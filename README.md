@@ -1,6 +1,6 @@
 # vlingo-net-symbio
 
-[[![Build status](https://ci.appveyor.com/api/projects/status/ug298v7ucwsvpj84?svg=true)](https://ci.appveyor.com/project/VlingoNetOwner/vlingo-net-symbio)
+[![Build status](https://ci.appveyor.com/api/projects/status/ug298v7ucwsvpj84?svg=true)](https://ci.appveyor.com/project/VlingoNetOwner/vlingo-net-symbio)
 [![NuGet](https://img.shields.io/nuget/v/Vlingo.Symbio.svg)](https://www.nuget.org/packages/Vlingo.Symbio)
 
 The reactive, scalable, and resilient CQRS storage and projection tool for services and applications built on the vlingo/platform.
