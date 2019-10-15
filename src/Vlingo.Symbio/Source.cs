@@ -62,8 +62,10 @@ namespace Vlingo.Symbio
         /// </summary>
         public string TypeName => GetType().Name;
 
+        /// <inheritdoc/>
         public override int GetHashCode() => Id.GetHashCode();
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (obj != null && obj.GetType() != GetType())
@@ -74,6 +76,7 @@ namespace Vlingo.Symbio
             return obj != null && Id.Equals(((Source<T>) obj).Id);
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             var id = Id;
@@ -90,6 +93,11 @@ namespace Vlingo.Symbio
         {
         }
 
+        /// <summary>
+        /// Construct my default state.
+        /// </summary>
+        /// <param name="sourceTypeVersion">the int type version of my concrete extender</param>
+        /// <exception cref="ArgumentOutOfRangeException">Throws when <paramref name="sourceTypeVersion"/> is less or equal to 0.</exception>
         protected Source(int sourceTypeVersion)
         {
             if (sourceTypeVersion <= 0)
