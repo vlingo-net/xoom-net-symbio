@@ -25,6 +25,14 @@ namespace Vlingo.Symbio
         
         public static Metadata With(object @object, string value, string operation) => new Metadata(@object, value, operation);
 
+        public static Metadata With<TOperation>(object @object, string value) => With<TOperation>(@object, value, true);
+
+        public static Metadata With<TOperation>(object @object, string value, bool compact)
+        {
+            var operation = compact ? typeof(TOperation).Name : typeof(TOperation).FullName;
+            return new Metadata(@object, value, operation);
+        }
+
         public Metadata(object @object, string value, string operation)
         {
             Object = @object ?? EmptyObject;
