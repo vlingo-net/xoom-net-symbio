@@ -19,8 +19,8 @@ namespace Vlingo.Symbio
     /// <typeparam name="T">The type of source of truth</typeparam>
     public abstract class Source<T>
     {
-        private long _dateTimeSourced;
-        private int _sourceTypeVersion;
+        private readonly long _dateTimeSourced;
+        private readonly int _sourceTypeVersion;
         
         /// <summary>
         /// Gets an instance of the <see cref="Source{T}.NullSource{TNested}"/>
