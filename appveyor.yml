@@ -1,6 +1,5 @@
 version: 0.0.{build}
 image:
-  - Visual Studio 2017
   - Visual Studio 2019
   - Ubuntu
 configuration: Release
