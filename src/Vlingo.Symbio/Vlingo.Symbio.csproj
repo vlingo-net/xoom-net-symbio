@@ -16,7 +16,7 @@
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageProjectUrl>https://github.com/vlingo-net/vlingo-net-symbio</PackageProjectUrl>
-        <PackageIconUrl>https://raw.githubusercontent.com/vlingo-net/vlingo-net-symbio/master/vlingo-64x64.png</PackageIconUrl>
+        <PackageIcon>vlingo-64x64.png</PackageIcon>
         <RepositoryUrl>https://github.com/vlingo-net/vlingo-net-symbio</RepositoryUrl>
         <PackageTags>vlingo-net-symbio;.net;c#;f#;reactive-programming;actors;actor-model;reactive;persistence;netstandard</PackageTags>
     </PropertyGroup>
@@ -26,6 +26,7 @@
         </AssemblyAttribute>
     </ItemGroup>
     <ItemGroup>
+        <None Include="..\..\vlingo-64x64.png" Pack="true" PackagePath="\"/>
         <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
         <None Update="vlingo-actors.properties">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
