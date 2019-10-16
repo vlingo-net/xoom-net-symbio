@@ -116,7 +116,7 @@ namespace Vlingo.Symbio
         public virtual bool IsEmpty => false;
 
         /// <inheritdoc/>
-        public bool IsNull => false;
+        public virtual bool IsNull => false;
 
         /// <inheritdoc/>
         public Type Typed => IEntry<T>.TypedFrom(_type);
@@ -254,5 +254,49 @@ namespace Vlingo.Symbio
         public override bool IsEmpty => EntryData!.Equals(EmptyObjectData);
 
         public override IEntry<T> WithId(string id) => new ObjectEntry<T>(id, Typed, TypeVersion, EntryData, 1);
+    }
+    
+    /// <summary>
+    /// The text string form of <see cref="IEntry{T}"/>.
+    /// </summary>
+    public sealed class TextEntry : BaseEntry<string>
+    {
+        public TextEntry(string id, Type type, int typeVersion, string entryData, Metadata metadata) : base(id, type, typeVersion, entryData, metadata)
+        {
+        }
+        
+        public TextEntry(string id, Type type, int typeVersion, string entryData) : base(id, type, typeVersion, entryData)
+        {
+        }
+        
+        public TextEntry(Type type, int typeVersion, string entryData, Metadata metadata) : base(UnknownId, type, typeVersion, entryData, metadata)
+        {
+        }
+
+        public TextEntry() : base(UnknownId, typeof(string), 1, EmptyTextData, Metadata.NullMetadata())
+        {
+        }
+
+        public override bool IsText => true;
+
+        public override bool IsEmpty => string.IsNullOrEmpty(EntryData);
+
+        public override IEntry<string> WithId(string id) => new TextEntry(id, Typed, TypeVersion, EntryData);
+    }
+    
+    /// <summary>
+    /// The object <typeparamref name="T"/> form of <see cref="IEntry{T}"/>.
+    /// </summary>
+    public sealed class NullEntry<T> : BaseEntry<T>
+    {
+        public NullEntry(T entryData) : base(UnknownId, typeof(T), 1, entryData, Metadata.NullMetadata())
+        {
+        }
+
+        public override bool IsNull => true;
+
+        public override bool IsEmpty => true;
+
+        public override IEntry<T> WithId(string id) => this;
     }
 }
