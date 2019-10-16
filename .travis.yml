@@ -17,8 +17,9 @@ script:
       dotnet build ./src/Vlingo.Symbio.sln;
       dotnet test ./src/Vlingo.Symbio.Tests/Vlingo.Symbio.Tests.csproj;
     else
-      msbuild ./src/Vlingo.Symbio.sln /p:Configuration=Release
-      mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./src/Vlingo.Symbio.Tests/bin/Release/Vlingo.Symbio.Tests.dll;
+      cd src
+      msbuild Vlingo.Symbio.sln /p:Configuration=Release
+      mono ../testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./Vlingo.Symbio.Tests/bin/Release/Vlingo.Symbio.Tests.dll;
     fi
 
 notifications:
