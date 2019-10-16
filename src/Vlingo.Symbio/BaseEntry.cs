@@ -17,10 +17,10 @@ namespace Vlingo.Symbio
     /// <seealso cref="TextEntry"/>
     /// <seealso cref="NullEntry"/>
     /// <typeparam name="T">The concrete type of <see cref="IEntry{T}"/> stored and read, which maybe be <c>string</c>, <c>byte[]</c>, or <c>object</c></typeparam>
-    public abstract class BaseEntry<T> : IEntry<T> where T : class
+    public abstract class BaseEntry<T> : IEntry<T>
     {
         protected static readonly byte[] EmptyBytesData = new byte[0];
-        protected static readonly T EmptyObjectData = default;
+        protected static readonly T EmptyObjectData = default!;
         protected static string EmptyTextData = string.Empty;
         protected static readonly string UnknownId = string.Empty;
         
@@ -88,7 +88,7 @@ namespace Vlingo.Symbio
         /// <inheritdoc/>
         public int TypeVersion => _typeVersion;
         
-        public BinaryEntry AsBinaryEntry() => this as BinaryEntry;
+        public BinaryEntry? AsBinaryEntry() => this as BinaryEntry;
         
         public ObjectEntry<T> AsObjectEntry() => (ObjectEntry<T>) this;
 
@@ -167,20 +167,20 @@ namespace Vlingo.Symbio
         public override string ToString()
         {
             return $"{GetType().Name}[id={_id} type={_type} typeVersion={_typeVersion} " +
-                $"entryData={(IsText || IsObject ? _entryData.ToString() : "(binary)")} metadata={_metadata}]";
+                $"entryData={(IsText || IsObject ? _entryData!.ToString() : "(binary)")} metadata={_metadata}]";
         }
 
         private int CompareData(BaseEntry<T> state1, BaseEntry<T> state2)
         {
             if (state1.IsText && state2.IsText)
             {
-                return string.Compare(((string)(object)state1.EntryData), (string)(object)state2.EntryData, StringComparison.InvariantCulture);
+                return string.Compare((string)(object)state1.EntryData!, (string)(object)state2.EntryData!, StringComparison.InvariantCulture);
             }
             
             if (state1.IsBinary && state2.IsBinary)
             {
-                var data1 = (byte[])(object)state1.EntryData;
-                var data2 = (byte[])(object)state2.EntryData;
+                var data1 = (byte[])(object)state1.EntryData!;
+                var data2 = (byte[])(object)state2.EntryData!;
                 if (data1.Length == data2.Length)
                 {
                     for (int idx = 0; idx < data1.Length; ++idx)
@@ -231,7 +231,7 @@ namespace Vlingo.Symbio
     /// <summary>
     /// The object <typeparamref name="T"/> form of <see cref="IEntry{T}"/>.
     /// </summary>
-    public sealed class ObjectEntry<T> : BaseEntry<T> where T : class
+    public sealed class ObjectEntry<T> : BaseEntry<T>
     {
         public ObjectEntry(string id, Type type, int typeVersion, T entryData, Metadata metadata) : base(id, type, typeVersion, entryData, metadata)
         {
@@ -251,7 +251,7 @@ namespace Vlingo.Symbio
 
         public override bool IsObject => true;
 
-        public override bool IsEmpty => EntryData == EmptyObjectData;
+        public override bool IsEmpty => EntryData!.Equals(EmptyObjectData);
 
         public override IEntry<T> WithId(string id) => new ObjectEntry<T>(id, Typed, TypeVersion, EntryData, 1);
     }

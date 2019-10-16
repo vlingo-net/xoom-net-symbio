@@ -15,7 +15,7 @@ namespace Vlingo.Symbio
     /// Entry represents a journal entry
     /// </summary>
     /// <typeparam name="T">The concrete of <c>IEntry{T}</c> stored and read, which may be a string, byte[] or object</typeparam>
-    public interface IEntry<T> : IComparable<IEntry<T>> where T : class
+    public interface IEntry<T> : IComparable<IEntry<T>>
     {
         /// <summary>
         /// Returns an empty <see>
