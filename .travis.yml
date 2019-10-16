@@ -19,11 +19,11 @@ jobs:
       env: MONO=latest
 sudo: false  # use the new container-based Travis infrastructure
 install:
-  - if [ "$MONO" == "latest" ]; then 
+  - if [ $MONO == "latest" ]; then 
       nuget src/Vlingo.Symbio.sln;
       nuget install xunit.runners -Version 1.9.2 -OutputDirectory testrunner;
 script:
-  - if [ "$DOTNETCORE" == "3" ]; then 
+  - if [ $DOTNETCORE == "3" ]; then 
     dotnet restore ./src/Vlingo.Symbio.sln;
     dotnet build ./src/Vlingo.Symbio.sln;
     dotnet test ./src/Vlingo.Symbio.Tests/Vlingo.Symbio.Tests.csproj;
