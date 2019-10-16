@@ -6,7 +6,7 @@ configuration: Release
 skip_commits:
   message: /.*\[ci\-skip\].*/
 before_build:
-  - cmd: dotnet restore src/Vlingo.Symbio.sln
+  - dotnet restore src/Vlingo.Symbio.sln
 build:
   project: src/Vlingo.Symbio.sln
   verbosity: minimal
