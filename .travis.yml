@@ -1,18 +1,6 @@
 language: csharp
 jobs:
   include:
-    - os: linux
-      dotnet: 3.0.100
-      mono: none
-      env: DOTNETCORE=3
-    - os: linux
-      mono: latest
-      env: MONO=latest
-    - os: osx
-      osx_image: xcode11
-      dotnet: 3.0.100
-      mono: none
-      env: DOTNETCORE=3
     - os: osx
       osx_image: xcode11
       mono: latest
@@ -29,7 +17,7 @@ script:
       dotnet build ./src/Vlingo.Symbio.sln;
       dotnet test ./src/Vlingo.Symbio.Tests/Vlingo.Symbio.Tests.csproj;
     else
-      msbuild /p:Configuration=Release src/Vlingo.Symbio.sln
+      msbuild ./src/Vlingo.Symbio.sln /p:Configuration=Release
       mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./src/Vlingo.Symbio.Tests/bin/Release/Vlingo.Symbio.Tests.dll;
     fi
 
