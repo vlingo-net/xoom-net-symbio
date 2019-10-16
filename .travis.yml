@@ -28,7 +28,9 @@ script:
       dotnet restore ./src/Vlingo.Symbio.sln;
       dotnet build ./src/Vlingo.Symbio.sln;
       dotnet test ./src/Vlingo.Symbio.Tests/Vlingo.Symbio.Tests.csproj;
-    else mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./src/Vlingo.Symbio.Tests/bin/Release/Vlingo.Symbio.Tests.dll;
+    else
+      msbuild /p:Configuration=Release src/Vlingo.Symbio.sln
+      mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./src/Vlingo.Symbio.Tests/bin/Release/Vlingo.Symbio.Tests.dll;
     fi
 
 notifications:
