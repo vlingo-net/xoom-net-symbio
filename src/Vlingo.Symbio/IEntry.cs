@@ -15,8 +15,38 @@ namespace Vlingo.Symbio
     /// Entry represents a journal entry
     /// </summary>
     /// <typeparam name="T">The concrete of <c>IEntry{T}</c> stored and read, which may be a string, byte[] or object</typeparam>
-    public interface IEntry<T> : IComparable<IEntry<T>>
+    public interface IEntry<T> : IComparable<IEntry<T>> where T : class
     {
+        /// <summary>
+        /// Returns an empty <see>
+        ///     <cref>IEnumerable{IEntry{T}}</cref>
+        /// </see>
+        /// .
+        /// </summary>
+        /// <typeparam name="T">The type used in <c>IEntry{T}</c></typeparam>
+        /// <returns><see>
+        ///     <cref>IEnumerable{IEntry{T}}</cref>
+        /// </see>
+        /// </returns>
+        public static IEnumerable<IEntry<T>> None => Enumerable.Empty<IEntry<T>>();
+        
+        /// <summary>
+        /// Returns a type for a given type name.
+        /// </summary>
+        /// <param name="type">Name of the type to load. Use fully qualified type name.</param>
+        /// <returns>Type for the given name</returns>
+        /// <exception cref="InvalidOperationException">If the type cannot be found for a given type name</exception>
+        public static Type TypedFrom(string type)
+        {
+            var loadedType = System.Type.GetType(type);
+            if (loadedType == null)
+            {
+                throw new InvalidOperationException($"Cannot get type for type name: {type}");
+            }
+
+            return loadedType;
+        }
+        
         /// <summary>
         /// Gets current entry's id.
         /// </summary>
@@ -72,39 +102,6 @@ namespace Vlingo.Symbio
         /// </summary>
         /// <param name="id">The identity to assign to my copy.</param>
         /// <returns>A copy of myself with new identity.</returns>
-        IEntry<T> WithId(string id);
-    }
-
-    public static class Entry<T>
-    {
-        /// <summary>
-        /// Returns an empty <see>
-        ///     <cref>IEnumerable{IEntry{T}}</cref>
-        /// </see>
-        /// .
-        /// </summary>
-        /// <typeparam name="T">The type used in <c>IEntry{T}</c></typeparam>
-        /// <returns><see>
-        ///     <cref>IEnumerable{IEntry{T}}</cref>
-        /// </see>
-        /// </returns>
-        public static IEnumerable<IEntry<T>> None => Enumerable.Empty<IEntry<T>>();
-
-        /// <summary>
-        /// Returns a type for a given type name.
-        /// </summary>
-        /// <param name="type">Name of the type to load. Use fully qualified type name.</param>
-        /// <returns>Type for the given name</returns>
-        /// <exception cref="InvalidOperationException">If the type cannot be found for a given type name</exception>
-        public static Type Typed(string type)
-        {
-            var loadedType = Type.GetType(type);
-            if (loadedType == null)
-            {
-                throw new InvalidOperationException($"Cannot get type for type name: {type}");
-            }
-
-            return loadedType;
-        }
+        public abstract IEntry<T> WithId(string id);
     }
 }
