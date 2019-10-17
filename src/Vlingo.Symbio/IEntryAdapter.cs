@@ -32,7 +32,7 @@ namespace Vlingo.Symbio
         /// </summary>
         /// <param name="source">The <see cref="Source{T}"/> native state.</param>
         /// <returns>Adapted <see cref="IEntry{T}"/>.</returns>
-        IEntry<TEntry> ToEntry(Source<TSource> source);
+        IEntry<TEntry> ToEntry(Source<TSource> source) => ToEntry(source, Metadata.NullMetadata());
         
         /// <summary>
         /// Gets the <see cref="IEntry{T}"/> state from the <see cref="Source{T}"/> native state.
@@ -48,7 +48,8 @@ namespace Vlingo.Symbio
         /// <param name="source">The <see cref="Source{T}"/> native state.</param>
         /// <param name="id">The string unique identity to assign to the <see cref="IEntry{T}"/>.</param>
         /// <returns>Adapted <see cref="IEntry{T}"/>.</returns>
-        IEntry<TEntry> ToEntry(Source<TSource> source, string id);
+        IEntry<TEntry> ToEntry(Source<TSource> source, string id) =>
+            ToEntry(source, id, Metadata.NullMetadata());
         
         /// <summary>
         /// Gets the <see cref="IEntry{T}"/> state with its <paramref name="id"/> from the <see cref="Source{T}"/> native state.
@@ -58,19 +59,5 @@ namespace Vlingo.Symbio
         /// <param name="metadata">The <see cref="Metadata"/> for this entry.</param>
         /// <returns>Adapted <see cref="IEntry{T}"/>.</returns>
         IEntry<TEntry> ToEntry(Source<TSource> source, string id, Metadata metadata);
-    }
-
-    public abstract class EntryAdapterBase<TSource, TEntry> : IEntryAdapter<TSource, TEntry>
-    {
-        public abstract Source<TSource> FromEntry(IEntry<TEntry> entry);
-        
-        public IEntry<TEntry> ToEntry(Source<TSource> source) => ToEntry(source, Metadata.NullMetadata());
-
-        public abstract IEntry<TEntry> ToEntry(Source<TSource> source, Metadata metadata);
-
-        public IEntry<TEntry> ToEntry(Source<TSource> source, string id) =>
-            ToEntry(source, id, Metadata.NullMetadata());
-
-        public abstract IEntry<TEntry> ToEntry(Source<TSource> source, string id, Metadata metadata);
     }
 }
