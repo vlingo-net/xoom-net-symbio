@@ -16,7 +16,7 @@ namespace Vlingo.Symbio
     /// <seealso cref="BinaryEntry"/>
     /// <seealso cref="ObjectEntry{T}"/>
     /// <seealso cref="TextEntry"/>
-    /// <seealso cref="NullEntry"/>
+    /// <seealso cref="NullEntry{T}"/>
     /// <typeparam name="T">The concrete type of <see cref="IEntry{T}"/> stored and read, which maybe be <c>string</c>, <c>byte[]</c>, or <c>object</c></typeparam>
     public abstract class BaseEntry<T> : IEntry<T>
     {
@@ -92,12 +92,12 @@ namespace Vlingo.Symbio
         
         /// <inheritdoc/>
         public int TypeVersion => _typeVersion;
-        
+
         public BinaryEntry? AsBinaryEntry() => this as BinaryEntry;
         
         public ObjectEntry<T> AsObjectEntry() => (ObjectEntry<T>) this;
 
-        //public TextEntry AsTextEntry() => (TextEntry) this;
+        public TextEntry? AsTextEntry() => this as TextEntry;
 
         /// <inheritdoc/>
         public bool HasMetadata => !_metadata.IsEmpty;
@@ -163,7 +163,8 @@ namespace Vlingo.Symbio
 
         public override bool Equals(object obj)
         {
-            if (obj == null || obj.GetType() != GetType()) {
+            if (obj == null || obj.GetType() != GetType())
+            {
                 return false;
             }
             return _id.Equals(((BaseEntry<T>) obj)._id);
@@ -172,7 +173,7 @@ namespace Vlingo.Symbio
         public override string ToString()
         {
             return $"{GetType().Name}[id={_id} type={_type} typeVersion={_typeVersion} " +
-                $"entryData={(IsText || IsObject ? _entryData!.ToString() : "(binary)")} metadata={_metadata}]";
+                $"entryData={(IsText || IsObject ? _entryData?.ToString() : "(binary)")} metadata={_metadata}]";
         }
 
         private int CompareData(BaseEntry<T> state1, BaseEntry<T> state2)
