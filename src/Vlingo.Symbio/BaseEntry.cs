@@ -6,6 +6,7 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System;
+using System.Collections.Generic;
 
 namespace Vlingo.Symbio
 {
@@ -73,6 +74,10 @@ namespace Vlingo.Symbio
         {
         }
 
+        public IEnumerable<IEntry<T>> None => Entry<T>.None;
+
+        public Type TypedFrom(string type) => Entry<T>.TypedFrom(type);
+
         /// <inheritdoc/>
         public string Id => _id;
         
@@ -119,7 +124,7 @@ namespace Vlingo.Symbio
         public virtual bool IsNull => false;
 
         /// <inheritdoc/>
-        public Type Typed => IEntry<T>.TypedFrom(_type);
+        public Type Typed => Entry<T>.TypedFrom(_type);
 
         /// <summary>
         /// My string type that is the fully-qualified class name of the original entry type.
