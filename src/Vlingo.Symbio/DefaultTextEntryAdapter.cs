@@ -10,15 +10,15 @@ using Vlingo.Common.Serialization;
 
 namespace Vlingo.Symbio
 {
-    public sealed class DefaultTextEntryAdapter<TSource> : EntryAdapter<TSource, string>
+    public sealed class DefaultTextEntryAdapter<TState> : EntryAdapter<TState, string>
     {
-        public override Source<TSource> FromEntry(IEntry<string> entry)
+        public override Source<TState> FromEntry(IEntry<string> entry)
         {
             try
             {
                 var sourceType = Type.GetType(entry.TypeName);
                 var bland = JsonSerialization.Deserialized(entry.EntryData, sourceType);
-                return (Source<TSource>) bland;
+                return (Source<TState>) bland;
             } 
             catch (Exception) 
             {
@@ -26,13 +26,13 @@ namespace Vlingo.Symbio
             }
         }
 
-        public override IEntry<string> ToEntry(Source<TSource> source, Metadata metadata)
+        public override IEntry<string> ToEntry(Source<TState> source, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(source.GetType(), 1, serialization, metadata);
         }
-
-        public override IEntry<string> ToEntry(Source<TSource> source, string id, Metadata metadata)
+        
+        public override IEntry<string> ToEntry(Source<TState> source, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, source.GetType(), 1, serialization, metadata);

@@ -67,6 +67,7 @@ namespace Vlingo.Symbio
         public abstract IEntry<TEntry> ToEntry(Source<TSource> source, Metadata metadata);
 
         public abstract IEntry<TEntry> ToEntry(Source<TSource> source, string id, Metadata metadata);
+
         public virtual IEntry<TEntry> ToEntry(Source<TSource> source) => ToEntry(source, Metadata.NullMetadata());
 
         public virtual IEntry<TEntry> ToEntry(Source<TSource> source, string id) => ToEntry(source, id, Metadata.NullMetadata());
