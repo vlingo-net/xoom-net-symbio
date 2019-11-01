@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using Vlingo.Common;
 
-namespace Vlingo.Symbio.State
+namespace Vlingo.Symbio.Store
 {
     /// <summary>
     /// The <see cref="IEntry{T}"/> reader for a given storage type. The specific storage type provides its typed instance.

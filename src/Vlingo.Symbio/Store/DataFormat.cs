@@ -5,20 +5,12 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
-namespace Vlingo.Symbio.State
+namespace Vlingo.Symbio.Store
 {
-    public enum Result
+    public enum DataFormat
     {
-        ConcurrencyViolation,
-        
-        Error,
-        
-        Failure,
-        
-        NotFound,
-        
-        NoTypeStore,
-        
-        Success
+        Binary,
+        Native,
+        Text
     }
 }
