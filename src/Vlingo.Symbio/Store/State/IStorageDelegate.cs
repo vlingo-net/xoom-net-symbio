@@ -20,9 +20,9 @@ namespace Vlingo.Symbio.Store.State
         
         bool IsClosed { get; }
         
-        Advice EntryReaderAdvice { get; }
+        Advice? EntryReaderAdvice { get; }
         
-        string OriginalId { get; }
+        string? OriginalId { get; }
 
         TState StateFrom<TState, TResult>(TResult result, string id);
     }
