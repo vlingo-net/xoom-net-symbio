@@ -37,45 +37,45 @@ namespace Vlingo.Symbio
             _namedAdapters = new Dictionary<string, object>();
         }
         
-        public void RegisterAdapter<TS, TE>(IEntryAdapter<TS, TE> adapter)
+        public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter)
         {
-            _adapters.Add(typeof(TS), adapter);
-            _namedAdapters.Add(nameof(TS), adapter);
+            _adapters.Add(typeof(TSource), adapter);
+            _namedAdapters.Add(nameof(TSource), adapter);
         }
         
-        public void RegisterAdapter<TS, TE>(TS sourceType, IEntryAdapter<TS, TE> adapter, Action<TS, IEntryAdapter<TS, TE>> consumer)
+        public void RegisterAdapter<TSource, TEntry>(TSource sourceType, IEntryAdapter<TSource, TEntry> adapter, Action<TSource, IEntryAdapter<TSource, TEntry>> consumer)
         {
             _adapters.Add(sourceType!.GetType(), adapter);
             _namedAdapters.Add(sourceType.GetType().Name, adapter);
             consumer(sourceType, adapter);
         }
         
-        public IEnumerable<IEntry<TE>> AsEntries<TS, TE>(IEnumerable<Source<TS>> sources, Metadata metadata)
+        public IEnumerable<IEntry<TEntry>> AsEntries<TSource, TEntry>(IEnumerable<Source<TSource>> sources, Metadata? metadata)
         {
-            var defaultTextEntryAdapter = new DefaultTextEntryAdapter<TS>();
-            return sources.Select(source => AsEntry<TS, TE>(source, metadata, defaultTextEntryAdapter)).ToList();
+            var defaultTextEntryAdapter = new DefaultTextEntryAdapter<TSource>();
+            return sources.Select(source => AsEntry<TSource, TEntry>(source, metadata, defaultTextEntryAdapter)).ToList();
         }
 
-        public IEntry<TE> AsEntry<TS, TE>(Source<TS> source, Metadata metadata, IEntryAdapter<TS, string> defaultTextEntryAdapter)
+        public IEntry<TEntry> AsEntry<TSource, TEntry>(Source<TSource> source, Metadata? metadata, IEntryAdapter<TSource, string> defaultTextEntryAdapter)
         {
-            var  adapter = Adapter<TS, TE>();
+            var  adapter = Adapter<TSource, TEntry>();
             if (adapter != null)
             {
-                return adapter.ToEntry(source, metadata);
+                return metadata == null ? adapter.ToEntry(source) : adapter.ToEntry(source, metadata);
             }
             
-            return (IEntry<TE>) defaultTextEntryAdapter.ToEntry(source, metadata);
+            return (IEntry<TEntry>) defaultTextEntryAdapter.ToEntry(source, metadata!);
         }
         
-        public IEnumerable<Source<TS>> AsSources<TS, TE>(IEnumerable<IEntry<TE>> entries)
+        public IEnumerable<Source<TSource>> AsSources<TSource, TEntry>(IEnumerable<IEntry<TEntry>> entries)
         {
-            var defaultTextEntryAdapter = new DefaultTextEntryAdapter<TS>();
+            var defaultTextEntryAdapter = new DefaultTextEntryAdapter<TSource>();
             return entries.Select(entry => AsSource(entry, defaultTextEntryAdapter)).ToList();
         }
 
-        public Source<TS> AsSource<TS, TE>(IEntry<TE> entry, IEntryAdapter<TS, string> defaultTextEntryAdapter)
+        public Source<TSource> AsSource<TSource, TEntry>(IEntry<TEntry> entry, IEntryAdapter<TSource, string> defaultTextEntryAdapter)
         {
-            var adapter = NamedAdapter<TS, TE>(entry);
+            var adapter = NamedAdapter<TSource, TEntry>(entry);
             if (adapter != null)
             {
                 return adapter.FromEntry(entry);
@@ -84,15 +84,15 @@ namespace Vlingo.Symbio
             return defaultTextEntryAdapter.FromEntry((TextEntry)(object)entry);
         }
         
-        private IEntryAdapter<TS, TE> Adapter<TS, TE>()
+        private IEntryAdapter<TSource, TEntry> Adapter<TSource, TEntry>()
         {
-            var adapter = (IEntryAdapter<TS, TE>) _adapters[typeof(TS)];
+            var adapter = (IEntryAdapter<TSource, TEntry>) _adapters[typeof(TSource)];
             return adapter;
         }
         
-        private IEntryAdapter<TS, TE> NamedAdapter<TS, TE>(IEntry<TE> entry)
+        private IEntryAdapter<TSource, TEntry> NamedAdapter<TSource, TEntry>(IEntry<TEntry> entry)
         {
-            var adapter = (IEntryAdapter<TS, TE>) _namedAdapters[entry.TypeName];
+            var adapter = (IEntryAdapter<TSource, TEntry>) _namedAdapters[entry.TypeName];
             return adapter;
         }
     }

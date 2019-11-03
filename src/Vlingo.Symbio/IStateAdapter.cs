@@ -34,7 +34,7 @@ namespace Vlingo.Symbio
         /// <param name="raw">the <see cref="State{T}"/> instance from which the native state is derived</param>
         /// <typeparam name="TOtherState">The state type to which to convert</typeparam>
         /// <returns>Converted state instance to <typeparamref name="TOtherState"/></returns>
-        State<TOtherState> FromRawState<TOtherState>(State<TRawState> raw);
+        TOtherState FromRawState<TOtherState>(State<TRawState> raw);
 
         /// <summary>
         /// Gets the <typeparamref name="TRawState"/> raw <see cref="State{T}"/> instance of the <typeparamref name="TState"/> instance.
@@ -70,7 +70,7 @@ namespace Vlingo.Symbio
 
         public abstract TState FromRawState(State<TRawState> raw);
 
-        public abstract State<TOtherState> FromRawState<TOtherState>(State<TRawState> raw);
+        public abstract TOtherState FromRawState<TOtherState>(State<TRawState> raw);
         
         public virtual State<TRawState> ToRawState(string id, TState state, int stateVersion, Metadata metadata) =>
             throw new InvalidOperationException("Must override.");

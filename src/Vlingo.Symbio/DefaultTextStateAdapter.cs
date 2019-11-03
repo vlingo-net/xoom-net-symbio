@@ -27,8 +27,8 @@ namespace Vlingo.Symbio
             }
         }
 
-        public override State<TOtherState> FromRawState<TOtherState>(State<string> raw) =>
-            (State<TOtherState>)JsonSerialization.Deserialized(raw.Data, typeof(TOtherState));
+        public override TOtherState FromRawState<TOtherState>(State<string> raw) =>
+            (TOtherState)JsonSerialization.Deserialized(raw.Data, typeof(TOtherState));
 
         public override State<string> ToRawState(string id, object state, int stateVersion, Metadata metadata)
         {

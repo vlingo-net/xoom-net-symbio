@@ -22,7 +22,8 @@ namespace Vlingo.Symbio.Store.State
         /// <param name="state">The <typeparamref name="TState"/> typed state instance</param>
         /// <param name="stateVersion">The int version of the state</param>
         /// <param name="interest">The <see cref="IWriteResultInterest"/> to which the result is dispatched</param>
-        void Write(string id, TState state, int stateVersion, IWriteResultInterest interest);
+        /// <typeparam name="TSource">The concrete type of the sources</typeparam>
+        void Write<TSource>(string id, TState state, int stateVersion, IWriteResultInterest interest);
 
         /// <summary>
         /// Write the <paramref name="state"/> identified by <paramref name="id"/> along with appending <paramref name="sources"/>
@@ -44,7 +45,8 @@ namespace Vlingo.Symbio.Store.State
         /// <param name="stateVersion">The int version of the state</param>
         /// <param name="metadata">The <see cref="Metadata"/> for the state</param>
         /// <param name="interest">The <see cref="IWriteResultInterest"/> to which the result is dispatched</param>
-        void Write(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest);
+        /// <typeparam name="TSource">The concrete type of the sources</typeparam>
+        void Write<TSource>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest);
 
         /// <summary>
         /// Write the <paramref name="state"/> identified by <paramref name="id"/> along with appending <paramref name="sources"/>
@@ -67,7 +69,8 @@ namespace Vlingo.Symbio.Store.State
         /// <param name="stateVersion">The int version of the state</param>
         /// <param name="interest">The <see cref="IWriteResultInterest"/> to which the result is dispatched</param>
         /// <param name="object">An object that will be sent to the <see cref="IWriteResultInterest"/> when the write has succeeded or failed</param>
-        void Write(string id, TState state, int stateVersion, IWriteResultInterest interest, object @object);
+        /// <typeparam name="TSource">The concrete type of the sources</typeparam>
+        void Write<TSource>(string id, TState state, int stateVersion, IWriteResultInterest interest, object @object);
 
         /// <summary>
         /// Write the <paramref name="state"/> identified by <paramref name="id"/> along with appending <paramref name="sources"/>
@@ -91,7 +94,8 @@ namespace Vlingo.Symbio.Store.State
         /// <param name="metadata">The <see cref="Metadata"/> for the state</param>
         /// <param name="interest">The <see cref="IWriteResultInterest"/> to which the result is dispatched</param>
         /// <param name="object">An object that will be sent to the <see cref="IWriteResultInterest"/> when the write has succeeded or failed</param>
-        void Write(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest, object @object);
+        /// <typeparam name="TSource">The concrete type of the sources</typeparam>
+        void Write<TSource>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest, object @object);
 
         /// <summary>
         /// Write the <paramref name="state"/> identified by <paramref name="id"/> along with appending <paramref name="sources"/>

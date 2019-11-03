@@ -41,7 +41,7 @@ namespace Vlingo.Symbio.Tests.Store.State
         
         public Entity1 FromRawState(State<string> raw) => JsonSerialization.Deserialized<Entity1>(raw.Data);
 
-        public State<TOtherState> FromRawState<TOtherState>(State<string> raw) => JsonSerialization.Deserialized<State<TOtherState>>(raw.Data);
+        public TOtherState FromRawState<TOtherState>(State<string> raw) => JsonSerialization.Deserialized<TOtherState>(raw.Data);
 
         public State<string> ToRawState(string id, Entity1 state, int stateVersion, Metadata metadata)
         {
