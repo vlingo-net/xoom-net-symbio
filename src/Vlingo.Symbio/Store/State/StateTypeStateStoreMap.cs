@@ -5,6 +5,7 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
@@ -16,10 +17,10 @@ namespace Vlingo.Symbio.Store.State
 
         public static IEnumerable<string> AllStoreNames => StateStoreNames.Values;
 
-        public static void StateTypeToStoreName<T>(string storeName) =>
-            StateStoreNames.AddOrUpdate(typeof(T).FullName, storeName, (key, value) => storeName);
+        public static void StateTypeToStoreName(string storeName, Type stateType) =>
+            StateStoreNames.AddOrUpdate(stateType.FullName, storeName, (key, value) => storeName);
 
-        public static string? StoreNameFrom<T>() => StoreNameFrom(typeof(T).FullName);
+        public static string? StoreNameFrom(Type stateType) => StoreNameFrom(stateType.FullName);
         
         public static string? StoreNameFrom(string typeName) => StateStoreNames.TryGetValue(typeName, out var name) ? name : null;
         

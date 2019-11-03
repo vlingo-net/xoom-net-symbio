@@ -83,7 +83,7 @@ namespace Vlingo.Symbio.Store
         /// appended to slowly.
         /// </summary>
         /// <returns>The <see cref="ICompletes{T}"/> next available entry or null if none</returns>
-        ICompletes<T> ReadNext();
+        ICompletes<IEntry<T>> ReadNext();
 
         /// <summary>
         /// Eventually answers the next available <see cref="IEntry{T}"/> instance or null if none is currently available.
@@ -95,7 +95,7 @@ namespace Vlingo.Symbio.Store
         /// </summary>
         /// <param name="fromId">The string id of the <see cref="IEntry{T}"/> instance to which the seek prepares to next read</param>
         /// <returns>The <see cref="ICompletes{T}"/> next available entry or null if none</returns>
-        ICompletes<T> ReadNext(string fromId);
+        ICompletes<IEntry<T>> ReadNext(string fromId);
 
         /// <summary>
         /// Eventually answers the next available <see cref="IEntry{T}"/> instances as a <see cref="IEnumerable{T}"/>, which may be
@@ -108,7 +108,7 @@ namespace Vlingo.Symbio.Store
         /// </summary>
         /// <param name="maximumEntries">The int indicating the maximum number of <see cref="IEntry{T}"/> instances to read</param>
         /// <returns>The <see cref="ICompletes{T}"/> enumerable of <code>T</code> of at most maximumEntries or empty if none</returns>
-        ICompletes<IEnumerable<T>> ReadNext(int maximumEntries);
+        ICompletes<IEnumerable<IEntry<T>>> ReadNext(int maximumEntries);
 
         /// <summary>
         /// Eventually answers the next available <see cref="IEntry{T}"/> instances as a <see cref="IEnumerable{T}"/>, which may be
@@ -122,7 +122,7 @@ namespace Vlingo.Symbio.Store
         /// <param name="fromId">The string id of the <see cref="IEntry{T}"/> instance to which the seek prepares to next read</param>
         /// <param name="maximumEntries">The int indicating the maximum number of <see cref="IEntry{T}"/> instances to read</param>
         /// <returns>The <see cref="ICompletes{T}"/> enumerable of <code>T</code> of at most maximumEntries or empty if none</returns>
-        ICompletes<IEnumerable<T>> ReadNext(string fromId, int maximumEntries);
+        ICompletes<IEnumerable<IEntry<T>>> ReadNext(string fromId, int maximumEntries);
 
         /// <summary>
         /// Rewinds the reader so that the next available <see cref="IEntry{T}"/> is the first one in the storage.
@@ -157,15 +157,15 @@ namespace Vlingo.Symbio.Store
     /// </summary>
     public static class EntryReader
     {
-        public static string Beginning = "<";
+        public const string Beginning = "<";
         
-        public static string End = ">";
+        public const string End = ">";
         
-        public static string Query = "=";
+        public const string Query = "=";
 
-        public static int DefaultGapPreventionRetries = 3;
+        public const int DefaultGapPreventionRetries = 3;
 
-        public static long DefaultGapPreventionRetryInterval = 10L;
+        public const long DefaultGapPreventionRetryInterval = 10L;
     }
 
     /// <summary>

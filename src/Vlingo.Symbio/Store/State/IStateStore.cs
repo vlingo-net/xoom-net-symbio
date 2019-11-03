@@ -12,14 +12,15 @@ namespace Vlingo.Symbio.Store.State
     /// <summary>
     /// The basic State Store interface, defining standard dispatching and control types.
     /// </summary>
-    public interface IStateStore : IStateStoreReader, IStateStoreWriter
+    /// <typeparam name="TEntry">The specific type of <see cref="IEntry{TEntry}"/> that will be read</typeparam>
+    /// <typeparam name="TState">The specific type of <see cref="State{T}"/> that will be used by the reader and writer</typeparam>
+    public interface IStateStore<TState, TEntry> : IStateStoreReader<TState>, IStateStoreWriter<TState>
     {
         /// <summary>
         /// Answer the <see cref="IStateStoreEntryReader{TEntry}"/> identified by the <paramref name="name"/>.
         /// </summary>
         /// <param name="name">The string name of the reader</param>
-        /// <typeparam name="TEntry">The specific type of <see cref="IEntry{TEntry}"/> that will be read</typeparam>
         /// <returns><see cref="ICompletes{T}"/></returns>
-        ICompletes<IStateStoreEntryReader<TEntry>> EntryReader<TEntry>(string name);
+        ICompletes<IStateStoreEntryReader<IEntry<TEntry>>> EntryReader(string name);
     }
 }

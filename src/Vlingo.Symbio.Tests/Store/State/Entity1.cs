@@ -37,7 +37,7 @@ namespace Vlingo.Symbio.Tests.Store.State
     
     public class Entity1StateAdapter : IStateAdapter<Entity1, string>
     {
-        public int TypeVersion { get; } = 1;
+        public int TypeVersion => 1;
         
         public Entity1 FromRawState(State<string> raw) => JsonSerialization.Deserialized<Entity1>(raw.Data);
 

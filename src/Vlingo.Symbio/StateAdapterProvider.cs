@@ -32,53 +32,53 @@ namespace Vlingo.Symbio
             _defaultTextStateAdapter = new DefaultTextStateAdapter();
         }
         
-        public void RegisterAdapter<TS, TStateType>(IStateAdapter<TS, TStateType> adapter)
+        public void RegisterAdapter<TSource, TState>(IStateAdapter<TSource, TState> adapter)
         {
-            _adapters.Add(typeof(TS), adapter);
-            _namedAdapters.Add(nameof(TS), adapter);
+            _adapters.Add(typeof(TSource), adapter);
+            _namedAdapters.Add(nameof(TSource), adapter);
         }
         
-        public void RegisterAdapter<TS, TStateType>(TS stateType, IStateAdapter<TS, TStateType> adapter, Action<TS, IStateAdapter<TS, TStateType>> consumer)
+        public void RegisterAdapter<TSource, TState>(TSource stateType, IStateAdapter<TSource, TState> adapter, Action<TSource, IStateAdapter<TSource, TState>> consumer)
         {
             _adapters.Add(stateType!.GetType(), adapter);
             _namedAdapters.Add(stateType.GetType().Name, adapter);
             consumer(stateType, adapter);
         }
 
-        public State<TStateType> AsRaw<TS, TStateType>(string id, TS state, int stateVersion) =>
-            AsRaw<TS, TStateType>(id, state, stateVersion, Metadata.NullMetadata());
+        public State<TNewState> AsRaw<TState, TNewState>(string id, TState state, int stateVersion) =>
+            AsRaw<TState, TNewState>(id, state, stateVersion, Metadata.NullMetadata());
 
-        public State<TStateType> AsRaw<TS, TStateType>(string id, TS state, int stateVersion, Metadata metadata)
+        public State<TNewState> AsRaw<TState, TNewState>(string id, TState state, int stateVersion, Metadata metadata)
         {
-            var  adapter = Adapter<TS, TStateType>();
+            var  adapter = Adapter<TState, TNewState>();
             if (adapter != null)
             {
                 return adapter.ToRawState(state, stateVersion, metadata);
             }
             
-            return (State<TStateType>)(object)_defaultTextStateAdapter.ToRawState(state!, stateVersion, metadata);
+            return (State<TNewState>)(object)_defaultTextStateAdapter.ToRawState(state!, stateVersion, metadata);
         }
 
-        public TS FromRaw<TS, TStateType>(State<TStateType> state)
+        public TSource FromRaw<TSource, TState>(State<TState> state)
         {
-            var adapter = NamedAdapter<TS, TStateType>(state);
+            var adapter = NamedAdapter<TSource, TState>(state);
             if (adapter != null)
             {
                 return adapter.FromRawState(state);
             }
             
-            return (TS) _defaultTextStateAdapter.FromRawState((TextState)(object)state);
+            return (TSource) _defaultTextStateAdapter.FromRawState((TextState)(object)state);
         }
         
-        private IStateAdapter<TS, TStateType> Adapter<TS, TStateType>()
+        private IStateAdapter<TSource, TState> Adapter<TSource, TState>()
         {
-            var adapter = (IStateAdapter<TS, TStateType>) _adapters[typeof(TS)];
+            var adapter = (IStateAdapter<TSource, TState>) _adapters[typeof(TSource)];
             return adapter;
         }
         
-        private IStateAdapter<TS, TStateType> NamedAdapter<TS, TStateType>(State<TStateType> state)
+        private IStateAdapter<TSource, TState> NamedAdapter<TSource, TState>(State<TState> state)
         {
-            var adapter = (IStateAdapter<TS, TStateType>) _namedAdapters[state.Type];
+            var adapter = (IStateAdapter<TSource, TState>) _namedAdapters[state.Type];
             return adapter;
         }
     }

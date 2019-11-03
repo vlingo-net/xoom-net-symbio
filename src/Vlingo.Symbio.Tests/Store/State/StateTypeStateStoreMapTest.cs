@@ -15,28 +15,28 @@ namespace Vlingo.Symbio.Tests.Store.State
         [Fact]
         public void TestExistingMappings()
         {
-            StateTypeStateStoreMap.StateTypeToStoreName<Entity1>(typeof(Entity1).FullName);
+            StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity1).FullName, typeof(Entity1));
             
-            Assert.Equal(typeof(Entity1).FullName, StateTypeStateStoreMap.StoreNameFrom<Entity1>());
+            Assert.Equal(typeof(Entity1).FullName, StateTypeStateStoreMap.StoreNameFrom(typeof(Entity1)));
             Assert.Equal(typeof(Entity1).FullName, StateTypeStateStoreMap.StoreNameFrom(typeof(Entity1).FullName));
 
-            Assert.Null(StateTypeStateStoreMap.StoreNameFrom<Entity2>());
+            Assert.Null(StateTypeStateStoreMap.StoreNameFrom(typeof(Entity2)));
             Assert.Null(StateTypeStateStoreMap.StoreNameFrom(typeof(Entity2).FullName));
 
-            StateTypeStateStoreMap.StateTypeToStoreName<Entity2>(typeof(Entity2).FullName);
+            StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity2).FullName, typeof(Entity2));
 
-            Assert.Equal(typeof(Entity2).FullName, StateTypeStateStoreMap.StoreNameFrom<Entity2>());
+            Assert.Equal(typeof(Entity2).FullName, StateTypeStateStoreMap.StoreNameFrom(typeof(Entity2)));
             Assert.Equal(typeof(Entity2).FullName, StateTypeStateStoreMap.StoreNameFrom(typeof(Entity2).FullName));
 
-            Assert.Equal(typeof(Entity1).FullName, StateTypeStateStoreMap.StoreNameFrom<Entity1>());
+            Assert.Equal(typeof(Entity1).FullName, StateTypeStateStoreMap.StoreNameFrom(typeof(Entity1)));
             Assert.Equal(typeof(Entity1).FullName, StateTypeStateStoreMap.StoreNameFrom(typeof(Entity1).FullName));
         }
 
         [Fact]
         public void TestNonExistingMappings()
         {
-            StateTypeStateStoreMap.StateTypeToStoreName<Entity1>(typeof(Entity1).FullName);
-            StateTypeStateStoreMap.StateTypeToStoreName<Entity2>(typeof(Entity2).FullName);
+            StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity1).FullName, typeof(Entity1));
+            StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity2).FullName, typeof(Entity2));
 
             Assert.Null(StateTypeStateStoreMap.StoreNameFrom("123"));
             Assert.Null(StateTypeStateStoreMap.StoreNameFrom(typeof(string).FullName));

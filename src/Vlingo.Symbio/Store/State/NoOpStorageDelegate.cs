@@ -15,11 +15,11 @@ namespace Vlingo.Symbio.Store.State
         {
         }
 
-        public bool IsClosed { get; } = false;
+        public bool IsClosed => false;
 
-        public Advice? EntryReaderAdvice { get; } = null;
+        public Advice? EntryReaderAdvice => null;
 
-        public string? OriginalId { get; } = null;
+        public string? OriginalId => null;
         
         public TState StateFrom<TState, TResult>(TResult result, string id) => default!;
     }
