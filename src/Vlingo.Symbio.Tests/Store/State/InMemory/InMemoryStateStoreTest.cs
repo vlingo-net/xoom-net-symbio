@@ -8,8 +8,11 @@
 using System;
 using Vlingo.Actors;
 using Vlingo.Actors.TestKit;
+using Vlingo.Symbio.Store;
 using Vlingo.Symbio.Store.State;
 using Vlingo.Symbio.Store.State.InMemory;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Vlingo.Symbio.Tests.Store.State.InMemory
 {
@@ -24,8 +27,27 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         private TestWorld _testWorld;
         private World _world;
 
-        public InMemoryStateStoreTest()
+        [Fact(Skip = "under development")]
+        public void TestThatStateStoreWritesText()
         {
+            var access1 = _interest.AfterCompleting(1);
+            _dispatcher.AfterCompleting(1);
+
+            var entity = new Entity1("123", 5);
+
+            _store.Write<Entity1, string>(entity.Id, entity, 1, _interest);
+
+            Assert.Equal(0, access1.ReadFrom<int>("readObjectResultedIn"));
+            Assert.Equal(1, access1.ReadFrom<int>("writeObjectResultedIn"));
+            Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectWriteResult"));
+            Assert.Equal(entity, access1.ReadFrom<Entity1>("objectState"));
+        }
+
+        public InMemoryStateStoreTest(ITestOutputHelper output)
+        {
+            var converter = new Converter(output);
+            Console.SetOut(converter);
+            
             _testWorld = TestWorld.StartWithDefaults("test-store");
             _world = _testWorld.World;
 

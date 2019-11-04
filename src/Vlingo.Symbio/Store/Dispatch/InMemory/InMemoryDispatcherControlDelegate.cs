@@ -19,7 +19,7 @@ namespace Vlingo.Symbio.Store.Dispatch.InMemory
         }
 
         public IEnumerable<Dispatchable<TEntry, TState>> AllUnconfirmedDispatchableStates => _dispatchables;
-        
+
         public void ConfirmDispatched(string dispatchId) => _dispatchables.RemoveAll(d => d.Id.Equals(dispatchId));
 
         public void Stop() => _dispatchables.Clear();

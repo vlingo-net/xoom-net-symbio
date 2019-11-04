@@ -17,7 +17,7 @@ namespace Vlingo.Symbio.Store.Dispatch
     public interface IDispatcherControlDelegate<TEntry, TState>
     {
         IEnumerable<Dispatchable<TEntry, TState>> AllUnconfirmedDispatchableStates { get; }
-        
+
         void ConfirmDispatched(string dispatchId);
 
         void Stop();

@@ -15,7 +15,7 @@ namespace Vlingo.Symbio.Store.Dispatch.Control
     public sealed class DispatcherControlActor<TEntry, TState> : Actor, IDispatcherControl, IScheduled<object?>
     {
         private static readonly long DefaultRedispatchDelay = 2000L;
-        
+
         private readonly IDispatcher<Dispatchable<TEntry, TState>> _dispatcher;
         private readonly IDispatcherControlDelegate<TEntry, TState> _delegate;
         private readonly long _checkConfirmationExpirationInterval;
@@ -32,7 +32,8 @@ namespace Vlingo.Symbio.Store.Dispatch.Control
             _delegate = @delegate;
             _checkConfirmationExpirationInterval = checkConfirmationExpirationInterval;
             _confirmationExpiration = confirmationExpiration;
-            _cancellable = Scheduler.Schedule(this, null, TimeSpan.FromMilliseconds(DefaultRedispatchDelay), TimeSpan.FromMilliseconds(checkConfirmationExpirationInterval));
+            _cancellable = Scheduler.Schedule(this, null, TimeSpan.FromMilliseconds(DefaultRedispatchDelay),
+                TimeSpan.FromMilliseconds(checkConfirmationExpirationInterval));
             _dispatcher.ControlWith(this);
         }
 
@@ -47,9 +48,9 @@ namespace Vlingo.Symbio.Store.Dispatch.Control
             {
                 Logger.Error($"{GetType().FullName} confirmDispatched() failed because: {e.Message}", e);
                 interest.ConfirmDispatchedResultedIn(Result.Failure, dispatchId);
-            }    
+            }
         }
-        
+
         public void DispatchUnconfirmed()
         {
             try
@@ -80,7 +81,7 @@ namespace Vlingo.Symbio.Store.Dispatch.Control
             {
                 _cancellable.Cancel();
             }
-            
+
             _delegate.Stop();
             base.Stop();
         }

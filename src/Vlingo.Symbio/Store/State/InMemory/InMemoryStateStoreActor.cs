@@ -26,7 +26,11 @@ namespace Vlingo.Symbio.Store.State.InMemory
         private readonly StateAdapterProvider _stateAdapterProvider;
         private readonly Dictionary<string, Dictionary<string, State<TState>>> _store;
 
-        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TState>> dispatcher, long checkConfirmationExpirationInterval = 1000L, long confirmationExpiration = 1000L)
+        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TState>> dispatcher) : this(dispatcher, 1000L, 1000L)
+        {
+        }
+        
+        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TState>> dispatcher, long checkConfirmationExpirationInterval, long confirmationExpiration)
         {
             if (dispatcher == null)
             {
@@ -56,28 +60,28 @@ namespace Vlingo.Symbio.Store.State.InMemory
 
         public void Read(string id, IReadResultInterest interest, object? @object) => ReadFor(id, interest, @object);
 
-        public void Write<TSource>(string id, TState state, int stateVersion, IWriteResultInterest interest) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IWriteResultInterest interest) =>
             Write(id, state, stateVersion, Source<TSource>.None(), Metadata.NullMetadata(), interest, null);
 
-        public void Write<TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, IWriteResultInterest interest) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, IWriteResultInterest interest) =>
             Write(id, state, stateVersion, sources, Metadata.NullMetadata(), interest, null);
 
-        public void Write<TSource>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest) => 
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest) => 
             Write(id, state, stateVersion, Source<TSource>.None(), metadata, interest, null);
 
-        public void Write<TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest) =>
             Write(id, state, stateVersion, sources, metadata, interest, null);
 
-        public void Write<TSource>(string id, TState state, int stateVersion, IWriteResultInterest interest, object @object) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IWriteResultInterest interest, object @object) =>
             Write(id, state, stateVersion, Source<TSource>.None(), Metadata.NullMetadata(), interest, @object);
 
-        public void Write<TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, IWriteResultInterest interest, object @object) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, IWriteResultInterest interest, object @object) =>
             Write(id, state, stateVersion, sources, Metadata.NullMetadata(), interest, @object);
 
-        public void Write<TSource>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest, object @object) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest, object @object) =>
             Write(id, state, stateVersion, Source<TSource>.None(), metadata, interest, @object);
 
-        public void Write<TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest, object? @object) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest, object? @object) =>
             WriteWith(id, state, stateVersion, sources, metadata, interest, @object);
 
         public ICompletes<IStateStoreEntryReader<IEntry<TEntry>>> EntryReader(string name)

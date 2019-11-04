@@ -19,7 +19,7 @@ namespace Vlingo.Symbio.Store.Dispatch
         /// <param name="dispatchId">The string unique identity of the dispatched state</param>
         /// <param name="interest">The <see cref="IConfirmDispatchedResultInterest"/></param>
         void ConfirmDispatched(string dispatchId, IConfirmDispatchedResultInterest interest);
-        
+
         /// <summary>
         /// Attempt to dispatch any unconfirmed dispatchables.
         /// </summary>

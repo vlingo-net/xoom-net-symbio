@@ -20,14 +20,15 @@ namespace Vlingo.Symbio.Store.Dispatch
     /// <typeparam name="TState">The concrete <see cref="State{T}"/> type of the storage</typeparam>
     public class Dispatchable<TEntry, TState>
     {
-        public Dispatchable(string id, DateTimeOffset createdOn, State<TState> state, IEnumerable<IEntry<TEntry>> entries)
+        public Dispatchable(string id, DateTimeOffset createdOn, State<TState> state,
+            IEnumerable<IEntry<TEntry>> entries)
         {
             Id = id;
             CreatedOn = createdOn;
             State = state;
             Entries = new List<IEntry<TEntry>>(entries);
         }
-        
+
         /// <summary>
         /// My String unique identity.
         /// </summary>
@@ -50,7 +51,7 @@ namespace Vlingo.Symbio.Store.Dispatch
 
         public bool HasEntries => Entries != null && Entries.Any();
 
-        public State<TNewState> TypedState<TNewState>() => (State<TNewState>)(object) State!;
+        public State<TNewState> TypedState<TNewState>() => (State<TNewState>) (object) State!;
 
         public override bool Equals(object obj)
         {
