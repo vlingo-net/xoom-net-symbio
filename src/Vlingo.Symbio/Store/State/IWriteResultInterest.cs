@@ -23,7 +23,6 @@ namespace Vlingo.Symbio.Store.State
         /// <param name="object">The Object passed to write() that is sent back to the receiver</param>
         /// <typeparam name="TState">The native state type</typeparam>
         /// <typeparam name="TSource">The native source type</typeparam>
-        void WriteResultedIn<TState, TSource>(IOutcome<StorageException, Result> outcome, string id, TState state,
-            int stateVersion, IEnumerable<Source<TSource>> sources, object? @object);
+        void WriteResultedIn<TState, TSource>(IOutcome<StorageException, Result> outcome, string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, object? @object);
     }
 }

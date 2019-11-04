@@ -24,7 +24,6 @@ namespace Vlingo.Symbio.Store.State
         /// <param name="metadata">The <see cref="Metadata"/> of the state that was read, or null if not found</param>
         /// <param name="object">the object passed to <code>Read()</code> that is sent back to the receiver</param>
         /// <typeparam name="TState">The native state type</typeparam>
-        void ReadResultedIn<TState>(IOutcome<StorageException, Result> outcome, string? id, TState state,
-            int stateVersion, Metadata? metadata, object? @object);
+        void ReadResultedIn<TState>(IOutcome<StorageException, Result> outcome, string? id, TState state, int stateVersion, Metadata? metadata, object? @object);
     }
 }
