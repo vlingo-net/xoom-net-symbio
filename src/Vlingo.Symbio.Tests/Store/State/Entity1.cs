@@ -35,26 +35,26 @@ namespace Vlingo.Symbio.Tests.Store.State
         public override string ToString() => $"Entity1[id={Id} value={Value}]";
     }
     
-    public class Entity1StateAdapter : IStateAdapter<Entity1, string>
+    public class Entity1StateAdapter : StateAdapter<Entity1, string>
     {
-        public int TypeVersion => 1;
+        public override int TypeVersion => 1;
         
-        public Entity1 FromRawState(State<string> raw) => JsonSerialization.Deserialized<Entity1>(raw.Data);
+        public override Entity1 FromRawState(State<string> raw) => JsonSerialization.Deserialized<Entity1>(raw.Data);
 
-        public TOtherState FromRawState<TOtherState>(State<string> raw) => JsonSerialization.Deserialized<TOtherState>(raw.Data);
+        public override TOtherState FromRawState<TOtherState>(State<string> raw) => JsonSerialization.Deserialized<TOtherState>(raw.Data);
 
-        public State<string> ToRawState(string id, Entity1 state, int stateVersion, Metadata metadata)
+        public override State<string> ToRawState(string id, Entity1 state, int stateVersion, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(state);
             return new TextState(id, typeof(Entity1), TypeVersion, serialization, stateVersion, metadata);
         }
 
-        public State<string> ToRawState(Entity1 state, int stateVersion, Metadata metadata)
+        public override State<string> ToRawState(Entity1 state, int stateVersion, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(state);
             return new TextState(state.Id, typeof(Entity1), TypeVersion, serialization, stateVersion, metadata);
         }
 
-        public State<string> ToRawState(Entity1 state, int stateVersion) => ToRawState(state, stateVersion, Metadata.With("value", "op"));
+        public override State<string> ToRawState(Entity1 state, int stateVersion) => ToRawState(state, stateVersion, Metadata.With("value", "op"));
     }
 }

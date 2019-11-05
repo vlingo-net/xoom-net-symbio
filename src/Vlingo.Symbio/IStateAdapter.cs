@@ -9,12 +9,17 @@ using System;
 
 namespace Vlingo.Symbio
 {
+    public interface IStateAdapter
+    {
+        object ToRawState<T>(T state, int stateVersion, Metadata metadata);
+    }
+    
     /// <summary>
     /// Adapts the native state to the raw <see cref="State{T}"/>, and the raw <see cref="State{T}"/> to the native state.
     /// </summary>
     /// <typeparam name="TState">The native type of the state</typeparam>
     /// <typeparam name="TRawState">the raw <see cref="State{T}"/> of the state</typeparam>
-    public interface IStateAdapter<TState, TRawState>
+    public interface IStateAdapter<TState, TRawState> : IStateAdapter
     {
         /// <summary>
         /// Gets the state type's version, as in the number of times the type has been defined and redefined.
@@ -71,7 +76,10 @@ namespace Vlingo.Symbio
         public abstract TState FromRawState(State<TRawState> raw);
 
         public abstract TOtherState FromRawState<TOtherState>(State<TRawState> raw);
-        
+
+        public virtual object ToRawState<T>(T state, int stateVersion, Metadata metadata) =>
+            ToRawState((TState)(object)state, stateVersion, metadata);
+
         public virtual State<TRawState> ToRawState(string id, TState state, int stateVersion, Metadata metadata) =>
             throw new InvalidOperationException("Must override.");
 

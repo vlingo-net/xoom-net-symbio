@@ -19,7 +19,7 @@ namespace Vlingo.Symbio
             }
 
             dictionary.Add(key, value);
-            return value;
+            return default;
         }
     }
 }

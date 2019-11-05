@@ -21,13 +21,13 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         private readonly string _storeName1 = typeof(Entity1).FullName;
         private readonly string _storeName2 = typeof(Entity2).FullName;
         
-        private MockStateStoreDispatcher<Entity1, Entity1> _dispatcher;
+        private MockStateStoreDispatcher<Entity1, string> _dispatcher;
         private MockStateStoreResultInterest<Entity1> _interest;
         private IStateStore<Entity1, Entity1> _store;
         private TestWorld _testWorld;
         private World _world;
 
-        [Fact(Skip = "under development")]
+        [Fact]
         public void TestThatStateStoreWritesText()
         {
             var access1 = _interest.AfterCompleting(1);
@@ -35,7 +35,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
 
             var entity = new Entity1("123", 5);
 
-            _store.Write<Entity1, string>(entity.Id, entity, 1, _interest);
+            _store.Write(entity.Id, entity, 1, _interest);
 
             Assert.Equal(0, access1.ReadFrom<int>("readObjectResultedIn"));
             Assert.Equal(1, access1.ReadFrom<int>("writeObjectResultedIn"));
@@ -52,7 +52,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             _world = _testWorld.World;
 
             _interest = new MockStateStoreResultInterest<Entity1>();
-            _dispatcher = new MockStateStoreDispatcher<Entity1, Entity1>(_interest);
+            _dispatcher = new MockStateStoreDispatcher<Entity1, string>(_interest);
 
             var stateAdapterProvider = new StateAdapterProvider(_world);
             new EntryAdapterProvider(_world);
@@ -60,7 +60,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
             // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = _world.ActorFor<IStateStore<Entity1, Entity1>>(typeof(InMemoryStateStoreActor<Entity1, Entity1>), _dispatcher);
+            _store = _world.ActorFor<IStateStore<Entity1, Entity1>>(typeof(InMemoryStateStoreActor<Entity1, string, Entity1>), _dispatcher);
 
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName1, typeof(Entity1));
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName2, typeof(Entity2));

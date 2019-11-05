@@ -74,7 +74,7 @@ namespace Vlingo.Symbio
             var adapter = (IStateAdapter<TState, TRawState>) _adapters[typeof(TState)];
             return adapter;
         }
-        
+
         private IStateAdapter<TState, TRawState> NamedAdapter<TState, TRawState>(State<TRawState> state)
         {
             var adapter = (IStateAdapter<TState, TRawState>) _namedAdapters[state.Type];
