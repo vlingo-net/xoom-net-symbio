@@ -105,12 +105,24 @@ namespace Vlingo.Symbio.Tests.Store.State
                 .ReadingWith("readObjectResultedIn", () => _readObjectResultedIn.Get())
                 .ReadingWith("objectReadResult", () => _objectReadResult.Get())
                 .ReadingWith("objectWriteResult", () => _objectWriteResult.Get())
-                .ReadingWith("objectWriteAccumulatedResults", () => _objectWriteAccumulatedResults.TryDequeue(out _))
+                .ReadingWith("objectWriteAccumulatedResults", () =>
+                {
+                    _objectWriteAccumulatedResults.TryDequeue(out var result);
+                    return result;
+                })
                 .ReadingWith("objectWriteAccumulatedResultsCount", () => _objectWriteAccumulatedResults.Count)
                 .ReadingWith("metadataHolder", () => _metadataHolder.Get())
                 .ReadingWith("objectState", () => (TSource) _objectState.Get())
-                .ReadingWith("sources", () => _sources.TryDequeue(out _))
-                .ReadingWith("errorCauses", () => _errorCauses.TryDequeue(out _))
+                .ReadingWith("sources", () =>
+                {
+                    _sources.TryDequeue(out var result);
+                    return result;
+                })
+                .ReadingWith("errorCauses", () =>
+                {
+                    _errorCauses.TryDequeue(out var result);
+                    return result;
+                })
                 .ReadingWith("errorCausesCount", () => _errorCauses.Count)
                 .ReadingWith("writeObjectResultedIn", () => _writeObjectResultedIn.Get());
 

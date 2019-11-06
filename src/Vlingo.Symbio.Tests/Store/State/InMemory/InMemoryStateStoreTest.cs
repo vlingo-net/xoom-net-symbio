@@ -63,6 +63,89 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal("123", readEntity.Id);
             Assert.Equal(5, readEntity.Value);
         }
+        
+        [Fact]
+        public void TestThatStateStoreWritesAndReadsMetadataValue()
+        {
+            var access1 = _interest.AfterCompleting(2);
+            _dispatcher.AfterCompleting(2);
+
+            var entity = new Entity1("123", 5);
+            var sourceMetadata = Metadata.WithValue("value");
+
+            _store.Write(entity.Id, entity, 1, sourceMetadata, _interest);
+            _store.Read(entity.Id, _interest);
+
+            Assert.Equal(1, access1.ReadFrom<int>("readObjectResultedIn"));
+            Assert.Equal(1, access1.ReadFrom<int>("writeObjectResultedIn"));
+            Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectReadResult"));
+            Assert.Equal(entity, access1.ReadFrom<Entity1>("objectState"));
+            Assert.NotNull(access1.ReadFrom<Metadata>("metadataHolder"));
+            var metadata = access1.ReadFrom<Metadata>("metadataHolder");
+            Assert.True(metadata.HasValue);
+            Assert.Equal("value", metadata.Value);
+            
+            var readEntity = access1.ReadFrom<Entity1>("objectState");
+
+            Assert.Equal("123", readEntity.Id);
+            Assert.Equal(5, readEntity.Value);
+        }
+        
+        [Fact]
+        public void TestThatStateStoreWritesAndReadsMetadataOperation()
+        {
+            var access1 = _interest.AfterCompleting(2);
+            _dispatcher.AfterCompleting(2);
+
+            var entity = new Entity1("123", 5);
+            var sourceMetadata = Metadata.With("value", "operation");
+
+            _store.Write(entity.Id, entity, 1, sourceMetadata, _interest);
+            _store.Read(entity.Id, _interest);
+
+            Assert.Equal(1, access1.ReadFrom<int>("readObjectResultedIn"));
+            Assert.Equal(1, access1.ReadFrom<int>("writeObjectResultedIn"));
+            Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectReadResult"));
+            Assert.Equal(entity, access1.ReadFrom<Entity1>("objectState"));
+            Assert.NotNull(access1.ReadFrom<Metadata>("metadataHolder"));
+            var metadata = access1.ReadFrom<Metadata>("metadataHolder");
+            Assert.True(metadata.HasOperation);
+            Assert.Equal("operation", metadata.Operation);
+            
+            var readEntity = access1.ReadFrom<Entity1>("objectState");
+
+            Assert.Equal("123", readEntity.Id);
+            Assert.Equal(5, readEntity.Value);
+        }
+        
+        [Fact]
+        public void TestThatConcurrencyViolationsDetected()
+        {
+            var access1 = _interest.AfterCompleting(2);
+            _dispatcher.AfterCompleting(2);
+
+            var entity = new Entity1("123", 5);
+
+            _store.Write(entity.Id, entity, 1, _interest);
+            _store.Write(entity.Id, entity, 2, _interest);
+
+            Assert.Equal(2, access1.ReadFrom<int>("objectWriteAccumulatedResultsCount"));
+            Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectWriteAccumulatedResults"));
+            Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectWriteAccumulatedResults"));
+            Assert.Equal(0, access1.ReadFrom<int>("objectWriteAccumulatedResultsCount"));
+            
+            var access2 = _interest.AfterCompleting(3);
+            _dispatcher.AfterCompleting(3);
+
+            _store.Write(entity.Id, entity, 1, _interest);
+            _store.Write(entity.Id, entity, 2, _interest);
+            _store.Write(entity.Id, entity, 3, _interest);
+
+            Assert.Equal(3, access2.ReadFrom<int>("objectWriteAccumulatedResultsCount"));
+            Assert.Equal(Result.ConcurrencyViolation, access2.ReadFrom<Result>("objectWriteAccumulatedResults"));
+            Assert.Equal(Result.ConcurrencyViolation, access2.ReadFrom<Result>("objectWriteAccumulatedResults"));
+            Assert.Equal(Result.Success, access2.ReadFrom<Result>("objectWriteAccumulatedResults"));
+        }
 
         public InMemoryStateStoreTest(ITestOutputHelper output)
         {

@@ -47,7 +47,7 @@ namespace Vlingo.Symbio.Tests.Store.State
             _access = AccessSafely.AfterCompleting(times)
                 .WritingWith<string, DispatchInternal>("dispatched", (id, dispatch) =>
                 {
-                    _dispatched.Add(id, dispatch.State);
+                    _dispatched[id] = dispatch.State;
                     foreach (var entry in dispatch.Entries)
                     {
                         _dispatchedEntries.Enqueue(entry);
