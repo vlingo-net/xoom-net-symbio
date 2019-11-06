@@ -147,6 +147,48 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal(Result.Success, access2.ReadFrom<Result>("objectWriteAccumulatedResults"));
         }
 
+        [Fact]
+        public void TestThatStateStoreDispatches()
+        {
+            _interest.AfterCompleting(3);
+            var accessDispatcher = _dispatcher.AfterCompleting(3);
+
+            var entity1 = new Entity1("123", 1);
+            _store.Write(entity1.Id, entity1, 1, _interest);
+            var entity2 = new Entity1("234", 2);
+            _store.Write(entity2.Id, entity2, 1, _interest);
+            var entity3 = new Entity1("345", 3);
+            _store.Write(entity3.Id, entity3, 1, _interest);
+
+            Assert.Equal(3, accessDispatcher.ReadFrom<int>("dispatchedStateCount"));
+            var state123 = accessDispatcher.ReadFrom<string, State<string>>("dispatchedState", DispatchId("123"));
+            Assert.Equal("123", state123.Id);
+            var state234 = accessDispatcher.ReadFrom<string, State<string>>("dispatchedState", DispatchId("234"));
+            Assert.Equal("234", state234.Id);
+            var state345 = accessDispatcher.ReadFrom<string, State<string>>("dispatchedState", DispatchId("345"));
+            Assert.Equal("345", state345.Id);
+
+            _interest.AfterCompleting(4);
+            var accessDispatcher1 = _dispatcher.AfterCompleting(4);
+
+            accessDispatcher1.WriteUsing("processDispatch", false);
+            var entity4 = new Entity1("456", 4);
+            _store.Write(entity4.Id, entity4, 1, _interest);
+            var entity5 = new Entity1("567", 5);
+            _store.Write(entity5.Id, entity5, 1, _interest);
+
+            accessDispatcher1.WriteUsing("processDispatch", true);
+            _dispatcher.DispatchUnconfirmed();
+            accessDispatcher1.ReadFrom<int>("dispatchedStateCount");
+
+            Assert.Equal(5, accessDispatcher1.ReadFrom<int>("dispatchedStateCount"));
+
+            var state456 = accessDispatcher1.ReadFrom<string, State<string>>("dispatchedState", DispatchId("456"));
+            Assert.Equal("456", state456.Id);
+            var state567 = accessDispatcher1.ReadFrom<string, State<string>>("dispatchedState", DispatchId("567"));
+            Assert.Equal("567", state567.Id);
+        }
+
         public InMemoryStateStoreTest(ITestOutputHelper output)
         {
             var converter = new Converter(output);
@@ -174,5 +216,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         {
             _world?.Terminate();
         }
+        
+        private string DispatchId(string entityId) => $"{_storeName1}:{entityId}";
     }
 }

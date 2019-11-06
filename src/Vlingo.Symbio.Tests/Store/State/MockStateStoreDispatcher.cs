@@ -19,7 +19,7 @@ namespace Vlingo.Symbio.Tests.Store.State
         
         private IConfirmDispatchedResultInterest _confirmDispatchedResultInterest;
         private IDispatcherControl _control;
-        private Dictionary<string, object> _dispatched = new Dictionary<string, object>();
+        private Dictionary<string, State<TState>> _dispatched = new Dictionary<string, State<TState>>();
         private ConcurrentQueue<IEntry<TEntry>> _dispatchedEntries = new ConcurrentQueue<IEntry<TEntry>>();
         private readonly AtomicBoolean _processDispatch = new AtomicBoolean(true);
         private int _dispatchAttemptCount;
@@ -54,17 +54,13 @@ namespace Vlingo.Symbio.Tests.Store.State
                     }
                 })
 
-                .ReadingWith<string, object>("dispatchedState", (id) => _dispatched[id])
+                .ReadingWith<string, State<TState>>("dispatchedState", id => _dispatched[id])
                 .ReadingWith("dispatchedStateCount", () => _dispatched.Count)
 
                 .ReadingWith("dispatchedEntries", () =>  _dispatchedEntries)
                 .ReadingWith("dispatchedEntriesCount", () => _dispatchedEntries.Count)
                 
-                .ReadingWith<bool, object>("processDispatch", (flag) =>
-                {
-                    _processDispatch.Set(flag);
-                    return null; // The return could be avoided if is fixed https://github.com/vlingo-net/vlingo-net-actors/issues/68
-                })
+                .WritingWith<bool>("processDispatch", flag => _processDispatch.Set(flag))
                 .ReadingWith("processDispatch", () => _processDispatch.Get())
 
                 .ReadingWith("dispatchAttemptCount", () => _dispatchAttemptCount)
@@ -78,6 +74,8 @@ namespace Vlingo.Symbio.Tests.Store.State
         
         public int DispatchedCount() => _access.ReadFrom<Dictionary<string, object>>("dispatched").Count;
         
+        public void DispatchUnconfirmed() => _control.DispatchUnconfirmed();
+
         public class DispatchInternal
         {
             public IEnumerable<IEntry<TEntry>> Entries { get; }
