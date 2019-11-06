@@ -14,7 +14,7 @@ namespace Vlingo.Symbio.Store.State
     /// </summary>
     /// <typeparam name="TEntry">The specific type of <see cref="IEntry{TEntry}"/> that will be read</typeparam>
     /// <typeparam name="TState">The specific type of <see cref="State{T}"/> that will be used by the reader and writer</typeparam>
-    public interface IStateStore<TState, TEntry> : IStateStoreReader<TState>, IStateStoreWriter<TState>
+    public interface IStateStore<TState, TEntry> : IStateStoreReader, IStateStoreWriter<TState>
     {
         /// <summary>
         /// Answer the <see cref="IStateStoreEntryReader{TEntry}"/> identified by the <paramref name="name"/>.

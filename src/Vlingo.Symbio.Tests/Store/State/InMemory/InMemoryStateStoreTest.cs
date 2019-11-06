@@ -21,11 +21,10 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         private readonly string _storeName1 = typeof(Entity1).FullName;
         private readonly string _storeName2 = typeof(Entity2).FullName;
         
-        private MockStateStoreDispatcher<Entity1, string> _dispatcher;
-        private MockStateStoreResultInterest<Entity1> _interest;
-        private IStateStore<Entity1, Entity1> _store;
-        private TestWorld _testWorld;
-        private World _world;
+        private readonly MockStateStoreDispatcher<Entity1, string> _dispatcher;
+        private readonly MockStateStoreResultInterest<Entity1> _interest;
+        private readonly IStateStore<Entity1, Entity1> _store;
+        private readonly World _world;
 
         [Fact]
         public void TestThatStateStoreWritesText()
@@ -42,14 +41,36 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectWriteResult"));
             Assert.Equal(entity, access1.ReadFrom<Entity1>("objectState"));
         }
+        
+        [Fact]
+        public void TestThatStateStoreWritesAndReadsObject()
+        {
+            var access1 = _interest.AfterCompleting(2);
+            _dispatcher.AfterCompleting(2);
+
+            var entity = new Entity1("123", 5);
+
+            _store.Write(entity.Id, entity, 1, _interest);
+            _store.Read(entity.Id, _interest);
+
+            Assert.Equal(1, access1.ReadFrom<int>("readObjectResultedIn"));
+            Assert.Equal(1, access1.ReadFrom<int>("writeObjectResultedIn"));
+            Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectReadResult"));
+            Assert.Equal(entity, access1.ReadFrom<Entity1>("objectState"));
+            
+            var readEntity = access1.ReadFrom<Entity1>("objectState");
+
+            Assert.Equal("123", readEntity.Id);
+            Assert.Equal(5, readEntity.Value);
+        }
 
         public InMemoryStateStoreTest(ITestOutputHelper output)
         {
             var converter = new Converter(output);
             Console.SetOut(converter);
             
-            _testWorld = TestWorld.StartWithDefaults("test-store");
-            _world = _testWorld.World;
+            var testWorld = TestWorld.StartWithDefaults("test-store");
+            _world = testWorld.World;
 
             _interest = new MockStateStoreResultInterest<Entity1>();
             _dispatcher = new MockStateStoreDispatcher<Entity1, string>(_interest);

@@ -138,7 +138,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
 
                 if (raw != null)
                 {
-                    var state = _stateAdapterProvider.FromRaw<string, TRawState>(raw);
+                    var state = _stateAdapterProvider.FromRaw<TState, TRawState>(raw);
                     interest.ReadResultedIn(Success.Of<StorageException, Result>(Result.Success), id, state, raw.DataVersion, raw.Metadata, @object);
                 }
                 else

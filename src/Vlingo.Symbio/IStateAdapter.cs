@@ -78,7 +78,7 @@ namespace Vlingo.Symbio
         public abstract TOtherState FromRawState<TOtherState>(State<TRawState> raw);
 
         public virtual object ToRawState<T>(T state, int stateVersion, Metadata metadata) =>
-            ToRawState((TState)(object)state, stateVersion, metadata);
+            ToRawState((TState)(object)state!, stateVersion, metadata);
 
         public virtual State<TRawState> ToRawState(string id, TState state, int stateVersion, Metadata metadata) =>
             throw new InvalidOperationException("Must override.");

@@ -11,7 +11,7 @@ namespace Vlingo.Symbio.Store.State
     /// Defines the reader of the <see cref="IStateStore{TState, TEntry}"/>.
     /// </summary>
     /// <typeparam name="TState">The type of the state to read.</typeparam>
-    public interface IStateStoreReader<TState>
+    public interface IStateStoreReader
     {
         /// <summary>
         /// Read the state identified by <paramref name="id"/> and dispatch the result to the <paramref name="interest"/>.
