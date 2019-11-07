@@ -86,8 +86,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
 
         public ICompletes<IStateStoreEntryReader<IEntry<TEntry>>> EntryReader(string name)
         {
-            var reader = _entryReaders[name];
-            if (reader == null)
+            if (!_entryReaders.TryGetValue(name, out var reader))
             {
                 reader = ChildActorFor<IStateStoreEntryReader<IEntry<TEntry>>>(Definition.Has<InMemoryStateStoreEntryReaderActor<TEntry>>(Definition.Parameters(_entries, name)));
                 _entryReaders.Add(name, reader);
