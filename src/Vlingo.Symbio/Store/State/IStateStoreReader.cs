@@ -8,9 +8,8 @@
 namespace Vlingo.Symbio.Store.State
 {
     /// <summary>
-    /// Defines the reader of the <see cref="IStateStore{TState, TEntry}"/>.
+    /// Defines the reader of the <see cref="IStateStore{TEntry}"/>.
     /// </summary>
-    /// <typeparam name="TState">The type of the state to read.</typeparam>
     public interface IStateStoreReader
     {
         /// <summary>
@@ -18,7 +17,8 @@ namespace Vlingo.Symbio.Store.State
         /// </summary>
         /// <param name="id">The string unique identity of the state to read</param>
         /// <param name="interest">the <see cref="IReadResultInterest"/> to which the result is dispatched</param>
-        void Read(string id, IReadResultInterest interest);
+        /// <typeparam name="TState">The type of the state to read.</typeparam>
+        void Read<TState>(string id, IReadResultInterest interest);
 
         /// <summary>
         /// Read the state identified by <paramref name="id"/> and dispatch the result to the <paramref name="interest"/>.
@@ -26,6 +26,7 @@ namespace Vlingo.Symbio.Store.State
         /// <param name="id">the string unique identity of the state to read</param>
         /// <param name="interest">The <see cref="IReadResultInterest"/> to which the result is dispatched</param>
         /// <param name="object">an object that will be sent to the <see cref="IReadResultInterest"/> when the read has succeeded or failed</param>
-        void Read(string id, IReadResultInterest interest, object? @object);
+        /// <typeparam name="TState">The type of the state to read.</typeparam>
+        void Read<TState>(string id, IReadResultInterest interest, object? @object);
     }
 }

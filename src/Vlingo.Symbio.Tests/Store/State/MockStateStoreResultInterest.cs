@@ -16,7 +16,7 @@ using Vlingo.Symbio.Store.State;
 
 namespace Vlingo.Symbio.Tests.Store.State
 {
-    public class MockStateStoreResultInterest<TSource> : IReadResultInterest, IWriteResultInterest, IConfirmDispatchedResultInterest
+    public class MockStateStoreResultInterest : IReadResultInterest, IWriteResultInterest, IConfirmDispatchedResultInterest
     {
         private AccessSafely _access;
 
@@ -30,35 +30,35 @@ namespace Vlingo.Symbio.Tests.Store.State
         public AtomicReference<Metadata> _metadataHolder = new AtomicReference<Metadata>();
         public AtomicReference<object> _objectState = new AtomicReference<object>();
         public ConcurrentQueue<Exception> _errorCauses = new ConcurrentQueue<Exception>();
-        public ConcurrentQueue<Source<TSource>> _sources = new ConcurrentQueue<Source<TSource>>();
+        public ConcurrentQueue<object> _sources = new ConcurrentQueue<object>();
 
         public MockStateStoreResultInterest()
         {
-            _access = AfterCompleting(0);
+            _access = AfterCompleting<object, object>(0);
         }
         
         public void ReadResultedIn<TState>(IOutcome<StorageException, Result> outcome, string id, TState state, int stateVersion, Metadata metadata, object @object)
         {
             outcome
                 .AndThen(result => {
-                    _access.WriteUsing("readStoreData", new StoreData<TSource>(1, result, state, new List<Source<TSource>>(), metadata, null));
+                    _access.WriteUsing("readStoreData", new StoreData<TState>(1, result, state, new List<Source<TState>>(), metadata, null));
                     return result; 
                 })
                 .Otherwise(cause => {
-                    _access.WriteUsing("readStoreData", new StoreData<TSource>(1, cause.Result, state, new List<Source<TSource>>(), metadata, cause));
+                    _access.WriteUsing("readStoreData", new StoreData<TState>(1, cause.Result, state, new List<Source<TState>>(), metadata, cause));
                     return cause.Result;
                 });
         }
 
-        public void WriteResultedIn<TState, TSourceInt>(IOutcome<StorageException, Result> outcome, string id, TState state, int stateVersion, IEnumerable<Source<TSourceInt>> sources, object @object)
+        public void WriteResultedIn<TState, TSource>(IOutcome<StorageException, Result> outcome, string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, object @object)
         {
             outcome
                 .AndThen(result => {
-                    _access.WriteUsing("writeStoreData", new StoreData<TSourceInt>(1, result, state, sources, null, null));
+                    _access.WriteUsing("writeStoreData", new StoreData<TSource>(1, result, state, sources, null, null));
                     return result;
                 })
                 .Otherwise(cause => {
-                    _access.WriteUsing("writeStoreData", new StoreData<TSourceInt>(1, cause.Result, state, sources, null, cause));
+                    _access.WriteUsing("writeStoreData", new StoreData<TSource>(1, cause.Result, state, sources, null, cause));
                     return cause.Result;
                 });
         }
@@ -68,7 +68,7 @@ namespace Vlingo.Symbio.Tests.Store.State
             // not used
         }
         
-        public AccessSafely AfterCompleting(int times)
+        public AccessSafely AfterCompleting<TState, TSource>(int times)
         {
             _access = AccessSafely.AfterCompleting(times);
                 
@@ -112,7 +112,7 @@ namespace Vlingo.Symbio.Tests.Store.State
                 })
                 .ReadingWith("objectWriteAccumulatedResultsCount", () => _objectWriteAccumulatedResults.Count)
                 .ReadingWith("metadataHolder", () => _metadataHolder.Get())
-                .ReadingWith("objectState", () => (TSource) _objectState.Get())
+                .ReadingWith("objectState", () => (TState) _objectState.Get())
                 .ReadingWith("sources", () =>
                 {
                     _sources.TryDequeue(out var result);

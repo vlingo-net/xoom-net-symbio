@@ -11,9 +11,9 @@ namespace Vlingo.Symbio.Tests.Store.State
     {
         public string Id { get; }
         
-        public int Value { get; }
+        public string Value { get; }
 
-        public Entity2(string id, int value)
+        public Entity2(string id, string value)
         {
             Id = id;
             Value = value;

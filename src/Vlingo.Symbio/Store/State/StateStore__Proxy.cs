@@ -6,7 +6,7 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.State
 {
-    public class StateStore__Proxy<TState, TEntry> : Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>
+    public class StateStore__Proxy<TEntry> : Vlingo.Symbio.Store.State.IStateStore<TEntry>
     {
         private const string EntryReaderRepresentation1 = "EntryReader(string)";
         private const string ReadRepresentation2 = "Read(string, Vlingo.Symbio.Store.State.IReadResultInterest)";
@@ -51,7 +51,7 @@ namespace Vlingo.Symbio.Store.State
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>> cons128873 = __ => __.EntryReader(name);
+                Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ => __.EntryReader(name);
                 var completes = new BasicCompletes<IStateStoreEntryReader<IEntry<TEntry>>>(this.actor.Scheduler);
                 if (this.mailbox.IsPreallocated)
                 {
@@ -60,7 +60,7 @@ namespace Vlingo.Symbio.Store.State
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TEntry>>(this.actor, cons128873,
                             completes, EntryReaderRepresentation1));
                 }
 
@@ -74,11 +74,11 @@ namespace Vlingo.Symbio.Store.State
             return null!;
         }
 
-        public void Read(string id, Vlingo.Symbio.Store.State.IReadResultInterest interest)
+        public void Read<TState>(string id, Vlingo.Symbio.Store.State.IReadResultInterest interest)
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>> cons128873 = __ => __.Read(id, interest);
+                Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ => __.Read<TState>(id, interest);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, null, ReadRepresentation2);
@@ -86,7 +86,7 @@ namespace Vlingo.Symbio.Store.State
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TEntry>>(this.actor, cons128873,
                             ReadRepresentation2));
                 }
             }
@@ -96,12 +96,12 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public void Read(string id, Vlingo.Symbio.Store.State.IReadResultInterest interest, object? @object)
+        public void Read<TState>(string id, Vlingo.Symbio.Store.State.IReadResultInterest interest, object? @object)
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>> cons128873 = __ =>
-                    __.Read(id, interest, @object);
+                Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ =>
+                    __.Read<TState>(id, interest, @object);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, null, ReadRepresentation3);
@@ -109,7 +109,7 @@ namespace Vlingo.Symbio.Store.State
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TEntry>>(this.actor, cons128873,
                             ReadRepresentation3));
                 }
             }
@@ -119,12 +119,12 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public void Write(string id, TState state, int stateVersion,
+        public void Write<TState>(string id, TState state, int stateVersion,
             Vlingo.Symbio.Store.State.IWriteResultInterest interest)
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ =>
                     __.Write(id, state, stateVersion, interest);
                 if (this.mailbox.IsPreallocated)
                 {
@@ -133,7 +133,7 @@ namespace Vlingo.Symbio.Store.State
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TEntry>>(this.actor, cons128873,
                             WriteRepresentation4));
                 }
             }
@@ -143,13 +143,13 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public void Write<TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources,
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources,
             Vlingo.Symbio.Store.State.IWriteResultInterest interest)
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>> cons128873 = __ =>
-                    __.Write<TSource>(id, state, stateVersion, sources, interest);
+                Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ =>
+                    __.Write(id, state, stateVersion, sources, interest);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, null, WriteRepresentation5);
@@ -157,7 +157,7 @@ namespace Vlingo.Symbio.Store.State
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TEntry>>(this.actor, cons128873,
                             WriteRepresentation5));
                 }
             }
@@ -167,12 +167,12 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public void Write(string id, TState state, int stateVersion, Vlingo.Symbio.Metadata metadata,
+        public void Write<TState>(string id, TState state, int stateVersion, Vlingo.Symbio.Metadata metadata,
             Vlingo.Symbio.Store.State.IWriteResultInterest interest)
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ =>
                     __.Write(id, state, stateVersion, metadata, interest);
                 if (this.mailbox.IsPreallocated)
                 {
@@ -181,7 +181,7 @@ namespace Vlingo.Symbio.Store.State
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TEntry>>(this.actor, cons128873,
                             WriteRepresentation6));
                 }
             }
@@ -191,13 +191,13 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public void Write<TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources,
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources,
             Vlingo.Symbio.Metadata metadata, Vlingo.Symbio.Store.State.IWriteResultInterest interest)
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>> cons128873 = __ =>
-                    __.Write<TSource>(id, state, stateVersion, sources, metadata, interest);
+                Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ =>
+                    __.Write(id, state, stateVersion, sources, metadata, interest);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, null, WriteRepresentation7);
@@ -205,7 +205,7 @@ namespace Vlingo.Symbio.Store.State
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TEntry>>(this.actor, cons128873,
                             WriteRepresentation7));
                 }
             }
@@ -215,12 +215,12 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public void Write(string id, TState state, int stateVersion,
+        public void Write<TState>(string id, TState state, int stateVersion,
             Vlingo.Symbio.Store.State.IWriteResultInterest interest, object @object)
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ =>
                     __.Write(id, state, stateVersion, interest, @object);
                 if (this.mailbox.IsPreallocated)
                 {
@@ -229,7 +229,7 @@ namespace Vlingo.Symbio.Store.State
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TEntry>>(this.actor, cons128873,
                             WriteRepresentation8));
                 }
             }
@@ -239,13 +239,13 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public void Write<TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources,
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources,
             Vlingo.Symbio.Store.State.IWriteResultInterest interest, object @object)
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>> cons128873 = __ =>
-                    __.Write<TSource>(id, state, stateVersion, sources, interest, @object);
+                Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ =>
+                    __.Write(id, state, stateVersion, sources, interest, @object);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, null, WriteRepresentation9);
@@ -253,7 +253,7 @@ namespace Vlingo.Symbio.Store.State
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TEntry>>(this.actor, cons128873,
                             WriteRepresentation9));
                 }
             }
@@ -263,12 +263,12 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public void Write(string id, TState state, int stateVersion, Vlingo.Symbio.Metadata metadata,
+        public void Write<TState>(string id, TState state, int stateVersion, Vlingo.Symbio.Metadata metadata,
             Vlingo.Symbio.Store.State.IWriteResultInterest interest, object @object)
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ =>
                     __.Write(id, state, stateVersion, metadata, interest, @object);
                 if (this.mailbox.IsPreallocated)
                 {
@@ -277,7 +277,7 @@ namespace Vlingo.Symbio.Store.State
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TEntry>>(this.actor, cons128873,
                             WriteRepresentation10));
                 }
             }
@@ -287,13 +287,13 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public void Write<TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources,
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources,
             Vlingo.Symbio.Metadata metadata, Vlingo.Symbio.Store.State.IWriteResultInterest interest, object @object)
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>> cons128873 = __ =>
-                    __.Write<TSource>(id, state, stateVersion, sources, metadata, interest, @object);
+                Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ =>
+                    __.Write(id, state, stateVersion, sources, metadata, interest, @object);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, null, WriteRepresentation11);
@@ -301,7 +301,7 @@ namespace Vlingo.Symbio.Store.State
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TState, TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.State.IStateStore<TEntry>>(this.actor, cons128873,
                             WriteRepresentation11));
                 }
             }

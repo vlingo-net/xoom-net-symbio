@@ -69,14 +69,22 @@ namespace Vlingo.Symbio
             return (TState) _defaultTextStateAdapter.FromRawState((TextState)(object)state);
         }
         
-        private IStateAdapter<TState, TRawState> Adapter<TState, TRawState>()
+        private IStateAdapter<TState, TRawState>? Adapter<TState, TRawState>()
         {
+            if (!_adapters.ContainsKey(typeof(TState)))
+            {
+                return null;
+            }
             var adapter = (IStateAdapter<TState, TRawState>) _adapters[typeof(TState)];
             return adapter;
         }
 
-        private IStateAdapter<TState, TRawState> NamedAdapter<TState, TRawState>(State<TRawState> state)
+        private IStateAdapter<TState, TRawState>? NamedAdapter<TState, TRawState>(State<TRawState> state)
         {
+            if (!_namedAdapters.ContainsKey(state.Type))
+            {
+                return null;
+            }
             var adapter = (IStateAdapter<TState, TRawState>) _namedAdapters[state.Type];
             return adapter;
         }

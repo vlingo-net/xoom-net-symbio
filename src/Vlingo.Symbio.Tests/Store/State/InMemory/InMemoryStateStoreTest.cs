@@ -22,14 +22,14 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         private readonly string _storeName2 = typeof(Entity2).FullName;
         
         private readonly MockStateStoreDispatcher<Entity1, string> _dispatcher;
-        private readonly MockStateStoreResultInterest<Entity1> _interest;
-        private readonly IStateStore<Entity1, Entity1> _store;
+        private readonly MockStateStoreResultInterest _interest;
+        private readonly IStateStore<Entity1> _store;
         private readonly World _world;
 
         [Fact]
         public void TestThatStateStoreWritesText()
         {
-            var access1 = _interest.AfterCompleting(1);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(1);
             _dispatcher.AfterCompleting(1);
 
             var entity = new Entity1("123", 5);
@@ -45,13 +45,13 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         [Fact]
         public void TestThatStateStoreWritesAndReadsObject()
         {
-            var access1 = _interest.AfterCompleting(2);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(2);
             _dispatcher.AfterCompleting(2);
 
             var entity = new Entity1("123", 5);
 
             _store.Write(entity.Id, entity, 1, _interest);
-            _store.Read(entity.Id, _interest);
+            _store.Read<Entity1>(entity.Id, _interest);
 
             Assert.Equal(1, access1.ReadFrom<int>("readObjectResultedIn"));
             Assert.Equal(1, access1.ReadFrom<int>("writeObjectResultedIn"));
@@ -67,14 +67,14 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         [Fact]
         public void TestThatStateStoreWritesAndReadsMetadataValue()
         {
-            var access1 = _interest.AfterCompleting(2);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(2);
             _dispatcher.AfterCompleting(2);
 
             var entity = new Entity1("123", 5);
             var sourceMetadata = Metadata.WithValue("value");
 
             _store.Write(entity.Id, entity, 1, sourceMetadata, _interest);
-            _store.Read(entity.Id, _interest);
+            _store.Read<Entity1>(entity.Id, _interest);
 
             Assert.Equal(1, access1.ReadFrom<int>("readObjectResultedIn"));
             Assert.Equal(1, access1.ReadFrom<int>("writeObjectResultedIn"));
@@ -94,25 +94,25 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         [Fact]
         public void TestThatStateStoreWritesAndReadsMetadataOperation()
         {
-            var access1 = _interest.AfterCompleting(2);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(2);
             _dispatcher.AfterCompleting(2);
 
             var entity = new Entity1("123", 5);
             var sourceMetadata = Metadata.With("value", "operation");
 
             _store.Write(entity.Id, entity, 1, sourceMetadata, _interest);
-            _store.Read(entity.Id, _interest);
+            _store.Read<Entity1>(entity.Id, _interest);
 
             Assert.Equal(1, access1.ReadFrom<int>("readObjectResultedIn"));
             Assert.Equal(1, access1.ReadFrom<int>("writeObjectResultedIn"));
             Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectReadResult"));
-            Assert.Equal(entity, access1.ReadFrom<Entity1>("objectState"));
+            Assert.Equal(entity, access1.ReadFrom<object>("objectState"));
             Assert.NotNull(access1.ReadFrom<Metadata>("metadataHolder"));
             var metadata = access1.ReadFrom<Metadata>("metadataHolder");
             Assert.True(metadata.HasOperation);
             Assert.Equal("operation", metadata.Operation);
             
-            var readEntity = access1.ReadFrom<Entity1>("objectState");
+            var readEntity = (Entity1)access1.ReadFrom<Entity1>("objectState");
 
             Assert.Equal("123", readEntity.Id);
             Assert.Equal(5, readEntity.Value);
@@ -121,7 +121,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         [Fact]
         public void TestThatConcurrencyViolationsDetected()
         {
-            var access1 = _interest.AfterCompleting(2);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(2);
             _dispatcher.AfterCompleting(2);
 
             var entity = new Entity1("123", 5);
@@ -134,7 +134,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectWriteAccumulatedResults"));
             Assert.Equal(0, access1.ReadFrom<int>("objectWriteAccumulatedResultsCount"));
             
-            var access2 = _interest.AfterCompleting(3);
+            var access2 = _interest.AfterCompleting<Entity1, Entity1>(3);
             _dispatcher.AfterCompleting(3);
 
             _store.Write(entity.Id, entity, 1, _interest);
@@ -150,7 +150,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         [Fact]
         public void TestThatStateStoreDispatches()
         {
-            _interest.AfterCompleting(3);
+            _interest.AfterCompleting<Entity1, Entity1>(3);
             var accessDispatcher = _dispatcher.AfterCompleting(3);
 
             var entity1 = new Entity1("123", 1);
@@ -168,7 +168,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             var state345 = accessDispatcher.ReadFrom<string, State<string>>("dispatchedState", DispatchId("345"));
             Assert.Equal("345", state345.Id);
 
-            _interest.AfterCompleting(4);
+            _interest.AfterCompleting<Entity1, Entity1>(4);
             var accessDispatcher1 = _dispatcher.AfterCompleting(4);
 
             accessDispatcher1.WriteUsing("processDispatch", false);
@@ -189,6 +189,56 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal("567", state567.Id);
         }
 
+        [Fact]
+        public void TestThatReadErrorIsReported()
+        {
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(2);
+            _dispatcher.AfterCompleting(2);
+
+            var entity = new Entity1("123", 1);
+            _store.Write(entity.Id, entity, 1, _interest);
+            _store.Read<Entity1>(null, _interest);
+
+            Assert.Equal(1, access1.ReadFrom<int>("errorCausesCount"));
+            var cause1 = access1.ReadFrom<Exception>("errorCauses");
+            Assert.Equal("The id is null.", cause1.Message);
+            var result1 = access1.ReadFrom<Result>("objectReadResult");
+            Assert.True(result1 == Result.Error);
+        }
+        
+        [Fact]
+        public void TestThatWriteErrorIsReported()
+        {
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(1);
+            _dispatcher.AfterCompleting(1);
+
+            _store.Write<Entity1>(null, null, 0, _interest);
+
+            Assert.Equal(1, access1.ReadFrom<int>("errorCausesCount"));
+            var cause1 = access1.ReadFrom<Exception>("errorCauses");
+            Assert.Equal("The state is null.", cause1.Message);
+            var result1 = access1.ReadFrom<Result>("objectWriteAccumulatedResults");
+            Assert.True(result1 == Result.Error);
+            var objectState = access1.ReadFrom<object>("objectState");
+            Assert.Null(objectState);
+        }
+        
+        [Fact]
+        public void TestThatStateStoreWritesTextWithDefaultAdapter()
+        {
+            var access1 = _interest.AfterCompleting<Entity2, Entity2>(1);
+            _dispatcher.AfterCompleting(1);
+            
+            var entity = new Entity2("123", "5");
+
+            _store.Write(entity.Id, entity, 1, _interest);
+
+            Assert.Equal(0, access1.ReadFrom<int>("readObjectResultedIn"));
+            Assert.Equal(1, access1.ReadFrom<int>("writeObjectResultedIn"));
+            Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectWriteResult"));
+            Assert.Equal(entity, access1.ReadFrom<object>("objectState"));
+        }
+
         public InMemoryStateStoreTest(ITestOutputHelper output)
         {
             var converter = new Converter(output);
@@ -197,7 +247,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             var testWorld = TestWorld.StartWithDefaults("test-store");
             _world = testWorld.World;
 
-            _interest = new MockStateStoreResultInterest<Entity1>();
+            _interest = new MockStateStoreResultInterest();
             _dispatcher = new MockStateStoreDispatcher<Entity1, string>(_interest);
 
             var stateAdapterProvider = new StateAdapterProvider(_world);
@@ -206,7 +256,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
             // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = _world.ActorFor<IStateStore<Entity1, Entity1>>(typeof(InMemoryStateStoreActor<Entity1, string, Entity1>), _dispatcher);
+            _store = _world.ActorFor<IStateStore<Entity1>>(typeof(InMemoryStateStoreActor<string, Entity1>), _dispatcher);
 
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName1, typeof(Entity1));
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName2, typeof(Entity2));
