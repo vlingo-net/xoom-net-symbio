@@ -18,7 +18,7 @@ namespace Vlingo.Symbio
 
         private readonly Dictionary<Type, object> _adapters;
         private readonly Dictionary<string, object> _namedAdapters;
-        
+
         /// <summary>
         /// Answer the <see cref="EntryAdapterProvider"/> held by the <see cref="World"/>.
         /// If no such instance exists, create and answer a new instance of
@@ -52,46 +52,52 @@ namespace Vlingo.Symbio
         
         public IEnumerable<IEntry<TEntry>> AsEntries<TSource, TEntry>(IEnumerable<Source<TSource>> sources, Metadata? metadata)
         {
-            var defaultTextEntryAdapter = new DefaultTextEntryAdapter<TSource>();
-            return sources.Select(source => AsEntry<TSource, TEntry>(source, metadata, defaultTextEntryAdapter)).ToList();
+            return sources.Select(source => AsEntry<TSource, TEntry>(source, metadata)).ToList();
         }
 
-        public IEntry<TEntry> AsEntry<TSource, TEntry>(Source<TSource> source, Metadata? metadata, IEntryAdapter<TSource, string> defaultTextEntryAdapter)
+        public IEntry<TEntry> AsEntry<TSource, TEntry>(Source<TSource> source, Metadata? metadata)
         {
             var  adapter = Adapter<TSource, TEntry>();
             if (adapter != null)
             {
                 return metadata == null ? adapter.ToEntry(source) : adapter.ToEntry(source, metadata);
             }
-            
-            return (IEntry<TEntry>) defaultTextEntryAdapter.ToEntry(source, metadata!);
+            // TODO: if called by AsSources we will create each new instance in the loop
+            return (IEntry<TEntry>) new DefaultTextEntryAdapter<TSource>().ToEntry(source, metadata!);
         }
         
         public IEnumerable<Source<TSource>> AsSources<TSource, TEntry>(IEnumerable<IEntry<TEntry>> entries)
         {
-            var defaultTextEntryAdapter = new DefaultTextEntryAdapter<TSource>();
-            return entries.Select(entry => AsSource(entry, defaultTextEntryAdapter)).ToList();
+            return entries.Select(AsSource<TSource, TEntry>).ToList();
         }
 
-        public Source<TSource> AsSource<TSource, TEntry>(IEntry<TEntry> entry, IEntryAdapter<TSource, string> defaultTextEntryAdapter)
+        public Source<TSource> AsSource<TSource, TEntry>(IEntry<TEntry> entry)
         {
             var adapter = NamedAdapter<TSource, TEntry>(entry);
             if (adapter != null)
             {
                 return adapter.FromEntry(entry);
             }
-            
-            return defaultTextEntryAdapter.FromEntry((TextEntry)(object)entry);
+            // TODO: if called by AsSources we will create each new instance in the loop
+            return new DefaultTextEntryAdapter<TSource>().FromEntry((IEntry<string>)entry);
         }
         
-        private IEntryAdapter<TSource, TEntry> Adapter<TSource, TEntry>()
+        private IEntryAdapter<TSource, TEntry>? Adapter<TSource, TEntry>()
         {
+            if (!_adapters.ContainsKey(typeof(TSource)))
+            {
+                return null;
+            }
             var adapter = (IEntryAdapter<TSource, TEntry>) _adapters[typeof(TSource)];
             return adapter;
         }
         
-        private IEntryAdapter<TSource, TEntry> NamedAdapter<TSource, TEntry>(IEntry<TEntry> entry)
+        private IEntryAdapter<TSource, TEntry>? NamedAdapter<TSource, TEntry>(IEntry<TEntry> entry)
         {
+            if (!_namedAdapters.ContainsKey(entry.TypeName))
+            {
+                return null;
+            }
             var adapter = (IEntryAdapter<TSource, TEntry>) _namedAdapters[entry.TypeName];
             return adapter;
         }

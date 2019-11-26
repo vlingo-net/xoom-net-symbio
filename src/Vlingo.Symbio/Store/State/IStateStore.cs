@@ -20,6 +20,6 @@ namespace Vlingo.Symbio.Store.State
         /// <param name="name">The string name of the reader</param>
         /// <typeparam name="TEntry">The specific type of <see cref="IEntry{TEntry}"/> that will be read</typeparam>
         /// <returns><see cref="ICompletes{T}"/></returns>
-        ICompletes<IStateStoreEntryReader<IEntry<TEntry>>> EntryReader(string name);
+        ICompletes<IStateStoreEntryReader<TEntry>> EntryReader(string name);
     }
 }

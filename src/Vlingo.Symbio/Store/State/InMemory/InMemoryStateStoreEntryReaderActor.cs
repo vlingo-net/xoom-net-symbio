@@ -18,10 +18,10 @@ namespace Vlingo.Symbio.Store.State.InMemory
         private readonly List<IEntry<TEntry>> _entriesView;
         private readonly string _name;
 
-        public InMemoryStateStoreEntryReaderActor(IEnumerable<IEntry<TEntry>> entriesView, string name)
+        public InMemoryStateStoreEntryReaderActor(List<IEntry<TEntry>> entriesView, string name)
         {
             _name = name;
-            _entriesView = new List<IEntry<TEntry>>(entriesView);
+            _entriesView = entriesView;
             _currentIndex = 0;
         }
 

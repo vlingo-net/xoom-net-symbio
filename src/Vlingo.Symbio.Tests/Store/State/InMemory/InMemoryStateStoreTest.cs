@@ -26,10 +26,10 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         private readonly IStateStore<TextEntry> _store;
         private readonly World _world;
 
-        [Fact(Skip = "Needs refactoring. Freezes")]
+        [Fact]
         public void TestThatStateStoreWritesText()
         {
-            var access1 = _interest.AfterCompleting<Entity1, TextEntry>(1);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(1);
             _dispatcher.AfterCompleting(1);
 
             var entity = new Entity1("123", 5);
@@ -42,10 +42,10 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal(entity, access1.ReadFrom<Entity1>("objectState"));
         }
         
-        [Fact(Skip = "Needs refactoring. Freezes")]
+        [Fact]
         public void TestThatStateStoreWritesAndReadsObject()
         {
-            var access1 = _interest.AfterCompleting<Entity1, TextEntry>(2);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(2);
             _dispatcher.AfterCompleting(2);
 
             var entity = new Entity1("123", 5);
@@ -64,10 +64,10 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal(5, readEntity.Value);
         }
         
-        [Fact(Skip = "Needs refactoring. Freezes")]
+        [Fact]
         public void TestThatStateStoreWritesAndReadsMetadataValue()
         {
-            var access1 = _interest.AfterCompleting<Entity1, TextEntry>(2);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(2);
             _dispatcher.AfterCompleting(2);
 
             var entity = new Entity1("123", 5);
@@ -91,10 +91,10 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal(5, readEntity.Value);
         }
         
-        [Fact(Skip = "Needs refactoring. Freezes")]
+        [Fact]
         public void TestThatStateStoreWritesAndReadsMetadataOperation()
         {
-            var access1 = _interest.AfterCompleting<Entity1, TextEntry>(2);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(2);
             _dispatcher.AfterCompleting(2);
 
             var entity = new Entity1("123", 5);
@@ -118,10 +118,10 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal(5, readEntity.Value);
         }
         
-        [Fact(Skip = "Needs refactoring. Freezes")]
+        [Fact]
         public void TestThatConcurrencyViolationsDetected()
         {
-            var access1 = _interest.AfterCompleting<Entity1, TextEntry>(2);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(2);
             _dispatcher.AfterCompleting(2);
 
             var entity = new Entity1("123", 5);
@@ -134,7 +134,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectWriteAccumulatedResults"));
             Assert.Equal(0, access1.ReadFrom<int>("objectWriteAccumulatedResultsCount"));
             
-            var access2 = _interest.AfterCompleting<Entity1, TextEntry>(3);
+            var access2 = _interest.AfterCompleting<Entity1, Entity1>(3);
             _dispatcher.AfterCompleting(3);
 
             _store.Write(entity.Id, entity, 1, _interest);
@@ -147,10 +147,10 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal(Result.Success, access2.ReadFrom<Result>("objectWriteAccumulatedResults"));
         }
 
-        [Fact(Skip = "Needs refactoring. Freezes")]
+        [Fact]
         public void TestThatStateStoreDispatches()
         {
-            _interest.AfterCompleting<Entity1, TextEntry>(3);
+            _interest.AfterCompleting<Entity1, Entity1>(3);
             var accessDispatcher = _dispatcher.AfterCompleting(3);
 
             var entity1 = new Entity1("123", 1);
@@ -168,7 +168,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             var state345 = accessDispatcher.ReadFrom<string, State<string>>("dispatchedState", DispatchId("345"));
             Assert.Equal("345", state345.Id);
 
-            _interest.AfterCompleting<Entity1, TextEntry>(4);
+            _interest.AfterCompleting<Entity1, Entity1>(4);
             var accessDispatcher1 = _dispatcher.AfterCompleting(4);
 
             accessDispatcher1.WriteUsing("processDispatch", false);
@@ -189,10 +189,10 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal("567", state567.Id);
         }
 
-        [Fact(Skip = "Needs refactoring. Freezes")]
+        [Fact]
         public void TestThatReadErrorIsReported()
         {
-            var access1 = _interest.AfterCompleting<Entity1, TextEntry>(2);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(2);
             _dispatcher.AfterCompleting(2);
 
             var entity = new Entity1("123", 1);
@@ -206,10 +206,10 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.True(result1 == Result.Error);
         }
         
-        [Fact(Skip = "Needs refactoring. Freezes")]
+        [Fact]
         public void TestThatWriteErrorIsReported()
         {
-            var access1 = _interest.AfterCompleting<Entity1, TextEntry>(1);
+            var access1 = _interest.AfterCompleting<Entity1, Entity1>(1);
             _dispatcher.AfterCompleting(1);
 
             _store.Write<Entity1>(null, null, 0, _interest);
@@ -223,10 +223,10 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Null(objectState);
         }
         
-        [Fact(Skip = "Needs refactoring. Freezes")]
+        [Fact]
         public void TestThatStateStoreWritesTextWithDefaultAdapter()
         {
-            var access1 = _interest.AfterCompleting<Entity2, TextEntry>(1);
+            var access1 = _interest.AfterCompleting<Entity2, Entity2>(1);
             _dispatcher.AfterCompleting(1);
             
             var entity = new Entity2("123", "5");

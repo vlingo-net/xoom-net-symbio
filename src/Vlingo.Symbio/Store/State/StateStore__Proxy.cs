@@ -47,12 +47,12 @@ namespace Vlingo.Symbio.Store.State
             this.mailbox = mailbox;
         }
 
-        public ICompletes<IStateStoreEntryReader<IEntry<TEntry>>> EntryReader(string name)
+        public ICompletes<IStateStoreEntryReader<TEntry>> EntryReader(string name)
         {
             if (!this.actor.IsStopped)
             {
                 Action<Vlingo.Symbio.Store.State.IStateStore<TEntry>> cons128873 = __ => __.EntryReader(name);
-                var completes = new BasicCompletes<IStateStoreEntryReader<IEntry<TEntry>>>(this.actor.Scheduler);
+                var completes = new BasicCompletes<IStateStoreEntryReader<TEntry>>(this.actor.Scheduler);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, completes, EntryReaderRepresentation1);

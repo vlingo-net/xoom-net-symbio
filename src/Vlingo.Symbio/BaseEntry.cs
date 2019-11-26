@@ -64,7 +64,7 @@ namespace Vlingo.Symbio
             if (metadata == null) throw new ArgumentNullException(nameof(metadata), "Entry metadata must not be null.");
             
             _id = id;
-            _type = type.FullName;
+            _type = type.AssemblyQualifiedName;
             _typeVersion = typeVersion;
             _entryData = entryData;
             _metadata = metadata;

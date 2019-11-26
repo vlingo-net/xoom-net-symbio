@@ -20,8 +20,10 @@ namespace Vlingo.Symbio.Store.State.InMemory
         private readonly List<Dispatchable<TEntry, TRawState>> _dispatchables;
         private readonly IDispatcher<Dispatchable<TEntry, TRawState>> _dispatcher;
         private readonly IDispatcherControl _dispatcherControl;
+        // this is based on mock database design, it represents a database entries and it's shared (like database)
+        // between this and InMemoryStateStoreEntryReaderActor
         private readonly List<IEntry<TEntry>> _entries;
-        private readonly Dictionary<string, IStateStoreEntryReader<IEntry<TEntry>>> _entryReaders;
+        private readonly Dictionary<string, IStateStoreEntryReader<TEntry>> _entryReaders;
         private readonly EntryAdapterProvider _entryAdapterProvider;
         private readonly StateAdapterProvider _stateAdapterProvider;
         private readonly Dictionary<string, Dictionary<string, State<TRawState>>> _store;
@@ -41,7 +43,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
             _entryAdapterProvider = EntryAdapterProvider.Instance(Stage.World);
             _stateAdapterProvider = StateAdapterProvider.Instance(Stage.World);
             _entries = new List<IEntry<TEntry>>();
-            _entryReaders = new Dictionary<string, IStateStoreEntryReader<IEntry<TEntry>>>();
+            _entryReaders = new Dictionary<string, IStateStoreEntryReader<TEntry>>();
             _store = new Dictionary<string, Dictionary<string, State<TRawState>>>();
             _dispatchables = new List<Dispatchable<TEntry, TRawState>>();
 
@@ -84,11 +86,11 @@ namespace Vlingo.Symbio.Store.State.InMemory
         public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest, object? @object) =>
             WriteWith(id, state, stateVersion, sources, metadata, interest, @object);
 
-        public ICompletes<IStateStoreEntryReader<IEntry<TEntry>>> EntryReader(string name)
+        public ICompletes<IStateStoreEntryReader<TEntry>> EntryReader(string name)
         {
             if (!_entryReaders.TryGetValue(name, out var reader))
             {
-                reader = ChildActorFor<IStateStoreEntryReader<IEntry<TEntry>>>(Definition.Has<InMemoryStateStoreEntryReaderActor<TEntry>>(Definition.Parameters(_entries, name)));
+                reader = ChildActorFor<IStateStoreEntryReader<TEntry>>(Definition.Has<InMemoryStateStoreEntryReaderActor<TEntry>>(Definition.Parameters(_entries, name)));
                 _entryReaders.Add(name, reader);
             }
             
