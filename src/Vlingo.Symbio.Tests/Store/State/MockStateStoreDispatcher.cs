@@ -17,10 +17,10 @@ namespace Vlingo.Symbio.Tests.Store.State
     {
         private AccessSafely _access = AccessSafely.AfterCompleting(0);
         
-        private IConfirmDispatchedResultInterest _confirmDispatchedResultInterest;
+        private readonly IConfirmDispatchedResultInterest _confirmDispatchedResultInterest;
         private IDispatcherControl _control;
-        private Dictionary<string, State<TState>> _dispatched = new Dictionary<string, State<TState>>();
-        private ConcurrentQueue<IEntry<TEntry>> _dispatchedEntries = new ConcurrentQueue<IEntry<TEntry>>();
+        private readonly Dictionary<string, State<TState>> _dispatched = new Dictionary<string, State<TState>>();
+        private readonly ConcurrentQueue<IEntry<TEntry>> _dispatchedEntries = new ConcurrentQueue<IEntry<TEntry>>();
         private readonly AtomicBoolean _processDispatch = new AtomicBoolean(true);
         private int _dispatchAttemptCount;
 

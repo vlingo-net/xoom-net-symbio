@@ -13,9 +13,9 @@ namespace Vlingo.Symbio.Store.Dispatch.InMemory
     {
         private readonly List<Dispatchable<TEntry, TState>> _dispatchables;
 
-        public InMemoryDispatcherControlDelegate(IEnumerable<Dispatchable<TEntry, TState>> dispatchables)
+        public InMemoryDispatcherControlDelegate(List<Dispatchable<TEntry, TState>> dispatchables)
         {
-            _dispatchables = new List<Dispatchable<TEntry, TState>>(dispatchables);
+            _dispatchables = dispatchables;
         }
 
         public IEnumerable<Dispatchable<TEntry, TState>> AllUnconfirmedDispatchableStates => _dispatchables;

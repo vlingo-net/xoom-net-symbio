@@ -20,17 +20,17 @@ namespace Vlingo.Symbio.Tests.Store.State
     {
         private AccessSafely _access;
 
-        public AtomicInteger _confirmDispatchedResultedIn = new AtomicInteger(0);
-        public AtomicInteger _readObjectResultedIn = new AtomicInteger(0);
-        public AtomicInteger _writeObjectResultedIn = new AtomicInteger(0);
+        private readonly AtomicInteger _confirmDispatchedResultedIn = new AtomicInteger(0);
+        private readonly AtomicInteger _readObjectResultedIn = new AtomicInteger(0);
+        private readonly AtomicInteger _writeObjectResultedIn = new AtomicInteger(0);
 
-        public AtomicRefValue<Result> _objectReadResult = new AtomicRefValue<Result>();
-        public AtomicRefValue<Result> _objectWriteResult = new AtomicRefValue<Result>();
-        public ConcurrentQueue<Result> _objectWriteAccumulatedResults = new ConcurrentQueue<Result>();
-        public AtomicReference<Metadata> _metadataHolder = new AtomicReference<Metadata>();
-        public AtomicReference<object> _objectState = new AtomicReference<object>();
-        public ConcurrentQueue<Exception> _errorCauses = new ConcurrentQueue<Exception>();
-        public ConcurrentQueue<object> _sources = new ConcurrentQueue<object>();
+        private readonly AtomicRefValue<Result> _objectReadResult = new AtomicRefValue<Result>();
+        private readonly AtomicRefValue<Result> _objectWriteResult = new AtomicRefValue<Result>();
+        private readonly ConcurrentQueue<Result> _objectWriteAccumulatedResults = new ConcurrentQueue<Result>();
+        private readonly AtomicReference<Metadata> _metadataHolder = new AtomicReference<Metadata>();
+        private readonly AtomicReference<object> _objectState = new AtomicReference<object>();
+        private readonly ConcurrentQueue<Exception> _errorCauses = new ConcurrentQueue<Exception>();
+        private readonly ConcurrentQueue<object> _sources = new ConcurrentQueue<object>();
 
         public MockStateStoreResultInterest()
         {
@@ -142,7 +142,7 @@ namespace Vlingo.Symbio.Tests.Store.State
             ResultedIn = resultedIn;
             Result = objectResult;
             State = state;
-            Sources = new List<Source<TSource>>(sources);
+            Sources = sources != null ? new List<Source<TSource>>(sources) : new List<Source<TSource>>();
             Metadata = metadata;
             ErrorCauses = errorCauses;
         }
