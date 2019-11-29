@@ -203,7 +203,7 @@ namespace Vlingo.Symbio
             return 1;
         }
 
-        internal void __internal__setId(string id) => _id = id;
+        internal void SetId(string id) => _id = id;
     }
 
     /// <summary>

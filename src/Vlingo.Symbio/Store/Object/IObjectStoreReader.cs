@@ -10,7 +10,7 @@ using Vlingo.Common;
 namespace Vlingo.Symbio.Store.Object
 {
     /// <summary>
-    /// Defines protocol for reading from an <see cref="ObjectStore"/>
+    /// Defines protocol for reading from an <see cref="IObjectStore"/>
     /// </summary>
     public interface IObjectStoreReader
     {

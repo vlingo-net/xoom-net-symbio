@@ -228,7 +228,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
             var adapted = _entryAdapterProvider.AsEntries<TSource, TEntry>(sources, metadata);
             foreach (var entry in adapted)
             {
-                ((BaseEntry<TEntry>) entry).__internal__setId(_entries.Count.ToString());
+                ((BaseEntry<TEntry>) entry).SetId(_entries.Count.ToString());
                 _entries.Add(entry);
             }
 
