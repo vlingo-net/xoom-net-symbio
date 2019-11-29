@@ -56,7 +56,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="updateId">The long identity to facilitate update; &lt; 0 for create &gt; 0 for update</param>
         /// <param name="metadata">The <see cref="Metadata"/> associated with the stateObjects and sources</param>
         /// <returns>The persisted collection of states, created from <paramref name="stateObjects"/></returns>
-        IEnumerable<TState> PersistAll(IEnumerable<TState> stateObjects, long updateId, Metadata metadata);
+        IEnumerable<State<TState>> PersistAll(IEnumerable<StateObject> stateObjects, long updateId, Metadata metadata);
         
         /// <summary>
         /// Persists the <paramref name="stateObject"/> with <paramref name="metadata"/>.
@@ -65,13 +65,13 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="updateId">The long identity to facilitate update; &lt; 0 for create &gt; 0 for update</param>
         /// <param name="metadata">The <see cref="Metadata"/> associated with the stateObjects and sources</param>
         /// <returns>The persisted state, created from <paramref name="stateObject"/></returns>
-        TState Persist(TState stateObject, long updateId, Metadata metadata);
+        State<TState> Persist(StateObject stateObject, long updateId, Metadata metadata);
 
         /// <summary>
-        /// Persist the <code>IEnumerable{TEntry}</code> of entries, that originated from sources.
+        /// Persist the <code>IEnumerable{BaseEntry}</code> of entries, that originated from sources.
         /// </summary>
         /// <param name="entries"><code>IEnumerable{TEntry}</code></param>
-        void PersistEntries(IEnumerable<TEntry> entries);
+        void PersistEntries(IEnumerable<BaseEntry<TEntry>> entries);
 
         /// <summary>
         /// Persist the <code>Dispatchable{E, ST}</code> that originated from write.
@@ -82,15 +82,15 @@ namespace Vlingo.Symbio.Store.Object
         /// <summary>
         /// Executes the query defined by <paramref name="expression"/> that may result in zero to many objects.
         /// </summary>
-        /// <param name="expression">The <see cref="QueryExpression{TState}"/></param>
+        /// <param name="expression">The <see cref="QueryExpression"/></param>
         /// <returns><see cref="QueryMultiResults"/> with objects that matches the expression.</returns>
-        QueryMultiResults QueryAll(QueryExpression<TState> expression);
+        QueryMultiResults QueryAll(QueryExpression expression);
         
         /// <summary>
         /// Executes the query defined by <paramref name="expression"/> that may result in one objects.
         /// </summary>
-        /// <param name="expression">The <see cref="QueryExpression{TState}"/></param>
+        /// <param name="expression">The <see cref="QueryExpression"/></param>
         /// <returns><see cref="QuerySingleResult"/> with object that matches the expression.</returns>
-        QuerySingleResult QueryObject(QueryExpression<TState> expression);
+        QuerySingleResult QueryObject(QueryExpression expression);
     }
 }

@@ -5,6 +5,7 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,20 +14,19 @@ namespace Vlingo.Symbio.Store.Object
     /// <summary>
     /// A query expression whose parameters are provided in a <code>Dictionary{TK, TV}</code> of name-value pairs.
     /// </summary>
-    /// <typeparam name="T">The type of the value</typeparam>
-    public class MapQueryExpression<T> : QueryExpression<T>
+    public class MapQueryExpression : QueryExpression
     {
-        private readonly Dictionary<string, T> _parameters;
+        private readonly Dictionary<string, StateObject> _parameters;
 
         /// <summary>
         /// Answer a new <see cref="FluentMap{TK, TV}"/> with a single <paramref name="key"/> and <paramref name="value"/>.
         /// </summary>
         /// <param name="key">the string key</param>
-        /// <param name="value">The <typeparamref name="T"/> value</param>
+        /// <param name="value">The state object value</param>
         /// <returns></returns>
-        public static FluentMap<string, T> Map(string key, T value)
+        public static FluentMap<string, StateObject> Map(string key, StateObject value)
         {
-            var map = new FluentMap<string, T>(1);
+            var map = new FluentMap<string, StateObject>(1);
             map.Add(key, value);
             return map;
         }
@@ -37,7 +37,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="query">The string describing the query</param>
         /// <param name="parameters"><code>Dictionary{TK, TV></code> containing query parameters of name-value pairs</param>
         /// <returns>MapQueryExpression</returns>
-        public static MapQueryExpression<T> Using(string query, Dictionary<string, T> parameters) => new MapQueryExpression<T>(query, parameters);
+        public static MapQueryExpression Using<T>(string query, Dictionary<string, StateObject> parameters) where T : StateObject => new MapQueryExpression(typeof(T), query, parameters);
 
         /// <summary>
         /// Answer a new <code>MapQueryExpression</code> with <paramref name="query"/>, and <paramref name="parameters"/>.
@@ -46,14 +46,15 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="mode">The <see cref="QueryMode"/></param>
         /// <param name="parameters"><code>Dictionary{TK, TV></code> containing query parameters of name-value pairs</param>
         /// <returns>MapQueryExpression</returns>
-        public static MapQueryExpression<T> Using(string query, QueryMode mode, Dictionary<string, T> parameters) => new MapQueryExpression<T>(query, mode, parameters);
+        public static MapQueryExpression Using<T>(string query, QueryMode mode, Dictionary<string, StateObject> parameters) where T : StateObject => new MapQueryExpression(typeof(T), query, mode, parameters);
 
         /// <summary>
         /// Constructs my default state with <code>QueryMode.ReadOnly</code>.
         /// </summary>
+        /// <param name="type">The concrete type of state object</param>
         /// <param name="query">The string describing the query</param>
         /// <param name="parameters"><code>Dictionary{TK, TV></code> containing query parameters of name-value pairs</param>
-        public MapQueryExpression(string query, Dictionary<string, T> parameters) : base(query)
+        public MapQueryExpression(Type type, string query, Dictionary<string, StateObject> parameters) : base(type, query)
         {
             _parameters = parameters;
         }
@@ -61,13 +62,16 @@ namespace Vlingo.Symbio.Store.Object
         /// <summary>
         /// Constructs my default state with <code>QueryMode.ReadOnly</code>.
         /// </summary>
+        /// <param name="type">The concrete type of state object</param>
         /// <param name="query">The string describing the query</param>
         /// <param name="mode">The <see cref="QueryMode"/></param>
         /// <param name="parameters"><code>Dictionary{TK, TV></code> containing query parameters of name-value pairs</param>
-        public MapQueryExpression(string query, QueryMode mode, Dictionary<string, T> parameters) : base(query, mode)
+        public MapQueryExpression(Type type, string query, QueryMode mode, Dictionary<string, StateObject> parameters) : base(type, query, mode)
         {
             _parameters = parameters;
         }
+
+        public Dictionary<string, StateObject> Parameters => _parameters;
 
         public override bool IsMapQueryExpression { get; } = true;
         

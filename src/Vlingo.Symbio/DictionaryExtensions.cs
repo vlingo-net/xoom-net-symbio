@@ -5,6 +5,7 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
+using System;
 using System.Collections.Generic;
 
 namespace Vlingo.Symbio
@@ -20,6 +21,22 @@ namespace Vlingo.Symbio
 
             dictionary.Add(key, value);
             return default!;
+        }
+
+        public static TValue ComputeIfAbsent<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Func<TKey, TValue> mappingFunction)
+        {
+            TValue v = default!;
+            if (!dictionary.ContainsKey(key))
+            {
+                var newValue = mappingFunction(key);
+                if (newValue != null)
+                {
+                    dictionary.Add(key, newValue);
+                    return newValue;
+                }
+            }
+            
+            return v;
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Vlingo.Symbio.Store.Object.InMemory
                 return Completes().With(_entriesView[_currentIndex++]);
             }
             
-            return Completes().With<IEntry<string>>(null);
+            return Completes().With<IEntry<string>>(null!);
         }
 
         public ICompletes<IEntry<string>> ReadNext(string fromId)

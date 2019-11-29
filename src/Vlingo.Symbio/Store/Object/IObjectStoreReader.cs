@@ -39,37 +39,35 @@ namespace Vlingo.Symbio.Store.Object
         /// Executes the query defined by <paramref name="expression"/> that may result in one object,
         /// and sends the result to <paramref name="interest"/>.
         /// </summary>
-        /// <param name="expression">The expression of <see cref="QueryExpression{T}"/></param>
+        /// <param name="expression">The expression of <see cref="QueryExpression"/></param>
         /// <param name="interest">The <see cref="IQueryResultInterest"/></param>
-        /// <typeparam name="T">The type of the expression</typeparam>
-        void QueryAll<T>(QueryExpression<T> expression, IQueryResultInterest interest);
+        void QueryAll(QueryExpression expression, IQueryResultInterest interest);
 
         /// <summary>
         /// Executes the query defined by <paramref name="expression"/> that may result in one object,
         /// and sends the result to <paramref name="interest"/>.
         /// </summary>
-        /// <param name="expression">The expression of <see cref="QueryExpression{T}"/></param>
+        /// <param name="expression">The expression of <see cref="QueryExpression"/></param>
         /// <param name="interest">The <see cref="IQueryResultInterest"/></param>
         /// <param name="object">An object sent to the <see cref="IQueryResultInterest"/> when the query has succeeded or failed</param>
-        /// <typeparam name="T">The type of the expression</typeparam>
-        void QueryAll<T>(QueryExpression<T> expression, IQueryResultInterest interest, object @object);
+        void QueryAll(QueryExpression expression, IQueryResultInterest interest, object @object);
 
         /// <summary>
         /// Executes the query defined by <paramref name="expression"/> that may result in one object,
         /// and sends the result to <paramref name="interest"/>.
         /// </summary>
-        /// <param name="expression">The <see cref="QueryExpression{T}"/></param>
+        /// <param name="expression">The <see cref="QueryExpression"/></param>
         /// <param name="interest">The <see cref="IQueryResultInterest"/></param>
-        void QueryObject<T>(QueryExpression<T> expression, IQueryResultInterest interest);
+        void QueryObject(QueryExpression expression, IQueryResultInterest interest);
 
         /// <summary>
         /// Executes the query defined by <paramref name="expression"/> that may result in one object,
         /// and sends the result to <paramref name="interest"/>.
         /// </summary>
-        /// <param name="expression">The <see cref="QueryExpression{T}"/></param>
+        /// <param name="expression">The <see cref="QueryExpression"/></param>
         /// <param name="interest">The <see cref="IQueryResultInterest"/></param>
         /// <param name="object">An object sent to the <see cref="IQueryResultInterest"/> when the query has succeeded or failed</param>
-        void QueryObject<T>(QueryExpression<T> expression, IQueryResultInterest interest, object @object);
+        void QueryObject(QueryExpression expression, IQueryResultInterest interest, object @object);
     }
 
     public static class ObjectStoreReader
