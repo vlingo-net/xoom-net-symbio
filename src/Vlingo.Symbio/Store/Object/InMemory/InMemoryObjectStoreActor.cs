@@ -232,6 +232,12 @@ namespace Vlingo.Symbio.Store.Object.InMemory
             }
         }
 
+        public override void Stop()
+        {
+            _dispatcherControl.Stop();
+            base.Stop();
+        }
+
         public long NoId { get; } = -1L;
         
         private void Dispatch(Dispatchable<TEntry, TState> dispatchable) => _dispatcher.Dispatch(dispatchable);
