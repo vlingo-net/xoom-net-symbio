@@ -68,10 +68,10 @@ namespace Vlingo.Symbio.Store.Object
         State<TState> Persist(StateObject stateObject, long updateId, Metadata metadata);
 
         /// <summary>
-        /// Persist the <code>IEnumerable{BaseEntry}</code> of entries, that originated from sources.
+        /// Persist the <code>IEnumerable{IEntry}</code> of entries, that originated from sources.
         /// </summary>
         /// <param name="entries"><code>IEnumerable{TEntry}</code></param>
-        void PersistEntries(IEnumerable<BaseEntry<TEntry>> entries);
+        void PersistEntries(IEnumerable<IEntry<TEntry>> entries);
 
         /// <summary>
         /// Persist the <code>Dispatchable{E, ST}</code> that originated from write.

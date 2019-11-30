@@ -22,6 +22,6 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="possible">The int number of possible objects to persist</param>
         /// <param name="actual">The int number of actual objects persisted</param>
         /// <param name="object">the object passed to Persist() that is sent back to the receiver, or null if not passed</param>
-        void PersistResultedIn(IOutcome<StorageException, Result> outcome, object stateObject, int possible, int actual, object @object);
+        void PersistResultedIn(IOutcome<StorageException, Result> outcome, object? stateObject, int possible, int actual, object? @object);
     }
 }

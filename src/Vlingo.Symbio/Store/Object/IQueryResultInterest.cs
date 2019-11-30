@@ -20,7 +20,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="outcome">The <code>IOutcome{StorageException, Result}</code> of the query</param>
         /// <param name="results">The <code>MultiQueryResults</code> of the query, with zero or more objects and a possible updateId</param>
         /// <param name="object">The object passed to Query() that is sent back to the receiver</param>
-        void QueryAllResultedIn(IOutcome<StorageException, Result> outcome, QueryMultiResults results, object @object);
+        void QueryAllResultedIn(IOutcome<StorageException, Result> outcome, QueryMultiResults results, object? @object);
         
         /// <summary>
         /// Implemented by the interest of a given Object Store for an object query operation with a single result.
@@ -28,6 +28,6 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="outcome">The <code>IOutcome{StorageException, Result}</code> of the query</param>
         /// <param name="result">The <code>SingleQueryResult</code> of the query, with zero or one object and a possible updateId</param>
         /// <param name="object">the object passed to Query() that is sent back to the receiver</param>
-        void QueryObjectResultedIn(IOutcome<StorageException, Result> outcome, QuerySingleResult result, object @object);
+        void QueryObjectResultedIn(IOutcome<StorageException, Result> outcome, QuerySingleResult result, object? @object);
     }
 }

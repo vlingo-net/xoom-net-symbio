@@ -12,12 +12,16 @@ namespace Vlingo.Symbio.Store.Object
     /// </summary>
     public class QuerySingleResult : QueryResult
     {
-        public QuerySingleResult(object stateObject) => StateObject = stateObject;
+        public static QuerySingleResult Of(object? stateObject) => new QuerySingleResult(stateObject);
 
-        public QuerySingleResult(object stateObject, long updateId) : base(updateId) => StateObject = stateObject;
-
-        public object StateObject { get; }
+        public static QuerySingleResult Of(object? stateObject, long updateId) => new QuerySingleResult(stateObject, updateId);
         
-        public T ToStateObject<T>() =>  (T) StateObject;
+        public QuerySingleResult(object? stateObject) => StateObject = stateObject;
+
+        public QuerySingleResult(object? stateObject, long updateId) : base(updateId) => StateObject = stateObject;
+
+        public object? StateObject { get; }
+        
+        public T ToStateObject<T>() => StateObject != null ? (T) StateObject : default;
     }
 }

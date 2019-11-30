@@ -19,7 +19,7 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         private long _nextId;
 
         private Dictionary<Type , Dictionary<long, State<TState>>> _stores;
-        private List<BaseEntry<TEntry>> _entries;
+        private List<IEntry<TEntry>> _entries;
         private List<Dispatchable<TEntry, TState>> _dispatchables;
         private StateAdapterProvider _stateAdapterProvider;
         private IIdentityGenerator _identityGenerator;
@@ -28,7 +28,7 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         {
             _stateAdapterProvider = stateAdapterProvider;
             _stores = new Dictionary<Type, Dictionary<long, State<TState>>>();
-            _entries = new List<BaseEntry<TEntry>>();
+            _entries = new List<IEntry<TEntry>>();
             _dispatchables = new List<Dispatchable<TEntry, TState>>();
             _identityGenerator = IdentityGeneratorType.Random.Generator();
 
@@ -98,12 +98,15 @@ namespace Vlingo.Symbio.Store.Object.InMemory
             Persist(stateObject, metadata);
 
         /// <inheritdoc />
-        public void PersistEntries(IEnumerable<BaseEntry<TEntry>> entries)
+        public void PersistEntries(IEnumerable<IEntry<TEntry>> entries)
         {
             foreach (var entry in entries)
             {
-                entry.SetId(_identityGenerator.Generate().ToString());
-                _entries.Add(entry);
+                if (entry is BaseEntry<TEntry> baseEntry)
+                {
+                    baseEntry.SetId(_identityGenerator.Generate().ToString());
+                    _entries.Add(baseEntry);   
+                }
             }
         }
 
@@ -158,6 +161,11 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         
         /// <inheritdoc />
         public IEnumerable<StateObjectMapper> RegisteredMappers { get; } = Enumerable.Empty<StateObjectMapper>();
+        
+        internal List<IEntry<TEntry>> ReadOnlyJournal()
+        {
+            return _entries;
+        }
         
         private State<TState> Persist(StateObject stateObject, Metadata metadata)
         {

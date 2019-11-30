@@ -33,7 +33,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <returns><code>True</code> if the <paramref name="id"/> is an identity, otherwise false.</returns>
         bool IsId(long id);
 
-        ICompletes<IEntryReader<IEntry<T>>> EntryReader<T>(string name);
+        ICompletes<IEntryReader<T>> EntryReader<T>(string name);
 
         /// <summary>
         /// Executes the query defined by <paramref name="expression"/> that may result in one object,
@@ -50,7 +50,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="expression">The expression of <see cref="QueryExpression"/></param>
         /// <param name="interest">The <see cref="IQueryResultInterest"/></param>
         /// <param name="object">An object sent to the <see cref="IQueryResultInterest"/> when the query has succeeded or failed</param>
-        void QueryAll(QueryExpression expression, IQueryResultInterest interest, object @object);
+        void QueryAll(QueryExpression expression, IQueryResultInterest interest, object? @object);
 
         /// <summary>
         /// Executes the query defined by <paramref name="expression"/> that may result in one object,
@@ -67,7 +67,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="expression">The <see cref="QueryExpression"/></param>
         /// <param name="interest">The <see cref="IQueryResultInterest"/></param>
         /// <param name="object">An object sent to the <see cref="IQueryResultInterest"/> when the query has succeeded or failed</param>
-        void QueryObject(QueryExpression expression, IQueryResultInterest interest, object @object);
+        void QueryObject(QueryExpression expression, IQueryResultInterest interest, object? @object);
     }
 
     public static class ObjectStoreReader

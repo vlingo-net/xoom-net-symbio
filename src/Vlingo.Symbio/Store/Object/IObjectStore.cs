@@ -12,7 +12,7 @@ namespace Vlingo.Symbio.Store.Object
     /// including their identity. This is often thought of as object-relational
     /// mapping, which certainly can be and is supported, but is not limited to such.
     /// </summary>
-    public interface IObjectStore
+    public interface IObjectStore : IObjectStoreReader, IObjectStoreWriter
     {
         /// <summary>
         /// Close me
