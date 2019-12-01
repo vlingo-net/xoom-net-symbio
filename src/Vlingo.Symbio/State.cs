@@ -127,7 +127,7 @@ namespace Vlingo.Symbio
             if (dataVersion <= 0) throw new ArgumentOutOfRangeException(nameof(dataVersion), "State dataVersion must be greater than 0.");
 
             Id = id;
-            Type = type.FullName;
+            Type = type.AssemblyQualifiedName;
             TypeVersion = typeVersion;
             Data = data;
             DataVersion = dataVersion;

@@ -35,7 +35,11 @@ namespace Vlingo.Symbio
                     return newValue;
                 }
             }
-            
+            else
+            {
+                return dictionary[key];
+            }
+
             return v;
         }
     }

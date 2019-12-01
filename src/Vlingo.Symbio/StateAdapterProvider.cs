@@ -19,9 +19,19 @@ namespace Vlingo.Symbio
         private readonly Dictionary<string, object> _namedAdapters;
         private readonly IStateAdapter<object, string> _defaultTextStateAdapter;
         
-        public static StateAdapterProvider Instance(World world) =>
-            world.ResolveDynamic<StateAdapterProvider>(InternalName) ?? new StateAdapterProvider(world);
-        
+        public static StateAdapterProvider Instance(World world)
+        {
+            // TODO: Refactor when https://github.com/vlingo-net/vlingo-net-actors/issues/75 is done merged and deployed
+            try
+            {
+                return world.ResolveDynamic<StateAdapterProvider>(InternalName);
+            }
+            catch (Exception)
+            {
+                return new StateAdapterProvider(world);
+            }
+        }
+
         public StateAdapterProvider(World world) : this() => world.RegisterDynamic(InternalName, this);
         
         public StateAdapterProvider()
@@ -54,8 +64,8 @@ namespace Vlingo.Symbio
             {
                 return adapter.ToRawState(state, stateVersion, metadata);
             }
-            
-            return (State<TRawState>)(object)_defaultTextStateAdapter.ToRawState(state!, stateVersion, metadata);
+
+            return (State<TRawState>) (object) _defaultTextStateAdapter.ToRawState(id, state!, stateVersion, metadata);
         }
 
         public TState FromRaw<TState, TRawState>(State<TRawState> state)

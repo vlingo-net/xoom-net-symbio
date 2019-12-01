@@ -97,6 +97,8 @@ namespace Vlingo.Symbio
 
         private class DummyObject
         {
+            public override bool Equals(object obj) => ToString() == obj?.ToString();
+
             public override string ToString() => "(empty)";
         }
     }

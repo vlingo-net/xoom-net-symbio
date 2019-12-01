@@ -16,7 +16,7 @@ namespace Vlingo.Symbio.Store.Object
     /// </summary>
     public class MapQueryExpression : QueryExpression
     {
-        private readonly Dictionary<string, StateObject> _parameters;
+        private readonly Dictionary<string, object> _parameters;
 
         /// <summary>
         /// Answer a new <see cref="FluentMap{TK, TV}"/> with a single <paramref name="key"/> and <paramref name="value"/>.
@@ -24,9 +24,9 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="key">the string key</param>
         /// <param name="value">The state object value</param>
         /// <returns></returns>
-        public static FluentMap<string, StateObject> Map(string key, StateObject value)
+        public static FluentMap<string, object> Map(string key, object value)
         {
-            var map = new FluentMap<string, StateObject>(1);
+            var map = new FluentMap<string, object>(1);
             map.Add(key, value);
             return map;
         }
@@ -37,7 +37,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="query">The string describing the query</param>
         /// <param name="parameters"><code>Dictionary{TK, TV></code> containing query parameters of name-value pairs</param>
         /// <returns>MapQueryExpression</returns>
-        public static MapQueryExpression Using<T>(string query, Dictionary<string, StateObject> parameters) where T : StateObject => new MapQueryExpression(typeof(T), query, parameters);
+        public static MapQueryExpression Using<T>(string query, Dictionary<string, object> parameters) where T : StateObject => new MapQueryExpression(typeof(T), query, parameters);
 
         /// <summary>
         /// Answer a new <code>MapQueryExpression</code> with <paramref name="query"/>, and <paramref name="parameters"/>.
@@ -46,7 +46,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="mode">The <see cref="QueryMode"/></param>
         /// <param name="parameters"><code>Dictionary{TK, TV></code> containing query parameters of name-value pairs</param>
         /// <returns>MapQueryExpression</returns>
-        public static MapQueryExpression Using<T>(string query, QueryMode mode, Dictionary<string, StateObject> parameters) where T : StateObject => new MapQueryExpression(typeof(T), query, mode, parameters);
+        public static MapQueryExpression Using<T>(string query, QueryMode mode, Dictionary<string, object> parameters) where T : StateObject => new MapQueryExpression(typeof(T), query, mode, parameters);
 
         /// <summary>
         /// Constructs my default state with <code>QueryMode.ReadOnly</code>.
@@ -54,7 +54,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="type">The concrete type of state object</param>
         /// <param name="query">The string describing the query</param>
         /// <param name="parameters"><code>Dictionary{TK, TV></code> containing query parameters of name-value pairs</param>
-        public MapQueryExpression(Type type, string query, Dictionary<string, StateObject> parameters) : base(type, query)
+        public MapQueryExpression(Type type, string query, Dictionary<string, object> parameters) : base(type, query)
         {
             _parameters = parameters;
         }
@@ -66,12 +66,12 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="query">The string describing the query</param>
         /// <param name="mode">The <see cref="QueryMode"/></param>
         /// <param name="parameters"><code>Dictionary{TK, TV></code> containing query parameters of name-value pairs</param>
-        public MapQueryExpression(Type type, string query, QueryMode mode, Dictionary<string, StateObject> parameters) : base(type, query, mode)
+        public MapQueryExpression(Type type, string query, QueryMode mode, Dictionary<string, object> parameters) : base(type, query, mode)
         {
             _parameters = parameters;
         }
 
-        public Dictionary<string, StateObject> Parameters => _parameters;
+        public Dictionary<string, object> Parameters => _parameters;
 
         public override bool IsMapQueryExpression { get; } = true;
         
