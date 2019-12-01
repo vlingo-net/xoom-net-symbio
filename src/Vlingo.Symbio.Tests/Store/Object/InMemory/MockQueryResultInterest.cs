@@ -6,6 +6,7 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Vlingo.Actors.TestKit;
 using Vlingo.Common;
@@ -37,7 +38,7 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
                 AccessSafely
                     .AfterCompleting(times)
                     .WritingWith<object>("add", value => _stateObjects.Add(value))
-                    .WritingWith<IEnumerable<object>>("addAll", values => _stateObjects.AddRange(values))
+                    .WritingWith<object>("addAll", values => _stateObjects.AddRange((List<StateObject>)values))
                     .ReadingWith<int, object>("object", index => _stateObjects[index])
                     .ReadingWith("size", () => _stateObjects.Count);
 

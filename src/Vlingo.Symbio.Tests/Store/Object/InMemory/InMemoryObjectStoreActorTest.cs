@@ -55,6 +55,45 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
             Assert.Equal(source.GetType().AssemblyQualifiedName, entry.TypeName);
             Assert.Equal(Metadata.NullMetadata(), entry.Metadata);
         }
+
+        [Fact]
+        public void TestThatMultiPersistQueryResolves()
+        {
+            _dispatcher.AfterCompleting(3);
+            var persistAllAccess = _persistInterest.AfterCompleting(1);
+
+            var person1 = new Person("Tom Jones", 78);
+            var person2 = new Person("Dean Martin", 78);
+            var person3 = new Person("Sally Struthers", 71);
+            _objectStore.PersistAll(new List<Person> { person1, person2, person3 }, _persistInterest);
+            var persistSize = persistAllAccess.ReadFrom<int>("size");
+            Assert.Equal(3, persistSize);
+
+            var queryAllAccess = _queryResultInterest.AfterCompleting(1);
+            _objectStore.QueryAll(QueryExpression.Using<Person>("findAll"), _queryResultInterest, null);
+            var querySize = queryAllAccess.ReadFrom<int>("size");
+            Assert.Equal(3, querySize);
+            Assert.Equal(person1, queryAllAccess.ReadFrom<int, object>("object", 0));
+            Assert.Equal(person2, queryAllAccess.ReadFrom<int, object>("object", 1));
+            Assert.Equal(person3, queryAllAccess.ReadFrom<int, object>("object", 2));
+
+            Assert.Equal(3, _dispatcher.DispatchedCount());
+
+            var dispatched = _dispatcher.GetDispatched()[0];
+            ValidateDispatchedState(person1, dispatched);
+            var dispatchedEntries = dispatched.Entries;
+            Assert.Empty(dispatchedEntries);
+
+            dispatched = _dispatcher.GetDispatched()[1];
+            ValidateDispatchedState(person2, dispatched);
+            dispatchedEntries = dispatched.Entries;
+            Assert.Empty(dispatchedEntries);
+
+            dispatched = _dispatcher.GetDispatched()[2];
+            ValidateDispatchedState(person3, dispatched);
+            dispatchedEntries = dispatched.Entries;
+            Assert.Empty(dispatchedEntries);
+        }
         
         public InMemoryObjectStoreActorTest(ITestOutputHelper output)
         {

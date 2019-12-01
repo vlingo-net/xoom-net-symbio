@@ -27,7 +27,7 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
             }
             else if (actual > 1)
             {
-                _access.WriteUsing("addAll", stateObject);
+                _access.WriteUsing("addAll", (List<Person>)stateObject);
             }
             else
             {
@@ -41,7 +41,7 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
                 AccessSafely
                     .AfterCompleting(times)
                     .WritingWith<object>("add", value => _stateObjects.Add(value))
-                    .WritingWith<IEnumerable<object>>("addAll", values => _stateObjects.AddRange(values))
+                    .WritingWith<List<Person>>("addAll", values => _stateObjects.AddRange(values))
                     .ReadingWith<int, object>("object", index => _stateObjects[index])
                     .ReadingWith("size", () => _stateObjects.Count);
 

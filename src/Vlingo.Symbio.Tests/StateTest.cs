@@ -31,7 +31,7 @@ namespace Vlingo.Symbio.Tests
             Assert.False(basicState.IsText);
             Assert.False(basicState.IsEmpty);
             Assert.Equal("123", basicState.Id);
-            Assert.Equal(typeof(string).FullName, basicState.Type);
+            Assert.Equal(typeof(string).AssemblyQualifiedName, basicState.Type);
             Assert.Equal(1, basicState.TypeVersion);
             Assert.Equal(state, Encoding.UTF8.GetString(basicState.Data));
             Assert.False(basicState.HasMetadata);
@@ -47,7 +47,7 @@ namespace Vlingo.Symbio.Tests
             Assert.False(metadataOperationState.IsText);
             Assert.False(metadataOperationState.IsEmpty);
             Assert.Equal("123", metadataOperationState.Id);
-            Assert.Equal(typeof(string).FullName, metadataOperationState.Type);
+            Assert.Equal(typeof(string).AssemblyQualifiedName, metadataOperationState.Type);
             Assert.Equal(1, metadataOperationState.TypeVersion);
             Assert.Equal(state, Encoding.UTF8.GetString(metadataOperationState.Data));
             Assert.True(metadataOperationState.HasMetadata);
@@ -66,7 +66,7 @@ namespace Vlingo.Symbio.Tests
             Assert.False(metadataValueState.IsText);
             Assert.False(metadataValueState.IsEmpty);
             Assert.Equal("123", metadataValueState.Id);
-            Assert.Equal(typeof(string).FullName, metadataValueState.Type);
+            Assert.Equal(typeof(string).AssemblyQualifiedName, metadataValueState.Type);
             Assert.Equal(1, metadataValueState.TypeVersion);
             Assert.Equal(state, Encoding.UTF8.GetString(metadataValueState.Data));
             Assert.True(metadataValueState.HasMetadata);
@@ -85,7 +85,7 @@ namespace Vlingo.Symbio.Tests
             Assert.False(metadataState.IsText);
             Assert.False(metadataState.IsEmpty);
             Assert.Equal("123", metadataState.Id);
-            Assert.Equal(typeof(string).FullName, metadataState.Type);
+            Assert.Equal(typeof(string).AssemblyQualifiedName, metadataState.Type);
             Assert.Equal(1, metadataState.TypeVersion);
             Assert.Equal(state, Encoding.UTF8.GetString(metadataState.Data));
             Assert.True(metadataState.HasMetadata);

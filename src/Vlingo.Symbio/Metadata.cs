@@ -99,6 +99,11 @@ namespace Vlingo.Symbio
         {
             public override bool Equals(object obj) => ToString() == obj?.ToString();
 
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
+
             public override string ToString() => "(empty)";
         }
     }
