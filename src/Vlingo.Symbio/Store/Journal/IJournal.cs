@@ -184,7 +184,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="name">The string name of the <see cref="IJournalReader{TEntry}"/> to answer</param>
         /// <typeparam name="TEntry">The concrete type of <see cref="IEntry{T}"/> of the <see cref="IJournalReader{TEntry}"/></typeparam>
         /// <returns><see cref="ICompletes{T}"/> of <see cref="IJournalReader{TEntry}"/></returns>
-        ICompletes<IJournalReader<TEntry>> JournalReader<TEntry>(string name);
+        ICompletes<IJournalReader<T>?> JournalReader(string name);
         
         /// <summary>
         /// Eventually answers the <see cref="IStreamReader{T}"/> named <paramref name="name"/> for this journal. If
@@ -194,7 +194,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// </summary>
         /// <param name="name">The string name of the <see cref="IStreamReader{T}"/> to answer</param>
         /// <returns><see cref="ICompletes{T}"/> of <see cref="IStreamReader{T}"/></returns>
-        ICompletes<IStreamReader<T>> StreamReader(string name);
+        ICompletes<IStreamReader<T>?> StreamReader(string name);
     }
     
     /// <summary>
@@ -244,8 +244,8 @@ namespace Vlingo.Symbio.Store.Journal
 
         public abstract void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object);
 
-        public abstract ICompletes<IJournalReader<TEntry>> JournalReader<TEntry>(string name);
+        public abstract ICompletes<IJournalReader<T>?> JournalReader(string name);
 
-        public abstract ICompletes<IStreamReader<T>> StreamReader(string name);
+        public abstract ICompletes<IStreamReader<T>?> StreamReader(string name);
     }
 }
