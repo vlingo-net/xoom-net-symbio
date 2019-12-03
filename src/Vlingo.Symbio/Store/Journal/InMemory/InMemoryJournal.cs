@@ -18,16 +18,16 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 {
     public class InMemoryJournal<TEntry, TState> : Journal<TEntry>, IStoppable
     {
-        private EntryAdapterProvider _entryAdapterProvider;
-        private StateAdapterProvider _stateAdapterProvider;
-        private List<IEntry<TEntry>> _journal;
-        private Dictionary<string, IJournalReader<TEntry>> _journalReaders;
-        private Dictionary<string, IStreamReader<TEntry>> _streamReaders;
-        private Dictionary<string, Dictionary<int, int>> _streamIndexes;
-        private Dictionary<string, State<TState>> _snapshots;
+        private readonly EntryAdapterProvider _entryAdapterProvider;
+        private readonly StateAdapterProvider _stateAdapterProvider;
+        private readonly List<IEntry<TEntry>> _journal;
+        private readonly Dictionary<string, IJournalReader<TEntry>> _journalReaders;
+        private readonly Dictionary<string, IStreamReader<TEntry>> _streamReaders;
+        private readonly Dictionary<string, Dictionary<int, int>> _streamIndexes;
+        private readonly Dictionary<string, State<TState>> _snapshots;
         private readonly List<Dispatchable<TEntry, TState>> _dispatchables;
-        private IDispatcher<Dispatchable<TEntry, TState>> _dispatcher;
-        private IDispatcherControl _dispatcherControl;
+        private readonly IDispatcher<Dispatchable<TEntry, TState>> _dispatcher;
+        private readonly IDispatcherControl _dispatcherControl;
 
         public InMemoryJournal(IDispatcher<Dispatchable<TEntry, TState>> dispatcher, World world, long checkConfirmationExpirationInterval = 1000L, long confirmationExpiration = 1000L)
         {

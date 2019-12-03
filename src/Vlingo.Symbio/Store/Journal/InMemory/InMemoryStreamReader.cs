@@ -12,10 +12,10 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 {
     public class InMemoryStreamReader<TEntry> : IStreamReader<TEntry>
     {
-        private List<BaseEntry<TEntry>> _journalView;
-        private Dictionary<string, State<TEntry>> _snapshotsView;
-        private Dictionary<string, Dictionary<int, int>> _streamIndexesView;
-        private string _name;
+        private readonly List<BaseEntry<TEntry>> _journalView;
+        private readonly Dictionary<string, State<TEntry>> _snapshotsView;
+        private readonly Dictionary<string, Dictionary<int, int>> _streamIndexesView;
+        private readonly string _name;
 
         public InMemoryStreamReader(List<BaseEntry<TEntry>> journalView, Dictionary<string, Dictionary<int, int>> streamIndexesView, Dictionary<string, State<TEntry>> snapshotsView, string name)
         {

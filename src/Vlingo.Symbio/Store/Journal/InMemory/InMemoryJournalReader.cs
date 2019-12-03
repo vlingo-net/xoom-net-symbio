@@ -14,8 +14,8 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
     public class InMemoryJournalReader<TEntry> : IJournalReader<TEntry>
     {
         private int _currentIndex;
-        private List<IEntry<TEntry>> _journalView;
-        private string _name;
+        private readonly List<IEntry<TEntry>> _journalView;
+        private readonly string _name;
 
         public InMemoryJournalReader(List<IEntry<TEntry>> journalView, string name)
         {
