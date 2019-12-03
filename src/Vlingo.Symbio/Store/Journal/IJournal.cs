@@ -215,18 +215,37 @@ namespace Vlingo.Symbio.Store.Journal
     public interface ITextJournal : IJournal<string>
     {}
     
-//    public class Journal<T> : IJournal<T>
-//    {
-//        public static IJournal<T> Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<T, TState>> dispatcher, params object[] additional) where TActor : Actor
-//        {
-//            return additional.Length == 0 ?
-//                    stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher) :
-//                    stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher, additional);
-//        }
-//
-//        IJournal<T> IJournal<T>.Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<T, TState>> dispatcher, params object[] additional)
-//        {
-//            return Using<TActor, TState>(stage, dispatcher, additional);
-//        }
-//    }
+    public abstract class Journal<T> : IJournal<T>
+    {
+        public virtual IJournal<T> Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<T, TState>> dispatcher, params object[] additional) where TActor : Actor
+        {
+            return additional.Length == 0 ?
+                    stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher) :
+                    stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher, additional);
+        }
+
+        public virtual void Append<TSource, TSnapshotState>(string streamName, int streamVersion, Source<TSource> source, IAppendResultInterest interest, object @object)
+            => Append<TSource, TSnapshotState>(streamName, streamVersion, source, Metadata.NullMetadata(), interest, @object);
+
+        public abstract void Append<TSource, TSnapshotState>(string streamName, int streamVersion, Source<TSource> source, Metadata metadata, IAppendResultInterest interest, object @object);
+
+        public virtual void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, Source<TSource> source, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
+            => AppendWith(streamName, streamVersion, source, Metadata.NullMetadata(), snapshot, interest, @object);
+
+        public abstract void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, Source<TSource> source, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object);
+
+        public virtual void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<Source<TSource>> sources, IAppendResultInterest interest, object @object)
+            => AppendAll<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, Metadata.NullMetadata(), interest, @object);
+
+        public abstract void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IAppendResultInterest interest, object @object);
+
+        public virtual void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<Source<TSource>> sources, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
+            => AppendAllWith(streamName, fromStreamVersion, sources, Metadata.NullMetadata(), snapshot, interest, @object);
+
+        public abstract void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object);
+
+        public abstract ICompletes<IJournalReader<TEntry>> JournalReader<TEntry>(string name);
+
+        public abstract ICompletes<IStreamReader<T>> StreamReader(string name);
+    }
 }
