@@ -26,8 +26,18 @@ namespace Vlingo.Symbio
         /// </summary>
         /// <param name="world">The World where the EntryAdapterProvider is held</param>
         /// <returns><see cref="EntryAdapterProvider"/></returns>
-        public static EntryAdapterProvider Instance(World world) =>
-            world.ResolveDynamic<EntryAdapterProvider>(InternalName) ?? new EntryAdapterProvider(world);
+        public static EntryAdapterProvider Instance(World world)
+        {
+            // TODO: Refactor when https://github.com/vlingo-net/vlingo-net-actors/issues/75 is done merged and deployed
+            try
+            {
+                return world.ResolveDynamic<EntryAdapterProvider>(InternalName);
+            }
+            catch (Exception)
+            {
+                return new EntryAdapterProvider(world);
+            }
+        }
         
         public EntryAdapterProvider(World world) : this() => world.RegisterDynamic(InternalName, this);
         
@@ -40,9 +50,9 @@ namespace Vlingo.Symbio
         public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter)
         {
             _adapters.Add(typeof(TSource), adapter);
-            _namedAdapters.Add(nameof(TSource), adapter);
+            _namedAdapters.Add(typeof(TSource).FullName, adapter);
         }
-        
+
         public void RegisterAdapter<TSource, TEntry>(TSource sourceType, IEntryAdapter<TSource, TEntry> adapter, Action<TSource, IEntryAdapter<TSource, TEntry>> consumer)
         {
             _adapters.Add(sourceType!.GetType(), adapter);

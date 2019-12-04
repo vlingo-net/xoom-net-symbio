@@ -217,11 +217,16 @@ namespace Vlingo.Symbio.Store.Journal
     
     public abstract class Journal<T> : IJournal<T>
     {
-        public virtual IJournal<T> Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<T, TState>> dispatcher, params object[] additional) where TActor : Actor
+        public static IJournal<T> Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<T, TState>> dispatcher, params object[] additional) where TActor : Actor
         {
             return additional.Length == 0 ?
                     stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher) :
                     stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher, additional);
+        }
+
+        IJournal<T> IJournal<T>.Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<T, TState>> dispatcher, params object[] additional)
+        {
+            return Using<TActor, TState>(stage, dispatcher, additional);
         }
 
         public virtual void Append<TSource, TSnapshotState>(string streamName, int streamVersion, Source<TSource> source, IAppendResultInterest interest, object @object)
