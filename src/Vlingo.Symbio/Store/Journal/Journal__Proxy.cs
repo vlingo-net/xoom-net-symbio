@@ -7,8 +7,7 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Store.Journal
 {
-    public class Journal__Proxy<TEntry> : Vlingo.Symbio.Store.Journal.IJournal<TEntry>
-        where TEntry : Vlingo.Symbio.IEntry
+    public class Journal__Proxy<T> : Vlingo.Symbio.Store.Journal.IJournal<T>
     {
         private const string UsingRepresentation1 =
             "Using<TActor, TState>(Vlingo.Actors.Stage, IDispatcher<Dispatchable<TEntry, TState>>, System.Object[])";
@@ -49,14 +48,14 @@ namespace Vlingo.Symbio.Store.Journal
             this.mailbox = mailbox;
         }
 
-        public Vlingo.Symbio.Store.Journal.IJournal<TEntry> Using<TActor, TState>(Vlingo.Actors.Stage stage,
+        public Vlingo.Symbio.Store.Journal.IJournal<T> Using<TActor, TEntry, TState>(Vlingo.Actors.Stage stage,
             IDispatcher<Dispatchable<TEntry, TState>> dispatcher, System.Object[] additional)
-            where TActor : Vlingo.Actors.Actor where TState : class, IState
+            where TActor : Vlingo.Actors.Actor where TEntry : IEntry<T> where TState : class, IState
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.Journal.IJournal<TEntry>> cons128873 = __ =>
-                    __.Using<TActor, TState>(stage, dispatcher, additional);
+                Action<Vlingo.Symbio.Store.Journal.IJournal<T>> cons128873 = __ =>
+                    __.Using<TActor, TEntry, TState>(stage, dispatcher, additional);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, null, UsingRepresentation1);
@@ -64,7 +63,7 @@ namespace Vlingo.Symbio.Store.Journal
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<T>>(this.actor, cons128873,
                             UsingRepresentation1));
                 }
             }
@@ -81,7 +80,7 @@ namespace Vlingo.Symbio.Store.Journal
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.Journal.IJournal<TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.Journal.IJournal<T>> cons128873 = __ =>
                     __.Append<TSource, TSnapshotState>(streamName, streamVersion, source, interest, @object);
                 if (this.mailbox.IsPreallocated)
                 {
@@ -90,7 +89,7 @@ namespace Vlingo.Symbio.Store.Journal
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<T>>(this.actor, cons128873,
                             AppendRepresentation2));
                 }
             }
@@ -105,7 +104,7 @@ namespace Vlingo.Symbio.Store.Journal
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.Journal.IJournal<TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.Journal.IJournal<T>> cons128873 = __ =>
                     __.Append<TSource, TSnapshotState>(streamName, streamVersion, source, metadata, interest, @object);
                 if (this.mailbox.IsPreallocated)
                 {
@@ -114,7 +113,7 @@ namespace Vlingo.Symbio.Store.Journal
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<T>>(this.actor, cons128873,
                             AppendRepresentation3));
                 }
             }
@@ -129,7 +128,7 @@ namespace Vlingo.Symbio.Store.Journal
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.Journal.IJournal<TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.Journal.IJournal<T>> cons128873 = __ =>
                     __.AppendWith<TSource, TSnapshotState>(streamName, streamVersion, source, snapshot, interest,
                         @object);
                 if (this.mailbox.IsPreallocated)
@@ -139,7 +138,7 @@ namespace Vlingo.Symbio.Store.Journal
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<T>>(this.actor, cons128873,
                             AppendWithRepresentation4));
                 }
             }
@@ -155,7 +154,7 @@ namespace Vlingo.Symbio.Store.Journal
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.Journal.IJournal<TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.Journal.IJournal<T>> cons128873 = __ =>
                     __.AppendWith<TSource, TSnapshotState>(streamName, streamVersion, source, metadata, snapshot,
                         interest, @object);
                 if (this.mailbox.IsPreallocated)
@@ -165,7 +164,7 @@ namespace Vlingo.Symbio.Store.Journal
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<T>>(this.actor, cons128873,
                             AppendWithRepresentation5));
                 }
             }
@@ -181,7 +180,7 @@ namespace Vlingo.Symbio.Store.Journal
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.Journal.IJournal<TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.Journal.IJournal<T>> cons128873 = __ =>
                     __.AppendAll<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, interest, @object);
                 if (this.mailbox.IsPreallocated)
                 {
@@ -190,7 +189,7 @@ namespace Vlingo.Symbio.Store.Journal
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<T>>(this.actor, cons128873,
                             AppendAllRepresentation6));
                 }
             }
@@ -206,7 +205,7 @@ namespace Vlingo.Symbio.Store.Journal
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.Journal.IJournal<TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.Journal.IJournal<T>> cons128873 = __ =>
                     __.AppendAll<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, metadata, interest,
                         @object);
                 if (this.mailbox.IsPreallocated)
@@ -216,7 +215,7 @@ namespace Vlingo.Symbio.Store.Journal
                 else
                 {
                     this.mailbox.Send(
-                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<TEntry>>(this.actor, cons128873,
+                        new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<T>>(this.actor, cons128873,
                             AppendAllRepresentation7));
                 }
             }
@@ -232,7 +231,7 @@ namespace Vlingo.Symbio.Store.Journal
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.Journal.IJournal<TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.Journal.IJournal<T>> cons128873 = __ =>
                     __.AppendAllWith<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, snapshot,
                         interest, @object);
                 if (this.mailbox.IsPreallocated)
@@ -241,7 +240,7 @@ namespace Vlingo.Symbio.Store.Journal
                 }
                 else
                 {
-                    this.mailbox.Send(new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<TEntry>>(this.actor,
+                    this.mailbox.Send(new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<T>>(this.actor,
                         cons128873, AppendAllWithRepresentation8));
                 }
             }
@@ -257,7 +256,7 @@ namespace Vlingo.Symbio.Store.Journal
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.Journal.IJournal<TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.Journal.IJournal<T>> cons128873 = __ =>
                     __.AppendAllWith<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, metadata,
                         snapshot, interest, @object);
                 if (this.mailbox.IsPreallocated)
@@ -266,7 +265,7 @@ namespace Vlingo.Symbio.Store.Journal
                 }
                 else
                 {
-                    this.mailbox.Send(new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<TEntry>>(this.actor,
+                    this.mailbox.Send(new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<T>>(this.actor,
                         cons128873, AppendAllWithRepresentation9));
                 }
             }
@@ -281,7 +280,7 @@ namespace Vlingo.Symbio.Store.Journal
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.Journal.IJournal<TEntry>> cons128873 = __ =>
+                Action<Vlingo.Symbio.Store.Journal.IJournal<T>> cons128873 = __ =>
                     __.JournalReader<TNewEntry>(name);
                 var completes = new BasicCompletes<IJournalReader<TNewEntry>>(this.actor.Scheduler);
                 if (this.mailbox.IsPreallocated)
@@ -290,7 +289,7 @@ namespace Vlingo.Symbio.Store.Journal
                 }
                 else
                 {
-                    this.mailbox.Send(new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<TEntry>>(this.actor,
+                    this.mailbox.Send(new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<T>>(this.actor,
                         cons128873, completes, JournalReaderRepresentation10));
                 }
 
@@ -304,19 +303,19 @@ namespace Vlingo.Symbio.Store.Journal
             return null!;
         }
 
-        public ICompletes<IStreamReader<TEntry>?> StreamReader(string name)
+        public ICompletes<IStreamReader<T>?> StreamReader(string name)
         {
             if (!this.actor.IsStopped)
             {
-                Action<Vlingo.Symbio.Store.Journal.IJournal<TEntry>> cons128873 = __ => __.StreamReader(name);
-                var completes = new BasicCompletes<IStreamReader<TEntry>>(this.actor.Scheduler);
+                Action<Vlingo.Symbio.Store.Journal.IJournal<T>> cons128873 = __ => __.StreamReader(name);
+                var completes = new BasicCompletes<IStreamReader<T>>(this.actor.Scheduler);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, completes, StreamReaderRepresentation11);
                 }
                 else
                 {
-                    this.mailbox.Send(new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<TEntry>>(this.actor,
+                    this.mailbox.Send(new LocalMessage<Vlingo.Symbio.Store.Journal.IJournal<T>>(this.actor,
                         cons128873, completes, StreamReaderRepresentation11));
                 }
 

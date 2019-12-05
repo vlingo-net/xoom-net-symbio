@@ -12,20 +12,17 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
-    public class InMemoryJournalActor<TEntry, TState> : Actor, IJournal<TEntry> where TEntry : IEntry where TState : class, IState
+    public class InMemoryJournalActor<T, TEntry, TState> : Actor, IJournal<T> where TEntry : IEntry<T> where TState : class, IState
     {
-        private InMemoryJournal<TEntry, TState> _journal;
+        private InMemoryJournal<T, TEntry, TState> _journal;
 
         public InMemoryJournalActor(IDispatcher<Dispatchable<TEntry, TState>> dispatcher)
-            => _journal = new InMemoryJournal<TEntry, TState>(dispatcher, Stage.World);
+            => _journal = new InMemoryJournal<T, TEntry, TState>(dispatcher, Stage.World);
         
-        public IJournal<TEntry> Using<TActor, TNewState>(Stage stage, IDispatcher<Dispatchable<TEntry, TNewState>> dispatcher, params object[] additional) where TActor : Actor where TNewState : class, IState
+        public IJournal<T> Using<TActor, TNewEntry, TNewState>(Stage stage, IDispatcher<Dispatchable<TNewEntry, TNewState>> dispatcher, params object[] additional) where TActor : Actor where TNewEntry : IEntry<T> where TNewState : class, IState
             => additional.Length == 0 ?
-                    stage.ActorFor<IJournal<TEntry>>(typeof(TActor), dispatcher) :
-                    stage.ActorFor<IJournal<TEntry>>(typeof(TActor), dispatcher, additional);
-
-        public IJournal<TEntry> Using<TActor, TState1>(Stage stage, IDispatcher<Dispatchable<IEntry<TEntry>, TState1>> dispatcher, params object[] additional) where TActor : Actor where TState1 : class, IState
-            => Using<TActor, TState1>(stage, dispatcher, additional);
+                    stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher) :
+                    stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher, additional);
 
         public void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, IAppendResultInterest interest, object @object) where TSource : Source =>
             _journal.Append<TSource, TSnapshotState>(streamName, streamVersion, source, interest, @object);
@@ -58,10 +55,10 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             return Completes().With(actor);
         }
 
-        public ICompletes<IStreamReader<TEntry>?> StreamReader(string name)
+        public ICompletes<IStreamReader<T>?> StreamReader(string name)
         {
             var inmemory = _journal.StreamReader(name).Outcome!;
-            var actor = ChildActorFor<IStreamReader<TEntry>?>(Definition.Has<InMemoryStreamReaderActor<TEntry>>(Definition.Parameters(inmemory)));
+            var actor = ChildActorFor<IStreamReader<T>?>(Definition.Has<InMemoryStreamReaderActor<T>>(Definition.Parameters(inmemory)));
             return Completes().With(actor);
         }
     }

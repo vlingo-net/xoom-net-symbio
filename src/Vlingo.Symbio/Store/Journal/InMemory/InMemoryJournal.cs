@@ -16,13 +16,13 @@ using Vlingo.Symbio.Store.Dispatch.InMemory;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
-    public class InMemoryJournal<TEntry, TState> : Journal<TEntry>, IStoppable where TEntry : IEntry where TState : class, IState
+    public class InMemoryJournal<T, TEntry, TState> : Journal<T>, IStoppable where TEntry : IEntry<T> where TState : class, IState
     {
         private readonly EntryAdapterProvider _entryAdapterProvider;
         private readonly StateAdapterProvider _stateAdapterProvider;
         private readonly List<TEntry> _journal;
         private readonly Dictionary<string, IJournalReader<TEntry>> _journalReaders;
-        private readonly Dictionary<string, IStreamReader<TEntry>> _streamReaders;
+        private readonly Dictionary<string, IStreamReader<T>> _streamReaders;
         private readonly Dictionary<string, Dictionary<int, int>> _streamIndexes;
         private readonly Dictionary<string, TState> _snapshots;
         private readonly List<Dispatchable<TEntry, TState>> _dispatchables;
@@ -36,7 +36,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             _stateAdapterProvider = StateAdapterProvider.Instance(world);
             _journal = new List<TEntry>();
             _journalReaders = new Dictionary<string, IJournalReader<TEntry>>(1);
-            _streamReaders = new Dictionary<string, IStreamReader<TEntry>>(1);
+            _streamReaders = new Dictionary<string, IStreamReader<T>>(1);
             _streamIndexes = new Dictionary<string, Dictionary<int, int>>();
             _snapshots = new Dictionary<string, TState>();
             _dispatchables = new List<Dispatchable<TEntry, TState>>();
@@ -131,17 +131,17 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             return Completes.WithSuccess(reader);
         }
 
-        public override ICompletes<IStreamReader<TEntry>?> StreamReader(string name)
+        public override ICompletes<IStreamReader<T>?> StreamReader(string name)
         {
-            IStreamReader<TEntry>? reader = null;
+            IStreamReader<T>? reader = null;
             if (!_journalReaders.ContainsKey(name))
             {
-                var castedDictionary = new Dictionary<string, State<TEntry>>();
+                var castedDictionary = new Dictionary<string, State<T>>();
                 foreach (var snapshotPair in _snapshots)
                 {
-                    castedDictionary.Add(snapshotPair.Key, (State<TEntry>)(object)snapshotPair.Value);
+                    castedDictionary.Add(snapshotPair.Key, (State<T>)(object)snapshotPair.Value);
                 }
-                reader = new InMemoryStreamReader<TEntry>(_journal.Cast<BaseEntry>().ToList(), _streamIndexes, castedDictionary, name);
+                reader = new InMemoryStreamReader<T>(_journal.Cast<BaseEntry>().ToList(), _streamIndexes, castedDictionary, name);
                 _streamReaders.Add(name, reader);
             }
             return Completes.WithSuccess(reader);

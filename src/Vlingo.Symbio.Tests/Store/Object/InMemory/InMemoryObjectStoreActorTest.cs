@@ -23,7 +23,7 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
         private MockQueryResultInterest _queryResultInterest;
         private IObjectStore _objectStore;
         private World _world;
-        private MockDispatcher<ObjectEntry<Test1Source>, State<string>> _dispatcher;
+        private MockDispatcher<Test1Source, ObjectEntry<Test1Source>, State<string>> _dispatcher;
 
         [Fact]
         public void TestThatObjectPersistsQueries()
@@ -107,8 +107,8 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
             var entryAdapterProvider = new EntryAdapterProvider(_world);
             entryAdapterProvider.RegisterAdapter(new Test1SourceAdapter());
     
-            _dispatcher = new MockDispatcher<ObjectEntry<Test1Source>, State<string>>(new MockConfirmDispatchedResultInterest());
-            _objectStore = _world.ActorFor<IObjectStore>(typeof(Vlingo.Symbio.Store.Object.InMemory.InMemoryObjectStoreActor<ObjectEntry<Test1Source>, State<string>>), _dispatcher);
+            _dispatcher = new MockDispatcher<Test1Source, ObjectEntry<Test1Source>, State<string>>(new MockConfirmDispatchedResultInterest());
+            _objectStore = _world.ActorFor<IObjectStore>(typeof(Vlingo.Symbio.Store.Object.InMemory.InMemoryObjectStoreActor<Test1Source, ObjectEntry<Test1Source>, State<string>>), _dispatcher);
         }
         
         private void ValidateDispatchedState(Person persistedObject, Dispatchable<ObjectEntry<Test1Source>, State<string>> dispatched)
@@ -139,9 +139,9 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
         public override Test1Source FromEntry(ObjectEntry<Test1Source> entry) => entry.EntryData;
 
         public override ObjectEntry<Test1Source> ToEntry(Test1Source source, Metadata metadata) =>
-            new ObjectEntry<Test1Source>(typeof(Test1Source), 1, (Test1Source) source, metadata);
+            new ObjectEntry<Test1Source>(typeof(Test1Source), 1, source, metadata);
 
         public override ObjectEntry<Test1Source> ToEntry(Test1Source source, string id, Metadata metadata)=>
-            new ObjectEntry<Test1Source>(id, typeof(Test1Source), 1, (Test1Source) source, metadata);
+            new ObjectEntry<Test1Source>(id, typeof(Test1Source), 1, source, metadata);
     }
 }

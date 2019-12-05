@@ -12,7 +12,7 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Tests.Store.Dispatch
 {
-    public class MockDispatcher<TEntry, TState> : IDispatcher<Dispatchable<TEntry, TState>> where TEntry : IEntry where TState : class, IState
+    public class MockDispatcher<T, TEntry, TState> : IDispatcher<Dispatchable<TEntry, TState>> where TEntry : IEntry<T> where TState : class, IState
     {
         private AccessSafely _access;
 
@@ -20,7 +20,7 @@ namespace Vlingo.Symbio.Tests.Store.Dispatch
         private IDispatcherControl _control;
         private readonly List<Dispatchable<TEntry, TState>> _dispatched = new List<Dispatchable<TEntry, TState>>();
         private readonly AtomicBoolean _processDispatch = new AtomicBoolean(true);
-        private int _dispatchAttemptCount = 0;
+        private int _dispatchAttemptCount;
 
         public MockDispatcher(IConfirmDispatchedResultInterest confirmDispatchedResultInterest)
         {

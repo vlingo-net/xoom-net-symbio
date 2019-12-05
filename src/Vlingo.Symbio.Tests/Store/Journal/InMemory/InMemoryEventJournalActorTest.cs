@@ -24,9 +24,9 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
     public class InMemoryEventJournalActorTest : IDisposable
     {
         private object _object = new object();
-        private IJournal<TextEntry> _journal;
+        private IJournal<string> _journal;
         private readonly World _world;
-        private readonly MockDispatcher<TextEntry, SnapshotState> _dispatcher;
+        private readonly MockDispatcher<string, TextEntry, TextState> _dispatcher;
 
         [Fact]
         public void TestThatJournalAppendsOneEvent()
@@ -63,16 +63,150 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             var dispatchedEntries = dispatched.Entries;
             Assert.Single(dispatchedEntries);
         }
+        
+        [Fact]
+        public void TestThatJournalAppendsOneEventWithSnapshot()
+        {
+            var interest = new MockAppendResultInterest<Test1Source, SnapshotState>();
+            _dispatcher.AfterCompleting(1);
+            interest.AfterCompleting(1);
 
+            var source = new Test1Source();
+            var streamName = "123";
+            var streamVersion = 1;
+            
+            _journal.AppendWith(streamName, streamVersion, new Test1Source(), new SnapshotState(),  interest, _object);
+
+            var entries = interest.Entries;
+            var journalData = entries.First();
+            Assert.NotNull(journalData);
+            Assert.Equal(streamName, journalData.StreamName);
+            Assert.Equal(streamVersion, journalData.StreamVersion);
+            Assert.Equal(Result.Success, journalData.Result);
+            Assert.True(journalData.Snapshot.IsPresent);
+
+            var sourceList = journalData.Sources;
+            Assert.Single(sourceList);
+            Assert.Equal(source, sourceList.First());
+
+            Assert.Equal(1, _dispatcher.DispatchedCount());
+            var dispatched = _dispatcher.GetDispatched()[0];
+
+            Assert.NotEqual(new DateTimeOffset(),  dispatched.CreatedOn);
+            Assert.True(dispatched.State.IsPresent);
+            Assert.NotNull(dispatched.Id);
+            var dispatchedEntries = dispatched.Entries;
+            Assert.Single(dispatchedEntries);
+        }
+
+        [Fact]
+        public void TestThatJournalReaderReadsOneEvent()
+        {
+            var interest = new MockAppendResultInterest<Test1Source, SnapshotState>();
+            _dispatcher.AfterCompleting(1);
+            interest.AfterCompleting(1);
+
+            var source = new Test1Source();
+            var streamName = "123";
+            var streamVersion = 1;
+            
+            _journal.Append<Test1Source, SnapshotState>(streamName, streamVersion, source,  interest, _object);
+
+            var accessResults = new TestResults().AfterCompleting(1);
+            _journal.JournalReader<TextEntry>("test")
+                .AndThenTo(reader => reader.ReadNext()
+                    .AndThenConsume(@event => {
+                        accessResults.WriteUsing("addAll", new List<BaseEntry<string>> {@event});
+            }));
+
+            Assert.NotNull(accessResults.ReadFrom<int, BaseEntry<string>>("entry", 0));
+            Assert.Equal("1", accessResults.ReadFrom<int, string>("entryId", 0));
+        }
+        
+        [Fact]
+        public void TestThatJournalReaderReadsThreeEvents()
+        {
+            var interest = new MockAppendResultInterest<Test1Source, SnapshotState>();
+            _dispatcher.AfterCompleting(1);
+            interest.AfterCompleting(1);
+
+            var three = new List<Source<string>> { new Test1Source(), new Test2Source(), new Test1Source() };
+            _journal.AppendAll<Source<string>, SnapshotState>("123", 1, three, interest, _object);
+
+            var accessResults = new TestResults().AfterCompleting(1);
+            _journal.JournalReader<TextEntry>("test")
+                .AndThenTo(reader => reader.ReadNext(5)
+                    .AndThenConsume(entries => {
+                        accessResults.WriteUsing("addAll", entries.Select(entry => (BaseEntry<string>)entry).ToList());
+            }));
+
+            Assert.Equal(3, accessResults.ReadFrom<int>("size"));
+            Assert.Equal("1", accessResults.ReadFrom<int, string>("entryId", 0));
+            Assert.Equal("2", accessResults.ReadFrom<int, string>("entryId", 1));
+            Assert.Equal("3", accessResults.ReadFrom<int, string>("entryId", 2));
+        }
+        
+        [Fact]
+        public void TestThatStreamReaderReadsFiveEventsWithSnapshot()
+        {
+            var interest = new MockAppendResultInterest<Test1Source, SnapshotState>();
+            _dispatcher.AfterCompleting(1);
+            interest.AfterCompleting(1);
+
+            _journal.Append<Test1Source, SnapshotState>("123", 1, new Test1Source(), interest, _object);
+            _journal.Append<Test1Source, SnapshotState>("123", 2, new Test1Source(), interest, _object);
+            _journal.AppendWith("123", 3, new Test1Source(), new SnapshotState(), interest, _object);
+            _journal.Append<Test1Source, SnapshotState>("123", 4, new Test1Source(), interest, _object);
+            _journal.Append<Test1Source, SnapshotState>("123", 5, new Test1Source(), interest, _object);
+
+            var accessResults = new TestResults().AfterCompleting(1);
+            _journal.StreamReader("test")
+                .AndThenTo(reader => reader.StreamFor("123")
+                    .AndThenConsume(eventStream => {
+                        accessResults.WriteUsing("addAll", eventStream.Entries.Select(entry => (BaseEntry<string>)entry).ToList());
+                    }));
+
+            Assert.Equal(3, accessResults.ReadFrom<int>("size"));
+            Assert.Equal("3", accessResults.ReadFrom<int, string>("entryId", 0));
+            Assert.Equal("4", accessResults.ReadFrom<int, string>("entryId", 1));
+            Assert.Equal("5", accessResults.ReadFrom<int, string>("entryId", 2));
+        }
+        
+        [Fact]
+        public void TestThatStreamReaderReadsFromBeyondSnapshot()
+        {
+            var interest = new MockAppendResultInterest<Test1Source, SnapshotState>();
+            _dispatcher.AfterCompleting(5);
+            interest.AfterCompleting(5);
+
+            _journal.Append<Test1Source, SnapshotState>("123", 1, new Test1Source(), interest, _object);
+            _journal.Append<Test1Source, SnapshotState>("123", 2, new Test1Source(), interest, _object);
+            _journal.AppendWith("123", 3, new Test1Source(), new SnapshotState(), interest, _object);
+            _journal.Append<Test1Source, SnapshotState>("123", 4, new Test1Source(), interest, _object);
+            _journal.Append<Test1Source, SnapshotState>("123", 5, new Test1Source(), interest, _object);
+
+            var accessResults = new TestResults().AfterCompleting(1);
+            _journal.StreamReader("test")
+                .AndThenTo(reader => reader.StreamFor("123", 4)
+                    .AndThenConsume(eventStream => {
+                        accessResults.WriteUsing("addAll", eventStream.Entries.Select(entry => (BaseEntry<string>)entry).ToList());
+                        Assert.Null(eventStream.Snapshot);
+                    }));
+
+            Assert.Equal(2, accessResults.ReadFrom<int>("size"));
+            Assert.Equal("4", accessResults.ReadFrom<int, string>("entryId", 0));
+            Assert.Equal("5", accessResults.ReadFrom<int, string>("entryId", 1));
+        }
+        
         public InMemoryEventJournalActorTest(ITestOutputHelper output)
         {
             var converter = new Converter(output);
             Console.SetOut(converter);
             
             _world = World.StartWithDefaults("test-journal");
-            _dispatcher = new MockDispatcher<TextEntry, SnapshotState>(new MockConfirmDispatchedResultInterest());
+            _dispatcher = new MockDispatcher<string, TextEntry, TextState>(new MockConfirmDispatchedResultInterest());
             
-            _journal = Journal<TextEntry>.Using<InMemoryJournalActor<TextEntry, SnapshotState>, SnapshotState>(_world.Stage, _dispatcher);
+            _journal = Journal<string>.Using<InMemoryJournalActor<string, TextEntry, TextState>, TextEntry, TextState>(_world.Stage, _dispatcher);
             EntryAdapterProvider.Instance(_world).RegisterAdapter(new Test1SourceAdapter());
             EntryAdapterProvider.Instance(_world).RegisterAdapter(new Test2SourceAdapter());
             StateAdapterProvider.Instance(_world).RegisterAdapter(new SnapshotStateAdapter());
@@ -132,6 +266,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
     internal class TestResults
     {
         private AccessSafely _access;
+        
         internal List<BaseEntry<string>> Entries { get; } = new List<BaseEntry<string>>();
         
         internal AccessSafely AfterCompleting(int times)

@@ -21,8 +21,8 @@ namespace Vlingo.Symbio.Store.Journal
     /// after each write transaction, you should register an <code>StreamJournalListener{T}</code> when first
     /// creating your <see cref="IStreamReader{T}"/>.
     /// </summary>
-    /// <typeparam name="TEntry">The concrete type of <see cref="IEntry{T}"/> and <see cref="State{T}"/> stored, which maybe be string, byte[], or object</typeparam>
-    public interface IJournal<TEntry> where TEntry : IEntry
+    /// <typeparam name="T">The concrete type of <see cref="IEntry{T}"/> and <see cref="State{T}"/> stored, which maybe be string, byte[], or object</typeparam>
+    public interface IJournal<T>
     {
         /// <summary>
         /// Answer a new <code>IJournal{T}</code>
@@ -32,8 +32,9 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="additional">The object[] of additional parameters</param>
         /// <typeparam name="TActor">The concrete type of the Actor implementing the <code>IJournal{T}</code> protocol</typeparam>
         /// <typeparam name="TState">The raw snapshot state type</typeparam>
+        /// <typeparam name="TEntry">The concrete type of journal entries</typeparam>
         /// <returns><code>IJournal{T}</code></returns>
-        IJournal<TEntry> Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional) where TActor : Actor where TState : class, IState;
+        IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional) where TActor : Actor  where TEntry : IEntry<T> where TState : class, IState;
 
         /// <summary>
         /// Appends the single <see cref="Source{T}"/> as an <see cref="IEntry{T}"/> to the end of the journal
@@ -194,39 +195,39 @@ namespace Vlingo.Symbio.Store.Journal
         /// </summary>
         /// <param name="name">The string name of the <see cref="IStreamReader{T}"/> to answer</param>
         /// <returns><see cref="ICompletes{T}"/> of <see cref="IStreamReader{T}"/></returns>
-        ICompletes<IStreamReader<TEntry>?> StreamReader(string name);
+        ICompletes<IStreamReader<T>?> StreamReader(string name);
     }
     
     /// <summary>
     /// The binary journal as type <code>IJournal{byte[]}</code>.
     /// </summary>
-    public interface IBinaryJournal : IJournal<IEntry<byte[]>>
+    public interface IBinaryJournal : IJournal<byte[]>
     {}
     
     /// <summary>
     /// The object journal as type <code>IJournal{object}</code>.
     /// </summary>
-    public interface IObjectJournal : IJournal<IEntry<object>>
+    public interface IObjectJournal : IJournal<object>
     {}
     
     /// <summary>
     /// The text journal as type <code>IJournal{string}</code>.
     /// </summary>
-    public interface ITextJournal : IJournal<IEntry<string>>
+    public interface ITextJournal : IJournal<string>
     {}
     
-    public abstract class Journal<T> : IJournal<T> where T : IEntry
+    public abstract class Journal<T> : IJournal<T>
     {
-        public static IJournal<T> Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<T, TState>> dispatcher, params object[] additional) where TActor : Actor where TState : class, IState
+        public static IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional) where TActor : Actor where TEntry : IEntry where TState : class, IState
         {
             return additional.Length == 0 ?
                     stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher) :
                     stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher, additional);
         }
 
-        IJournal<T> IJournal<T>.Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<T, TState>> dispatcher, params object[] additional)
+        IJournal<T> IJournal<T>.Using<TActor, TEntry, TState>(Stage stage, IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional)
         {
-            return Using<TActor, TState>(stage, dispatcher, additional);
+            return Using<TActor, TEntry, TState>(stage, dispatcher, additional);
         }
 
         public virtual void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, IAppendResultInterest interest, object @object) where TSource : Source 

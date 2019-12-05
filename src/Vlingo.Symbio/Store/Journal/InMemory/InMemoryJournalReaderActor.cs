@@ -19,21 +19,21 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 
         public void Close() => _reader.Close();
 
-        public ICompletes<TEntry> ReadNext() => Completes().With(_reader.ReadNext()).Outcome;
+        public ICompletes<TEntry> ReadNext() => Completes().With(_reader.ReadNext().Outcome);
 
-        public ICompletes<TEntry> ReadNext(string fromId) => Completes().With(_reader.ReadNext(fromId)).Outcome;
+        public ICompletes<TEntry> ReadNext(string fromId) => Completes().With(_reader.ReadNext(fromId).Outcome);
 
-        public ICompletes<IEnumerable<TEntry>> ReadNext(int maximumEntries) => Completes().With(_reader.ReadNext(maximumEntries)).Outcome;
+        public ICompletes<IEnumerable<TEntry>> ReadNext(int maximumEntries) => Completes().With(_reader.ReadNext(maximumEntries).Outcome);
 
-        public ICompletes<IEnumerable<TEntry>> ReadNext(string fromId, int maximumEntries) => Completes().With(_reader.ReadNext(fromId, maximumEntries)).Outcome;
+        public ICompletes<IEnumerable<TEntry>> ReadNext(string fromId, int maximumEntries) => Completes().With(_reader.ReadNext(fromId, maximumEntries).Outcome);
 
         public void Rewind() => _reader.Rewind();
 
-        public ICompletes<string> SeekTo(string id) => Completes().With(_reader.SeekTo(id)).Outcome;
+        public ICompletes<string> SeekTo(string id) => Completes().With(_reader.SeekTo(id).Outcome);
 
-        public ICompletes<string> Name => Completes().With(_reader.Name).Outcome;
+        public ICompletes<string> Name => Completes().With(_reader.Name.Outcome);
         
-        public ICompletes<long> Size => Completes().With(_reader.Size).Outcome;
+        public ICompletes<long> Size => Completes().With(_reader.Size.Outcome);
         
         public string Beginning { get; } = EntryReader.Beginning;
 

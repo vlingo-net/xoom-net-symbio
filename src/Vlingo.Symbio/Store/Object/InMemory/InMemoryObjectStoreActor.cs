@@ -18,13 +18,13 @@ namespace Vlingo.Symbio.Store.Object.InMemory
     /// In-memory implementation of <see cref="IObjectStore"/>. Note that <code>QueryAll()</code> variations
     /// do not support select constraints but always select all stored objects.
     /// </summary>
-    public class InMemoryObjectStoreActor<TEntry, TState> : Actor, IObjectStore where TEntry : IEntry where TState : class, IState
+    public class InMemoryObjectStoreActor<T, TEntry, TState> : Actor, IObjectStore where TEntry : IEntry<T> where TState : class, IState
     {
         private EntryAdapterProvider _entryAdapterProvider;
 
         private readonly IDispatcher<Dispatchable<TEntry, TState>> _dispatcher;
         private IDispatcherControl _dispatcherControl;
-        private readonly Dictionary<string, IObjectStoreEntryReader<TEntry>> _entryReaders;
+        private readonly Dictionary<string, IObjectStoreEntryReader<IEntry<T>>> _entryReaders;
         private readonly IObjectStoreDelegate<TEntry, TState> _storeDelegate;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Vlingo.Symbio.Store.Object.InMemory
             _entryAdapterProvider = EntryAdapterProvider.Instance(Stage.World);
             _dispatcher = dispatcher;
 
-            _entryReaders = new Dictionary<string, IObjectStoreEntryReader<TEntry>>();
+            _entryReaders = new Dictionary<string, IObjectStoreEntryReader<IEntry<T>>>();
 
             _storeDelegate = new InMemoryObjectStoreDelegate<TEntry, TState>(StateAdapterProvider.Instance(Stage.World));
 
@@ -55,15 +55,15 @@ namespace Vlingo.Symbio.Store.Object.InMemory
 
         public bool IsId(long id) => id > NoId;
 
-        public ICompletes<IEntryReader<T>> EntryReader<T>(string name) where T : IEntry
+        public ICompletes<IEntryReader<TNewEntry>> EntryReader<TNewEntry>(string name) where TNewEntry : IEntry
         {
             if (!_entryReaders.TryGetValue(name, out var reader))
             {
                 var definition = Definition.Has<InMemoryObjectStoreEntryReaderActor>(Definition.Parameters(ReadOnlyJournal(), name));
-                reader = ChildActorFor<IObjectStoreEntryReader<TEntry>>(definition);
+                reader = (IObjectStoreEntryReader<IEntry<T>>)ChildActorFor<IObjectStoreEntryReader<TNewEntry>>(definition);
             }
             
-            return Completes().With((IEntryReader<T>)reader);
+            return Completes().With((IEntryReader<TNewEntry>)reader);
         }
 
         public void QueryAll(QueryExpression expression, IQueryResultInterest interest) =>
@@ -251,9 +251,9 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         private static string GetDispatchId(TState raw, IEnumerable<TEntry> entries) =>
             $"{raw.Id}:{string.Join(":", entries.Select(entry => entry.Id))}";
         
-        private List<TEntry> ReadOnlyJournal()
+        private List<IEntry<T>> ReadOnlyJournal()
         {
-            return ((InMemoryObjectStoreDelegate<TEntry, TState>) _storeDelegate).ReadOnlyJournal();
+            return ((InMemoryObjectStoreDelegate<IEntry<T>, TState>) _storeDelegate).ReadOnlyJournal();
         }
     }
 }
