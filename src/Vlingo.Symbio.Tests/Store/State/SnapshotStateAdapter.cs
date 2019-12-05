@@ -10,28 +10,28 @@ using Vlingo.Symbio.Tests.Store.Journal.InMemory;
 
 namespace Vlingo.Symbio.Tests.Store.State
 {
-    public class SnapshotStateAdapter : IStateAdapter<SnapshotState, string>
+    public class SnapshotStateAdapter : IStateAdapter<SnapshotState, TextState>
     {
         public int TypeVersion { get; } = 1;
         
-        public SnapshotState FromRawState(State<string> raw) => (SnapshotState)JsonSerialization.Deserialized(raw.Data, raw.Typed);
+        public SnapshotState FromRawState(TextState raw) => (SnapshotState)JsonSerialization.Deserialized(raw.Data, raw.Typed);
         
 
-        public TOtherState FromRawState<TOtherState>(State<string> raw) => (TOtherState)JsonSerialization.Deserialized(raw.Data, typeof(TOtherState));
+        public TOtherState FromRawState<TOtherState>(TextState raw) => (TOtherState)JsonSerialization.Deserialized(raw.Data, typeof(TOtherState));
 
-        public State<string> ToRawState(string id, SnapshotState state, int stateVersion, Metadata metadata)
+        public TextState ToRawState(string id, SnapshotState state, int stateVersion, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(state);
             return new TextState(id, typeof(SnapshotState), TypeVersion, serialization, stateVersion, metadata);
         }
 
-        public State<string> ToRawState(SnapshotState state, int stateVersion, Metadata metadata)
+        public TextState ToRawState(SnapshotState state, int stateVersion, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(state);
             return new TextState(TextState.NoOp, typeof(SnapshotState), TypeVersion, serialization, stateVersion, metadata);
         }
 
-        public State<string> ToRawState(SnapshotState state, int stateVersion) =>
+        public TextState ToRawState(SnapshotState state, int stateVersion) =>
             ToRawState(state, stateVersion, Metadata.NullMetadata());
 
         public object ToRawState<T>(T state, int stateVersion, Metadata metadata)

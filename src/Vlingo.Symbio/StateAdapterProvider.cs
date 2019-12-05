@@ -17,7 +17,7 @@ namespace Vlingo.Symbio
 
         private readonly Dictionary<Type, object> _adapters;
         private readonly Dictionary<string, object> _namedAdapters;
-        private readonly IStateAdapter<object, string> _defaultTextStateAdapter;
+        private readonly IStateAdapter<object, TextState> _defaultTextStateAdapter;
         
         public static StateAdapterProvider Instance(World world)
         {
@@ -41,23 +41,23 @@ namespace Vlingo.Symbio
             _defaultTextStateAdapter = new DefaultTextStateAdapter();
         }
         
-        public void RegisterAdapter<TState, TRawState>(IStateAdapter<TState, TRawState> adapter)
+        public void RegisterAdapter<TState, TRawState>(IStateAdapter<TState, TRawState> adapter) where TRawState : IState
         {
             _adapters.Add(typeof(TState), adapter);
             _namedAdapters.Add(typeof(TState).FullName, adapter);
         }
         
-        public void RegisterAdapter<TState, TRawState>(TState stateType, IStateAdapter<TState, TRawState> adapter, Action<TState, IStateAdapter<TState, TRawState>> consumer)
+        public void RegisterAdapter<TState, TRawState>(TState stateType, IStateAdapter<TState, TRawState> adapter, Action<TState, IStateAdapter<TState, TRawState>> consumer) where TRawState : IState
         {
             _adapters.Add(stateType!.GetType(), adapter);
             _namedAdapters.Add(stateType.GetType().Name, adapter);
             consumer(stateType, adapter);
         }
 
-        public State<TRawState> AsRaw<TState, TRawState>(string id, TState state, int stateVersion) =>
+        public TRawState AsRaw<TState, TRawState>(string id, TState state, int stateVersion) where TRawState : IState =>
             AsRaw<TState, TRawState>(id, state, stateVersion, Metadata.NullMetadata());
 
-        public State<TRawState> AsRaw<TState, TRawState>(string id, TState state, int stateVersion, Metadata metadata)
+        public TRawState AsRaw<TState, TRawState>(string id, TState state, int stateVersion, Metadata metadata) where TRawState : IState
         {
             var adapter = Adapter<TState, TRawState>();
             if (adapter != null)
@@ -65,10 +65,10 @@ namespace Vlingo.Symbio
                 return adapter.ToRawState(state, stateVersion, metadata);
             }
 
-            return (State<TRawState>) (object) _defaultTextStateAdapter.ToRawState(id, state!, stateVersion, metadata);
+            return (TRawState) (object) _defaultTextStateAdapter.ToRawState(id, state!, stateVersion, metadata);
         }
 
-        public TState FromRaw<TState, TRawState>(State<TRawState> state)
+        public TState FromRaw<TState, TRawState>(TRawState state) where TRawState : IState
         {
             var adapter = NamedAdapter<TState, TRawState>(state);
             if (adapter != null)
@@ -79,7 +79,7 @@ namespace Vlingo.Symbio
             return (TState) _defaultTextStateAdapter.FromRawState((TextState)(object)state);
         }
         
-        private IStateAdapter<TState, TRawState>? Adapter<TState, TRawState>()
+        private IStateAdapter<TState, TRawState>? Adapter<TState, TRawState>() where TRawState : IState
         {
             if (!_adapters.ContainsKey(typeof(TState)))
             {
@@ -89,7 +89,7 @@ namespace Vlingo.Symbio
             return adapter;
         }
 
-        private IStateAdapter<TState, TRawState>? NamedAdapter<TState, TRawState>(State<TRawState> state)
+        private IStateAdapter<TState, TRawState>? NamedAdapter<TState, TRawState>(TRawState state) where TRawState : IState
         {
             if (!_namedAdapters.ContainsKey(state.Type))
             {

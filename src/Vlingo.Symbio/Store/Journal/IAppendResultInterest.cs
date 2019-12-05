@@ -26,7 +26,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="object">The object supplied by the sender to be sent back in this result</param>
         /// <typeparam name="TSource">The <see cref="Source{T}"/> type</typeparam>
         /// <typeparam name="TSnapshotState">The snapshot state type</typeparam>
-        void AppendResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, Source<TSource> source, Optional<TSnapshotState> snapshot, object @object);
+        void AppendResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, TSource source, Optional<TSnapshotState> snapshot, object @object) where TSource : Source;
 
         /// <summary>
         /// Conveys the <code>IOutcome{TError, TResult}</code> of a single appended <see cref="Source{T}"/> and a possible state <paramref name="snapshot"/>.
@@ -40,7 +40,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="object">The object supplied by the sender to be sent back in this result</param>
         /// <typeparam name="TSource">The <see cref="Source{T}"/> type</typeparam>
         /// <typeparam name="TSnapshotState">The snapshot state type</typeparam>
-        void AppendResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, Source<TSource> source, Metadata metadata, Optional<TSnapshotState> snapshot, object @object);
+        void AppendResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, TSource source, Metadata metadata, Optional<TSnapshotState> snapshot, object @object) where TSource : Source;
         
         /// <summary>
         /// Conveys the <code>IOutcome{TError, TResult}</code> of attempting to append multiple <see cref="Source{T}"/>s and a possible state <paramref name="snapshot"/>.
@@ -53,7 +53,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="object">The object supplied by the sender to be sent back in this result</param>
         /// <typeparam name="TSource">The <see cref="Source{T}"/> type</typeparam>
         /// <typeparam name="TSnapshotState">The snapshot state type</typeparam>
-        void AppendAllResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, IEnumerable<Source<TSource>> sources, Optional<TSnapshotState> snapshot, object @object);
+        void AppendAllResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, IEnumerable<TSource> sources, Optional<TSnapshotState> snapshot, object @object) where TSource : Source;
 
         /// <summary>
         /// Conveys the <code>IOutcome{TError, TResult}</code> of attempting to append multiple <see cref="Source{T}"/>s and a possible state <paramref name="snapshot"/>.
@@ -67,6 +67,6 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="object">The object supplied by the sender to be sent back in this result</param>
         /// <typeparam name="TSource">The <see cref="Source{T}"/> type</typeparam>
         /// <typeparam name="TSnapshotState">The snapshot state type</typeparam>
-        void AppendAllResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, Optional<TSnapshotState> snapshot, object @object);
+        void AppendAllResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, IEnumerable<TSource> sources, Metadata metadata, Optional<TSnapshotState> snapshot, object @object) where TSource : Source;
     }
 }

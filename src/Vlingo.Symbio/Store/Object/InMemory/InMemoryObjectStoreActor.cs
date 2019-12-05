@@ -18,7 +18,7 @@ namespace Vlingo.Symbio.Store.Object.InMemory
     /// In-memory implementation of <see cref="IObjectStore"/>. Note that <code>QueryAll()</code> variations
     /// do not support select constraints but always select all stored objects.
     /// </summary>
-    public class InMemoryObjectStoreActor<TEntry, TState> : Actor, IObjectStore
+    public class InMemoryObjectStoreActor<TEntry, TState> : Actor, IObjectStore where TEntry : IEntry where TState : class, IState
     {
         private EntryAdapterProvider _entryAdapterProvider;
 
@@ -55,7 +55,7 @@ namespace Vlingo.Symbio.Store.Object.InMemory
 
         public bool IsId(long id) => id > NoId;
 
-        public ICompletes<IEntryReader<T>> EntryReader<T>(string name)
+        public ICompletes<IEntryReader<T>> EntryReader<T>(string name) where T : IEntry
         {
             if (!_entryReaders.TryGetValue(name, out var reader))
             {
@@ -98,10 +98,10 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         public void Persist<TNewState>(TNewState stateObject, Metadata metadata, IPersistResultInterest interest)
             where TNewState : StateObject => Persist(stateObject, Source<TState>.None(), metadata, -1, interest, null);
 
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<Source<TSource>> sources, IPersistResultInterest interest) where TNewState : StateObject
+        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
             => Persist(stateObject, sources, Metadata.NullMetadata(), -1, interest, null);
 
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<Source<TSource>> sources, Metadata metadata, IPersistResultInterest interest) where TNewState : StateObject
+        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, Metadata metadata, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
             => Persist(stateObject, sources, metadata, -1, interest, null);
 
         public void Persist<TNewState>(TNewState stateObject, IPersistResultInterest interest, object? @object)
@@ -110,11 +110,11 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         public void Persist<TNewState>(TNewState stateObject, Metadata metadata, IPersistResultInterest interest, object? @object)
             where TNewState : StateObject => Persist(stateObject, Source<TState>.None(), metadata, -1, interest, @object);
 
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<Source<TSource>> sources, IPersistResultInterest interest, object? @object) where TNewState : StateObject
+        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
             => Persist(stateObject, sources, Metadata.NullMetadata(), -1, interest, @object);
 
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<Source<TSource>> sources, Metadata metadata, IPersistResultInterest interest, object? @object)
-            where TNewState : StateObject => Persist(stateObject, sources, metadata, -1, interest, @object);
+        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, Metadata metadata, IPersistResultInterest interest, object? @object)
+            where TNewState : StateObject where TSource : Source => Persist(stateObject, sources, metadata, -1, interest, @object);
 
         public void Persist<TNewState>(TNewState stateObject, long updateId, IPersistResultInterest interest)
             where TNewState : StateObject => Persist(stateObject, Source<TState>.None(), Metadata.NullMetadata(), updateId, interest, null);
@@ -122,11 +122,11 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         public void Persist<TNewState>(TNewState stateObject, Metadata metadata, long updateId, IPersistResultInterest interest)
             where TNewState : StateObject => Persist(stateObject,Source<TState>.None(), metadata, updateId, interest, null);
 
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<Source<TSource>> sources, long updateId, IPersistResultInterest interest)
-            where TNewState : StateObject => Persist(stateObject, sources, Metadata.NullMetadata(), updateId, interest, null);
+        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, long updateId, IPersistResultInterest interest)
+            where TNewState : StateObject where TSource : Source => Persist(stateObject, sources, Metadata.NullMetadata(), updateId, interest, null);
 
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<Source<TSource>> sources, Metadata metadata, long updateId, IPersistResultInterest interest)
-            where TNewState : StateObject => Persist(stateObject, sources, metadata, updateId, interest, null);
+        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, Metadata metadata, long updateId, IPersistResultInterest interest)
+            where TNewState : StateObject where TSource : Source => Persist(stateObject, sources, metadata, updateId, interest, null);
 
         public void Persist<TNewState>(TNewState stateObject, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
             => Persist(stateObject, Source<TState>.None(), Metadata.NullMetadata(), updateId, interest, @object);
@@ -134,10 +134,10 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         public void Persist<TNewState>(TNewState stateObject, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
             => Persist(stateObject, Source<TState>.None(), metadata, updateId, interest, @object);
 
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<Source<TSource>> sources, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
+        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
             => Persist(stateObject, sources, Metadata.NullMetadata(), updateId, interest, @object);
 
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<Source<TSource>> sources, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
+        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
         {
             try
             {
@@ -165,10 +165,10 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, Metadata metadata, IPersistResultInterest interest) where TNewState : StateObject
             => PersistAll(stateObjects, Source<TState>.None(), metadata, -1, interest, null);
 
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<Source<TSource>> sources, IPersistResultInterest interest) where TNewState : StateObject
-            => PersistAll(stateObjects, sources, Metadata.NullMetadata(), -1, interest, null);
+        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source =>
+            PersistAll(stateObjects, sources, Metadata.NullMetadata(), -1, interest, null);
 
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<Source<TSource>> sources, Metadata metadata, IPersistResultInterest interest) where TNewState : StateObject
+        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, Metadata metadata, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
             => PersistAll(stateObjects, sources, metadata, -1, interest, null);
 
         public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, IPersistResultInterest interest, object? @object) where TNewState : StateObject
@@ -177,10 +177,10 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, Metadata metadata, IPersistResultInterest interest, object? @object) where TNewState : StateObject
             => PersistAll(stateObjects, Source<TState>.None(), metadata, -1, interest, @object);
 
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<Source<TSource>> sources, IPersistResultInterest interest, object? @object) where TNewState : StateObject
+        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
             => PersistAll(stateObjects, sources, Metadata.NullMetadata(), -1, interest, @object);
 
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<Source<TSource>> sources, Metadata metadata, IPersistResultInterest interest, object? @object) where TNewState : StateObject
+        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, Metadata metadata, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
             => PersistAll(stateObjects, sources, metadata, -1, interest, @object);
 
         public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, long updateId, IPersistResultInterest interest) where TNewState : StateObject
@@ -189,10 +189,10 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, Metadata metadata, long updateId, IPersistResultInterest interest) where TNewState : StateObject
             => PersistAll(stateObjects, Source<TState>.None(), metadata, updateId, interest, null);
 
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<Source<TSource>> sources, long updateId, IPersistResultInterest interest) where TNewState : StateObject
+        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, long updateId, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
             => PersistAll(stateObjects, sources, Metadata.NullMetadata(), updateId, interest, null);
 
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<Source<TSource>> sources, Metadata metadata, long updateId, IPersistResultInterest interest) where TNewState : StateObject
+        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, Metadata metadata, long updateId, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
             => PersistAll(stateObjects, sources, metadata, updateId, interest, null);
 
         public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
@@ -201,10 +201,10 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
             => PersistAll(stateObjects, Source<TState>.None(), metadata, updateId, interest, @object);
 
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<Source<TSource>> sources, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
+        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
             => PersistAll(stateObjects, sources, Metadata.NullMetadata(), updateId, interest, @object);
 
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<Source<TSource>> sources, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
+        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
         {
             try
             {
@@ -242,16 +242,16 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         
         private void Dispatch(Dispatchable<TEntry, TState> dispatchable) => _dispatcher.Dispatch(dispatchable);
 
-        private static Dispatchable<TEntry, TState> BuildDispatchable(State<TState> state, List<IEntry<TEntry>> entries)
+        private static Dispatchable<TEntry, TState> BuildDispatchable(TState state, List<TEntry> entries)
         {
             var id = GetDispatchId(state, entries);
             return new Dispatchable<TEntry, TState>(id, DateTimeOffset.Now, state, entries);
         }
 
-        private static string GetDispatchId(State<TState> raw, IEnumerable<IEntry<TEntry>> entries) =>
+        private static string GetDispatchId(TState raw, IEnumerable<TEntry> entries) =>
             $"{raw.Id}:{string.Join(":", entries.Select(entry => entry.Id))}";
         
-        private List<IEntry<TEntry>> ReadOnlyJournal()
+        private List<TEntry> ReadOnlyJournal()
         {
             return ((InMemoryObjectStoreDelegate<TEntry, TState>) _storeDelegate).ReadOnlyJournal();
         }

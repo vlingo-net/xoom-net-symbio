@@ -11,7 +11,7 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
-    public class InMemoryJournalReaderActor<TEntry> : Actor, IJournalReader<TEntry>
+    public class InMemoryJournalReaderActor<TEntry> : Actor, IJournalReader<TEntry> where TEntry : IEntry
     {
         private InMemoryJournalReader<TEntry> _reader;
 
@@ -19,13 +19,13 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 
         public void Close() => _reader.Close();
 
-        public ICompletes<IEntry<TEntry>> ReadNext() => Completes().With(_reader.ReadNext()).Outcome;
+        public ICompletes<TEntry> ReadNext() => Completes().With(_reader.ReadNext()).Outcome;
 
-        public ICompletes<IEntry<TEntry>> ReadNext(string fromId) => Completes().With(_reader.ReadNext(fromId)).Outcome;
+        public ICompletes<TEntry> ReadNext(string fromId) => Completes().With(_reader.ReadNext(fromId)).Outcome;
 
-        public ICompletes<IEnumerable<IEntry<TEntry>>> ReadNext(int maximumEntries) => Completes().With(_reader.ReadNext(maximumEntries)).Outcome;
+        public ICompletes<IEnumerable<TEntry>> ReadNext(int maximumEntries) => Completes().With(_reader.ReadNext(maximumEntries)).Outcome;
 
-        public ICompletes<IEnumerable<IEntry<TEntry>>> ReadNext(string fromId, int maximumEntries) => Completes().With(_reader.ReadNext(fromId, maximumEntries)).Outcome;
+        public ICompletes<IEnumerable<TEntry>> ReadNext(string fromId, int maximumEntries) => Completes().With(_reader.ReadNext(fromId, maximumEntries)).Outcome;
 
         public void Rewind() => _reader.Rewind();
 

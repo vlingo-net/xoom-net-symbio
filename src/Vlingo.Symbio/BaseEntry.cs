@@ -7,9 +7,28 @@
 
 using System;
 using System.Collections.Generic;
+using Vlingo.Symbio.Store.Journal;
 
 namespace Vlingo.Symbio
 {
+    public abstract class BaseEntry
+    {
+        public BaseEntry(string id)
+        {
+            if (id == null) throw new ArgumentNullException(nameof(id), "Entry id must not be null.");
+            
+            InternalId = id;
+        }
+        
+        /// <summary>
+        /// My <c>string</c> id that is unique within the <see cref="IJournal{T}"/> where persisted,
+        /// and is (generally) assigned by the journal.
+        /// </summary>
+        protected string InternalId;
+        
+        internal void SetId(string id) => InternalId = id;
+    }
+    
     /// <summary>
     /// The abstract base class of all journal entry types.
     /// </summary>
@@ -18,19 +37,13 @@ namespace Vlingo.Symbio
     /// <seealso cref="TextEntry"/>
     /// <seealso cref="NullEntry{T}"/>
     /// <typeparam name="T">The concrete type of <see cref="IEntry{T}"/> stored and read, which maybe be <c>string</c>, <c>byte[]</c>, or <c>object</c></typeparam>
-    public abstract class BaseEntry<T> : IEntry<T>
+    public abstract class BaseEntry<T> : BaseEntry, IEntry<T>
     {
         protected static readonly byte[] EmptyBytesData = new byte[0];
         protected static readonly T EmptyObjectData = default!;
         protected static string EmptyTextData = string.Empty;
         protected static readonly string UnknownId = string.Empty;
-        
-        /// <summary>
-        /// My <c>string</c> id that is unique within the <see cref="IJournal{T}"/> where persisted,
-        /// and is (generally) assigned by the journal.
-        /// </summary>
-        private string _id;
-        
+
         /// <summary>
         /// My data representation of the entry, generally serialized as string, byte[], or object.
         /// </summary>
@@ -55,15 +68,13 @@ namespace Vlingo.Symbio
         {
         }
 
-        public BaseEntry(string id, Type type, int typeVersion, T entryData, Metadata metadata)
+        public BaseEntry(string id, Type type, int typeVersion, T entryData, Metadata metadata) : base(id)
         {
-            if (id == null) throw new ArgumentNullException(nameof(id), "Entry id must not be null.");
             if (type == null) throw new ArgumentNullException(nameof(id), "Entry type must not be null.");
             if (typeVersion <= 0) throw new ArgumentOutOfRangeException(nameof(typeVersion), "Entry typeVersion must be greater than 0.");
             if (entryData == null) throw new ArgumentNullException(nameof(entryData), "Entry entryData must not be null.");
             if (metadata == null) throw new ArgumentNullException(nameof(metadata), "Entry metadata must not be null.");
             
-            _id = id;
             _type = type.AssemblyQualifiedName;
             _typeVersion = typeVersion;
             _entryData = entryData;
@@ -79,7 +90,7 @@ namespace Vlingo.Symbio
         public Type TypedFrom(string type) => Entry<T>.TypedFrom(type);
 
         /// <inheritdoc/>
-        public string Id => _id;
+        public string Id => InternalId;
         
         /// <inheritdoc/>
         public T EntryData => _entryData;
@@ -158,7 +169,7 @@ namespace Vlingo.Symbio
             return result;
         }
 
-        public override int GetHashCode() => 31 * _id.GetHashCode();
+        public override int GetHashCode() => 31 * InternalId.GetHashCode();
 
 
         public override bool Equals(object obj)
@@ -167,12 +178,12 @@ namespace Vlingo.Symbio
             {
                 return false;
             }
-            return _id.Equals(((BaseEntry<T>) obj)._id);
+            return InternalId.Equals(((BaseEntry<T>) obj).InternalId);
         }
 
         public override string ToString()
         {
-            return $"{GetType().Name}[id={_id} type={_type} typeVersion={_typeVersion} " +
+            return $"{GetType().Name}[id={InternalId} type={_type} typeVersion={_typeVersion} " +
                 $"entryData={(IsText || IsObject ? _entryData?.ToString() : "(binary)")} metadata={_metadata}]";
         }
 
@@ -202,8 +213,6 @@ namespace Vlingo.Symbio
             }
             return 1;
         }
-
-        internal void SetId(string id) => _id = id;
     }
 
     /// <summary>

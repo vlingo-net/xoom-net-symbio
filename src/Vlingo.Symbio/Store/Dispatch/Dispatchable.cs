@@ -18,14 +18,14 @@ namespace Vlingo.Symbio.Store.Dispatch
     /// </summary>
     /// <typeparam name="TEntry">The concrete <see cref="IEntry{T}"/> type of the entries</typeparam>
     /// <typeparam name="TState">The concrete <see cref="State{T}"/> type of the storage</typeparam>
-    public class Dispatchable<TEntry, TState>
+    public class Dispatchable<TEntry, TState> where TEntry : IEntry where TState : IState
     {
-        public Dispatchable(string id, DateTimeOffset createdOn, State<TState>? state, IEnumerable<IEntry<TEntry>> entries)
+        public Dispatchable(string id, DateTimeOffset createdOn, TState state, IEnumerable<TEntry> entries)
         {
             Id = id;
             CreatedOn = createdOn;
             State = state;
-            Entries = new List<IEntry<TEntry>>(entries);
+            Entries = new List<TEntry>(entries);
         }
 
         /// <summary>
@@ -41,16 +41,16 @@ namespace Vlingo.Symbio.Store.Dispatch
         /// <summary>
         /// My <typeparamref name="TState"/> concrete <see cref="State{T}"/> type.
         /// </summary>
-        public State<TState>? State { get; }
+        public TState State { get; }
 
         /// <summary>
-        /// My <code>List{IEntry{T}}</code> to dispatch
+        /// My <code>List{TEntry}</code> to dispatch
         /// </summary>
-        public List<IEntry<TEntry>> Entries { get; }
+        public List<TEntry> Entries { get; }
 
         public bool HasEntries => Entries != null && Entries.Any();
 
-        public State<TNewState> TypedState<TNewState>() => (State<TNewState>) (object) State!;
+        public TNewState TypedState<TNewState>() where TNewState : IState => (TNewState) (object) State!;
 
         public override bool Equals(object obj)
         {

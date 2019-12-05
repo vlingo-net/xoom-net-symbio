@@ -31,7 +31,7 @@ namespace Vlingo.Symbio.Store
     /// </para>
     /// </summary>
     /// <typeparam name="T">The concrete type of <see cref="IEntry{T}"/> stored and read, which maybe be string, byte[], or object</typeparam>
-    public interface IEntryReader<T>
+    public interface IEntryReader<T> where T : IEntry
     {
         /// <summary>
         /// A means to seek to the first id position of the storage. This constant
@@ -83,7 +83,7 @@ namespace Vlingo.Symbio.Store
         /// appended to slowly.
         /// </summary>
         /// <returns>The <see cref="ICompletes{T}"/> next available entry or null if none</returns>
-        ICompletes<IEntry<T>> ReadNext();
+        ICompletes<T> ReadNext();
 
         /// <summary>
         /// Eventually answers the next available <see cref="IEntry{T}"/> instance or null if none is currently available.
@@ -95,7 +95,7 @@ namespace Vlingo.Symbio.Store
         /// </summary>
         /// <param name="fromId">The string id of the <see cref="IEntry{T}"/> instance to which the seek prepares to next read</param>
         /// <returns>The <see cref="ICompletes{T}"/> next available entry or null if none</returns>
-        ICompletes<IEntry<T>> ReadNext(string fromId);
+        ICompletes<T> ReadNext(string fromId);
 
         /// <summary>
         /// Eventually answers the next available <see cref="IEntry{T}"/> instances as a <see cref="IEnumerable{T}"/>, which may be
@@ -108,7 +108,7 @@ namespace Vlingo.Symbio.Store
         /// </summary>
         /// <param name="maximumEntries">The int indicating the maximum number of <see cref="IEntry{T}"/> instances to read</param>
         /// <returns>The <see cref="ICompletes{T}"/> enumerable of <code>T</code> of at most maximumEntries or empty if none</returns>
-        ICompletes<IEnumerable<IEntry<T>>> ReadNext(int maximumEntries);
+        ICompletes<IEnumerable<T>> ReadNext(int maximumEntries);
 
         /// <summary>
         /// Eventually answers the next available <see cref="IEntry{T}"/> instances as a <see cref="IEnumerable{T}"/>, which may be
@@ -122,7 +122,7 @@ namespace Vlingo.Symbio.Store
         /// <param name="fromId">The string id of the <see cref="IEntry{T}"/> instance to which the seek prepares to next read</param>
         /// <param name="maximumEntries">The int indicating the maximum number of <see cref="IEntry{T}"/> instances to read</param>
         /// <returns>The <see cref="ICompletes{T}"/> enumerable of <code>T</code> of at most maximumEntries or empty if none</returns>
-        ICompletes<IEnumerable<IEntry<T>>> ReadNext(string fromId, int maximumEntries);
+        ICompletes<IEnumerable<T>> ReadNext(string fromId, int maximumEntries);
 
         /// <summary>
         /// Rewinds the reader so that the next available <see cref="IEntry{T}"/> is the first one in the storage.

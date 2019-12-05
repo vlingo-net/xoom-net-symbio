@@ -11,6 +11,7 @@ using Vlingo.Actors;
 using Vlingo.Symbio.Store.Dispatch;
 using Vlingo.Symbio.Store.Object;
 using Vlingo.Symbio.Tests.Store.Dispatch;
+using Vlingo.Symbio.Tests.Store.Journal.InMemory;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,7 +23,7 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
         private MockQueryResultInterest _queryResultInterest;
         private IObjectStore _objectStore;
         private World _world;
-        private MockDispatcher<Test1Source, string> _dispatcher;
+        private MockDispatcher<ObjectEntry<Test1Source>, State<string>> _dispatcher;
 
         [Fact]
         public void TestThatObjectPersistsQueries()
@@ -106,17 +107,17 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
             var entryAdapterProvider = new EntryAdapterProvider(_world);
             entryAdapterProvider.RegisterAdapter(new Test1SourceAdapter());
     
-            _dispatcher = new MockDispatcher<Test1Source, string>(new MockConfirmDispatchedResultInterest());
-            _objectStore = _world.ActorFor<IObjectStore>(typeof(Vlingo.Symbio.Store.Object.InMemory.InMemoryObjectStoreActor<Test1Source, string>), _dispatcher);
+            _dispatcher = new MockDispatcher<ObjectEntry<Test1Source>, State<string>>(new MockConfirmDispatchedResultInterest());
+            _objectStore = _world.ActorFor<IObjectStore>(typeof(Vlingo.Symbio.Store.Object.InMemory.InMemoryObjectStoreActor<ObjectEntry<Test1Source>, State<string>>), _dispatcher);
         }
         
-        private void ValidateDispatchedState(Person persistedObject, Dispatchable<Test1Source, string> dispatched)
+        private void ValidateDispatchedState(Person persistedObject, Dispatchable<ObjectEntry<Test1Source>, State<string>> dispatched)
         {
             Assert.NotNull(dispatched);
             Assert.NotNull(dispatched.Id);
 
             Assert.NotNull(dispatched.State);
-            var state = dispatched.TypedState<string>();
+            var state = dispatched.TypedState<State<string>>();
             Assert.Equal(persistedObject.PersistenceId.ToString(), state.Id);
             Assert.Equal(persistedObject.GetType().AssemblyQualifiedName, state.Type);
             Assert.Equal(Metadata.NullMetadata(), state.Metadata);
@@ -133,14 +134,14 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
         }
     }
     
-    public class Test1SourceAdapter : EntryAdapter<string, Test1Source>
+    public class Test1SourceAdapter : EntryAdapter<Test1Source, ObjectEntry<Test1Source>>
     {
-        public override Source<string> FromEntry(IEntry<Test1Source> entry) => entry.EntryData;
+        public override Test1Source FromEntry(ObjectEntry<Test1Source> entry) => entry.EntryData;
 
-        public override IEntry<Test1Source> ToEntry(Source<string> source, Metadata metadata) =>
+        public override ObjectEntry<Test1Source> ToEntry(Test1Source source, Metadata metadata) =>
             new ObjectEntry<Test1Source>(typeof(Test1Source), 1, (Test1Source) source, metadata);
 
-        public override IEntry<Test1Source> ToEntry(Source<string> source, string id, Metadata metadata)=>
+        public override ObjectEntry<Test1Source> ToEntry(Test1Source source, string id, Metadata metadata)=>
             new ObjectEntry<Test1Source>(id, typeof(Test1Source), 1, (Test1Source) source, metadata);
     }
 }

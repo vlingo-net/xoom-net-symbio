@@ -11,25 +11,8 @@ using System.Linq;
 
 namespace Vlingo.Symbio
 {
-    /// <summary>
-    /// Entry represents a journal entry
-    /// </summary>
-    /// <typeparam name="T">The concrete of <c>IEntry{T}</c> stored and read, which may be a string, byte[] or object</typeparam>
-    public interface IEntry<T> : IComparable<IEntry<T>>
+    public interface IEntry
     {
-        /// <summary>
-        /// Returns an empty <see>
-        ///     <cref>IEnumerable{IEntry{T}}</cref>
-        /// </see>
-        /// .
-        /// </summary>
-        /// <typeparam name="T">The type used in <c>IEntry{T}</c></typeparam>
-        /// <returns><see>
-        ///     <cref>IEnumerable{IEntry{T}}</cref>
-        /// </see>
-        /// </returns>
-        IEnumerable<IEntry<T>> None { get; }
-
         /// <summary>
         /// Returns a type for a given type name.
         /// </summary>
@@ -42,11 +25,6 @@ namespace Vlingo.Symbio
         /// Gets current entry's id.
         /// </summary>
         string Id { get; }
-        
-        /// <summary>
-        /// Gets current entry's data.
-        /// </summary>
-        T EntryData { get; }
         
         /// <summary>
         /// Gets my associated (possibly null) Metadata
@@ -87,6 +65,31 @@ namespace Vlingo.Symbio
         /// Gets the Type.
         /// </summary>
         Type Typed { get; }
+    }
+    
+    /// <summary>
+    /// Entry represents a journal entry
+    /// </summary>
+    /// <typeparam name="T">The concrete of <c>IEntry{T}</c> stored and read, which may be a string, byte[] or object</typeparam>
+    public interface IEntry<T> : IComparable<IEntry<T>>, IEntry
+    {
+        /// <summary>
+        /// Returns an empty <see>
+        ///     <cref>IEnumerable{IEntry{T}}</cref>
+        /// </see>
+        /// .
+        /// </summary>
+        /// <typeparam name="T">The type used in <c>IEntry{T}</c></typeparam>
+        /// <returns><see>
+        ///     <cref>IEnumerable{IEntry{T}}</cref>
+        /// </see>
+        /// </returns>
+        IEnumerable<IEntry<T>> None { get; }
+
+        /// <summary>
+        /// Gets current entry's data.
+        /// </summary>
+        T EntryData { get; }
 
         /// <summary>
         /// Gets a copy of myself with the id.

@@ -13,14 +13,14 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Tests.Store.State
 {
-    public class MockStateStoreDispatcher<TEntry, TState> : IDispatcher<Dispatchable<TEntry, TState>>
+    public class MockStateStoreDispatcher<TEntry, TState> : IDispatcher<Dispatchable<TEntry, TState>> where TEntry : IEntry where TState : IState
     {
         private AccessSafely _access = AccessSafely.AfterCompleting(0);
         
         private readonly IConfirmDispatchedResultInterest _confirmDispatchedResultInterest;
         private IDispatcherControl _control;
-        private readonly Dictionary<string, State<TState>> _dispatched = new Dictionary<string, State<TState>>();
-        private readonly ConcurrentQueue<IEntry<TEntry>> _dispatchedEntries = new ConcurrentQueue<IEntry<TEntry>>();
+        private readonly Dictionary<string, TState> _dispatched = new Dictionary<string, TState>();
+        private readonly ConcurrentQueue<TEntry> _dispatchedEntries = new ConcurrentQueue<TEntry>();
         private readonly AtomicBoolean _processDispatch = new AtomicBoolean(true);
         private int _dispatchAttemptCount;
 
@@ -54,7 +54,7 @@ namespace Vlingo.Symbio.Tests.Store.State
                     }
                 })
 
-                .ReadingWith<string, State<TState>>("dispatchedState", id => _dispatched[id])
+                .ReadingWith<string, TState>("dispatchedState", id => _dispatched[id])
                 .ReadingWith("dispatchedStateCount", () => _dispatched.Count)
 
                 .ReadingWith("dispatchedEntries", () =>  _dispatchedEntries)
@@ -78,10 +78,10 @@ namespace Vlingo.Symbio.Tests.Store.State
 
         public class DispatchInternal
         {
-            public IEnumerable<IEntry<TEntry>> Entries { get; }
-            public State<TState> State { get; }
+            public IEnumerable<TEntry> Entries { get; }
+            public TState State { get; }
 
-            public DispatchInternal(State<TState> state, IEnumerable<IEntry<TEntry>> entries)
+            public DispatchInternal(TState state, IEnumerable<TEntry> entries)
             {
                 State = state;
                 Entries = entries;

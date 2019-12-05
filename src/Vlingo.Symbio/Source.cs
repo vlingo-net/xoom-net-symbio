@@ -12,12 +12,16 @@ using Vlingo.Common.Version;
 
 namespace Vlingo.Symbio
 {
+    public abstract class Source
+    {
+    }
+    
     /// <summary>
     /// Abstract base of any concrete type that is a source of truth. The concrete
     /// type is represented by the <paramref name="{T}"/> parameter and is also extends me.
     /// </summary>
     /// <typeparam name="T">The type of source of truth</typeparam>
-    public abstract class Source<T>
+    public abstract class Source<T> : Source
     {
         private readonly long _dateTimeSourced;
         private readonly int _sourceTypeVersion;

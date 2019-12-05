@@ -11,7 +11,7 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Object.InMemory
 {
-    public class InMemoryObjectStoreEntryReaderActor : Actor, IObjectStoreEntryReader<string>
+    public class InMemoryObjectStoreEntryReaderActor : Actor, IObjectStoreEntryReader<IEntry<string>>
     {
         private int _currentIndex;
         private readonly List<IEntry<string>> _entriesView;

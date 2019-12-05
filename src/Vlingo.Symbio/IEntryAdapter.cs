@@ -18,21 +18,21 @@ namespace Vlingo.Symbio
     /// </summary>
     /// <typeparam name="TSource">The native <see cref="Source{T}"/> type.</typeparam>
     /// <typeparam name="TEntry">The raw <see cref="IEntry{T}"/></typeparam>
-    public interface IEntryAdapter<TSource, TEntry>
+    public interface IEntryAdapter<TSource, TEntry> where TEntry : IEntry where TSource : Source
     {
         /// <summary>
         /// Gets the <see cref="Source{T}"/> native state from the <see cref="IEntry{T}"/> state.
         /// </summary>
         /// <param name="entry">The <see cref="IEntry{T}"/> to adapt from.</param>
         /// <returns>Adapted <see cref="Source{T}"/>.</returns>
-        Source<TSource> FromEntry(IEntry<TEntry> entry);
+        TSource FromEntry(TEntry entry);
 
         /// <summary>
         /// Gets the <see cref="IEntry{T}"/> state from the <see cref="Source{T}"/> native state.
         /// </summary>
         /// <param name="source">The <see cref="Source{T}"/> native state.</param>
         /// <returns>Adapted <see cref="IEntry{T}"/>.</returns>
-        IEntry<TEntry> ToEntry(Source<TSource> source);
+        TEntry ToEntry(TSource source);
         
         /// <summary>
         /// Gets the <see cref="IEntry{T}"/> state from the <see cref="Source{T}"/> native state.
@@ -40,7 +40,7 @@ namespace Vlingo.Symbio
         /// <param name="source">The <see cref="Source{T}"/> native state.</param>
         /// <param name="metadata">The <see cref="Metadata"/> for this entry.</param>
         /// <returns>Adapted <see cref="IEntry{T}"/>.</returns>
-        IEntry<TEntry> ToEntry(Source<TSource> source, Metadata metadata);
+        TEntry ToEntry(TSource source, Metadata metadata);
 
         /// <summary>
         /// Gets the <see cref="IEntry{T}"/> state with its <paramref name="id"/> from the <see cref="Source{T}"/> native state.
@@ -48,7 +48,7 @@ namespace Vlingo.Symbio
         /// <param name="source">The <see cref="Source{T}"/> native state.</param>
         /// <param name="id">The string unique identity to assign to the <see cref="IEntry{T}"/>.</param>
         /// <returns>Adapted <see cref="IEntry{T}"/>.</returns>
-        IEntry<TEntry> ToEntry(Source<TSource> source, string id);
+        TEntry ToEntry(TSource source, string id);
 
             /// <summary>
         /// Gets the <see cref="IEntry{T}"/> state with its <paramref name="id"/> from the <see cref="Source{T}"/> native state.
@@ -57,19 +57,19 @@ namespace Vlingo.Symbio
         /// <param name="id">The string unique identity to assign to the <see cref="IEntry{T}"/>.</param>
         /// <param name="metadata">The <see cref="Metadata"/> for this entry.</param>
         /// <returns>Adapted <see cref="IEntry{T}"/>.</returns>
-        IEntry<TEntry> ToEntry(Source<TSource> source, string id, Metadata metadata);
+        TEntry ToEntry(TSource source, string id, Metadata metadata);
     }
 
-    public abstract class EntryAdapter<TSource, TEntry> : IEntryAdapter<TSource, TEntry>
+    public abstract class EntryAdapter<TSource, TEntry> : IEntryAdapter<TSource, TEntry> where TEntry : IEntry where TSource : Source
     {
-        public abstract Source<TSource> FromEntry(IEntry<TEntry> entry);
+        public abstract TSource FromEntry(TEntry entry);
 
-        public abstract IEntry<TEntry> ToEntry(Source<TSource> source, Metadata metadata);
+        public abstract TEntry ToEntry(TSource source, Metadata metadata);
 
-        public abstract IEntry<TEntry> ToEntry(Source<TSource> source, string id, Metadata metadata);
+        public abstract TEntry ToEntry(TSource source, string id, Metadata metadata);
 
-        public virtual IEntry<TEntry> ToEntry(Source<TSource> source) => ToEntry(source, Metadata.NullMetadata());
+        public virtual TEntry ToEntry(TSource source) => ToEntry(source, Metadata.NullMetadata());
 
-        public virtual IEntry<TEntry> ToEntry(Source<TSource> source, string id) => ToEntry(source, id, Metadata.NullMetadata());
+        public virtual TEntry ToEntry(TSource source, string id) => ToEntry(source, id, Metadata.NullMetadata());
     }
 }

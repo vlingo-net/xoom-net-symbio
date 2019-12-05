@@ -19,7 +19,7 @@ namespace Vlingo.Symbio
     /// </summary>
     /// <typeparam name="TState">The native type of the state</typeparam>
     /// <typeparam name="TRawState">the raw <see cref="State{T}"/> of the state</typeparam>
-    public interface IStateAdapter<TState, TRawState> : IStateAdapter
+    public interface IStateAdapter<TState, TRawState> : IStateAdapter where TRawState : IState
     {
         /// <summary>
         /// Gets the state type's version, as in the number of times the type has been defined and redefined.
@@ -31,7 +31,7 @@ namespace Vlingo.Symbio
         /// </summary>
         /// <param name="raw">The <see cref="State{T}"/> instance from which the native state is derived</param>
         /// <returns><typeparamref name="TState"/></returns>
-        TState FromRawState(State<TRawState> raw);
+        TState FromRawState(TRawState raw);
         
         /// <summary>
         /// Converts to <typeparamref name="TOtherState"/> native state instance.
@@ -39,7 +39,7 @@ namespace Vlingo.Symbio
         /// <param name="raw">the <see cref="State{T}"/> instance from which the native state is derived</param>
         /// <typeparam name="TOtherState">The state type to which to convert</typeparam>
         /// <returns>Converted state instance to <typeparamref name="TOtherState"/></returns>
-        TOtherState FromRawState<TOtherState>(State<TRawState> raw);
+        TOtherState FromRawState<TOtherState>(TRawState raw);
 
         /// <summary>
         /// Gets the <typeparamref name="TRawState"/> raw <see cref="State{T}"/> instance of the <typeparamref name="TState"/> instance.
@@ -49,7 +49,7 @@ namespace Vlingo.Symbio
         /// <param name="stateVersion">The int state version</param>
         /// <param name="metadata">The <see cref="Metadata"/> for this state</param>
         /// <returns><typeparamref name="TRawState"/></returns>
-        State<TRawState> ToRawState(string id, TState state, int stateVersion, Metadata metadata);
+        TRawState ToRawState(string id, TState state, int stateVersion, Metadata metadata);
         
         /// <summary>
         /// Gets the <typeparamref name="TRawState"/> raw <see cref="State{T}"/> instance of the <typeparamref name="TState"/> instance.
@@ -58,7 +58,7 @@ namespace Vlingo.Symbio
         /// <param name="stateVersion">The int state version</param>
         /// <param name="metadata">The <see cref="Metadata"/> for this state</param>
         /// <returns><typeparamref name="TRawState"/></returns>
-        State<TRawState> ToRawState(TState state, int stateVersion, Metadata metadata);
+        TRawState ToRawState(TState state, int stateVersion, Metadata metadata);
         
         /// <summary>
         /// Gets the <typeparamref name="TRawState"/> raw <see cref="State{T}"/> instance of the <typeparamref name="TState"/> instance.
@@ -66,27 +66,27 @@ namespace Vlingo.Symbio
         /// <param name="state">The <see cref="State{T}"/> native state instance</param>
         /// <param name="stateVersion">The int state version</param>
         /// <returns><typeparamref name="TRawState"/></returns>
-        State<TRawState> ToRawState(TState state, int stateVersion);
+        TRawState ToRawState(TState state, int stateVersion);
     }
     
-    public abstract class StateAdapter<TState, TRawState> : IStateAdapter<TState, TRawState>
+    public abstract class StateAdapter<TState, TRawState> : IStateAdapter<TState, TRawState> where TRawState : IState
     {
         public abstract int TypeVersion { get; }
 
-        public abstract TState FromRawState(State<TRawState> raw);
+        public abstract TState FromRawState(TRawState raw);
 
-        public abstract TOtherState FromRawState<TOtherState>(State<TRawState> raw);
+        public abstract TOtherState FromRawState<TOtherState>(TRawState raw);
 
         public virtual object ToRawState<T>(T state, int stateVersion, Metadata metadata) =>
             ToRawState((TState)(object)state!, stateVersion, metadata);
 
-        public virtual State<TRawState> ToRawState(string id, TState state, int stateVersion, Metadata metadata) =>
+        public virtual TRawState ToRawState(string id, TState state, int stateVersion, Metadata metadata) =>
             throw new InvalidOperationException("Must override.");
 
-        public virtual State<TRawState> ToRawState(TState state, int stateVersion, Metadata metadata) =>
-            ToRawState(State<TRawState>.NoOp, state, stateVersion, metadata);
+        public virtual TRawState ToRawState(TState state, int stateVersion, Metadata metadata) =>
+            ToRawState(State<object>.NoOp, state, stateVersion, metadata);
 
-        public virtual State<TRawState> ToRawState(TState state, int stateVersion) =>
+        public virtual TRawState ToRawState(TState state, int stateVersion) =>
             ToRawState(state, stateVersion, Metadata.NullMetadata());
     }
 }

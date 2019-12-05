@@ -12,12 +12,12 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 {
     public class InMemoryStreamReader<TEntry> : IStreamReader<TEntry>
     {
-        private readonly List<BaseEntry<TEntry>> _journalView;
+        private readonly List<BaseEntry> _journalView;
         private readonly Dictionary<string, State<TEntry>> _snapshotsView;
         private readonly Dictionary<string, Dictionary<int, int>> _streamIndexesView;
         private readonly string _name;
 
-        public InMemoryStreamReader(List<BaseEntry<TEntry>> journalView, Dictionary<string, Dictionary<int, int>> streamIndexesView, Dictionary<string, State<TEntry>> snapshotsView, string name)
+        public InMemoryStreamReader(List<BaseEntry> journalView, Dictionary<string, Dictionary<int, int>> streamIndexesView, Dictionary<string, State<TEntry>> snapshotsView, string name)
         {
             _journalView = journalView;
             _streamIndexesView = streamIndexesView;
@@ -42,7 +42,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
                 }
             }
             
-            var entries = new List<BaseEntry<TEntry>>();
+            var entries = new List<BaseEntry>();
             if (_streamIndexesView.TryGetValue(streamName, out var versionIndexes))
             {
                 while (versionIndexes.TryGetValue(version, out var journalIndex)) {

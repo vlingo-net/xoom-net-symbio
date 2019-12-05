@@ -10,11 +10,11 @@ using Vlingo.Common.Serialization;
 
 namespace Vlingo.Symbio
 {
-    public sealed class DefaultTextStateAdapter : StateAdapter<object, string>
+    public sealed class DefaultTextStateAdapter : StateAdapter<object, TextState>
     {
         public override int TypeVersion => 1;
 
-        public override object FromRawState(State<string> raw)
+        public override object FromRawState(TextState raw)
         {
             try
             {
@@ -27,10 +27,10 @@ namespace Vlingo.Symbio
             }
         }
 
-        public override TOtherState FromRawState<TOtherState>(State<string> raw) =>
+        public override TOtherState FromRawState<TOtherState>(TextState raw) =>
             (TOtherState)JsonSerialization.Deserialized(raw.Data, typeof(TOtherState))!;
 
-        public override State<string> ToRawState(string id, object state, int stateVersion, Metadata metadata)
+        public override TextState ToRawState(string id, object state, int stateVersion, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(state);
             return new TextState(id, state.GetType(), TypeVersion, serialization, stateVersion, metadata);

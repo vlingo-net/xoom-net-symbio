@@ -15,7 +15,7 @@ namespace Vlingo.Symbio.Store.State
     /// all newly appended <see cref="IEntry{T}"/> instances beyond that point when they become available.
     /// </summary>
     /// <typeparam name="TEntry">the concrete type of <see cref="IEntry{T}"/> stored and read, which maybe be string, byte[], or object</typeparam>
-    public interface IStateStoreEntryReader<TEntry> : IEntryReader<TEntry>
+    public interface IStateStoreEntryReader<TEntry> : IEntryReader<TEntry> where TEntry : IEntry
     {
     }
 }

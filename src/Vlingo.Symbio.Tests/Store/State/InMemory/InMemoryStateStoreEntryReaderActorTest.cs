@@ -21,11 +21,11 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         private const string Id2 = "123-B";
         private const string Id3 = "123-C";
 
-        private readonly MockStateStoreDispatcher<string, string> _dispatcher;
+        private readonly MockStateStoreDispatcher<IEntry<string>, TextState> _dispatcher;
         private readonly EntryAdapterProvider _entryAdapterProvider;
         private readonly MockStateStoreResultInterest _interest;
-        private readonly IStateStoreEntryReader<string> _reader;
-        private readonly IStateStore<string> _store;
+        private readonly IStateStoreEntryReader<IEntry<string>> _reader;
+        private readonly IStateStore<IEntry<string>> _store;
 
         [Fact]
         public void TestThatEntryReaderReadsOne()
@@ -42,11 +42,11 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal(new Event3(), access.ReadFrom<object>("sources"));
 
             var entry1 = _reader.ReadNext().Await();
-            Assert.True(_entryAdapterProvider.AsEntry<Event, string>(new Event1(), Metadata.NullMetadata()).WithId("0").Equals(entry1));
+            Assert.True(_entryAdapterProvider.AsEntry<Event, IEntry<string>>(new Event1(), Metadata.NullMetadata()).WithId("0").Equals(entry1));
             var entry2 = _reader.ReadNext().Await();
-            Assert.True(_entryAdapterProvider.AsEntry<Event, string>(new Event2(), Metadata.NullMetadata()).WithId("1").Equals(entry2));
+            Assert.True(_entryAdapterProvider.AsEntry<Event, IEntry<string>>(new Event2(), Metadata.NullMetadata()).WithId("1").Equals(entry2));
             var entry3 = _reader.ReadNext().Await();
-            Assert.True(_entryAdapterProvider.AsEntry<Event, string>(new Event3(), Metadata.NullMetadata()).WithId("2").Equals(entry3));
+            Assert.True(_entryAdapterProvider.AsEntry<Event, IEntry<string>>(new Event3(), Metadata.NullMetadata()).WithId("2").Equals(entry3));
 
             _reader.Rewind();
             Assert.Equal(new List<IEntry<string>> { entry1, entry2, entry3}, _reader.ReadNext(3).Await());
@@ -61,7 +61,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             var world = testWorld.World;
 
             _interest = new MockStateStoreResultInterest();
-            _dispatcher = new MockStateStoreDispatcher<string, string>(_interest);
+            _dispatcher = new MockStateStoreDispatcher<IEntry<string>, TextState>(_interest);
 
             var stateAdapterProvider = new StateAdapterProvider(world);
             _entryAdapterProvider = new EntryAdapterProvider(world);
@@ -69,7 +69,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
             // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = world.ActorFor<IStateStore<string>>(typeof(InMemoryStateStoreActor<string, string>), _dispatcher);
+            _store = world.ActorFor<IStateStore<IEntry<string>>>(typeof(InMemoryStateStoreActor<TextState, IEntry<string>>), _dispatcher);
             
             var completes = _store.EntryReader("test");
             _reader = completes.Await();

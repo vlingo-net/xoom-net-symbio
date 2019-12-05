@@ -21,7 +21,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         private readonly string _storeName1 = typeof(Entity1).FullName;
         private readonly string _storeName2 = typeof(Entity2).FullName;
         
-        private readonly MockStateStoreDispatcher<TextEntry, string> _dispatcher;
+        private readonly MockStateStoreDispatcher<TextEntry, TextState> _dispatcher;
         private readonly MockStateStoreResultInterest _interest;
         private readonly IStateStore<TextEntry> _store;
         private readonly World _world;
@@ -248,7 +248,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             _world = testWorld.World;
 
             _interest = new MockStateStoreResultInterest();
-            _dispatcher = new MockStateStoreDispatcher<TextEntry, string>(_interest);
+            _dispatcher = new MockStateStoreDispatcher<TextEntry, TextState>(_interest);
 
             var stateAdapterProvider = new StateAdapterProvider(_world);
             new EntryAdapterProvider(_world);
@@ -256,7 +256,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
             // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = _world.ActorFor<IStateStore<TextEntry>>(typeof(InMemoryStateStoreActor<string, TextEntry>), _dispatcher);
+            _store = _world.ActorFor<IStateStore<TextEntry>>(typeof(InMemoryStateStoreActor<TextState, TextEntry>), _dispatcher);
 
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName1, typeof(Entity1));
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName2, typeof(Entity2));

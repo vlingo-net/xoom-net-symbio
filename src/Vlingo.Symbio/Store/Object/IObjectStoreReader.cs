@@ -33,7 +33,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <returns><code>True</code> if the <paramref name="id"/> is an identity, otherwise false.</returns>
         bool IsId(long id);
 
-        ICompletes<IEntryReader<T>> EntryReader<T>(string name);
+        ICompletes<IEntryReader<T>> EntryReader<T>(string name) where T : IEntry;
 
         /// <summary>
         /// Executes the query defined by <paramref name="expression"/> that may result in one object,

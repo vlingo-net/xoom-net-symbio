@@ -22,10 +22,10 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
     public class InMemoryEventJournalActorTest : IDisposable
     {
         private object _object = new object();
-        private MockAppendResultInterest<string, string> _interest = new MockAppendResultInterest<string, string>();
-        private IJournal<string> _journal;
+        private MockAppendResultInterest<TextEntry, SnapshotState> _interest = new MockAppendResultInterest<TextEntry, SnapshotState>();
+        private IJournal<TextEntry> _journal;
         private readonly World _world;
-        private readonly MockDispatcher<string, string> _dispatcher;
+        private readonly MockDispatcher<TextEntry, SnapshotState> _dispatcher;
 
         [Fact]
         public void TestThatJournalAppendsOneEvent()
@@ -39,9 +39,9 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             Console.SetOut(converter);
             
             _world = World.StartWithDefaults("test-journal");
-            _dispatcher = new MockDispatcher<string, string>(new MockConfirmDispatchedResultInterest());
+            _dispatcher = new MockDispatcher<TextEntry, SnapshotState>(new MockConfirmDispatchedResultInterest());
             
-            _journal = Journal<string>.Using<InMemoryJournalActor<string, string>, string>(_world.Stage, _dispatcher);
+            _journal = Journal<TextEntry>.Using<InMemoryJournalActor<TextEntry, SnapshotState>, SnapshotState>(_world.Stage, _dispatcher);
             EntryAdapterProvider.Instance(_world).RegisterAdapter(new Test1SourceAdapter());
             EntryAdapterProvider.Instance(_world).RegisterAdapter(new Test2SourceAdapter());
             StateAdapterProvider.Instance(_world).RegisterAdapter(new SnapshotStateAdapter());
@@ -64,34 +64,34 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
         public int Two => _two;
     }
     
-    internal class Test1SourceAdapter : EntryAdapter<string, string>
+    internal class Test1SourceAdapter : EntryAdapter<Test1Source, TextEntry>
     {
-        public override Source<string> FromEntry(IEntry<string> entry) => JsonSerialization.Deserialized<Test1Source>(entry.EntryData);
-
-        public override IEntry<string> ToEntry(Source<string> source, Metadata metadata)
+        public override Test1Source FromEntry(TextEntry entry) => JsonSerialization.Deserialized<Test1Source>(entry.EntryData);
+        
+        public override TextEntry ToEntry(Test1Source source, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(typeof(Test1Source), 1, serialization, metadata);
         }
 
-        public override IEntry<string> ToEntry(Source<string> source, string id, Metadata metadata)
+        public override TextEntry ToEntry(Test1Source source, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, typeof(Test1Source), 1, serialization, metadata);
         }
     }
     
-    internal class Test2SourceAdapter : EntryAdapter<string, string>
+    internal class Test2SourceAdapter : EntryAdapter<Test2Source, TextEntry>
     {
-        public override Source<string> FromEntry(IEntry<string> entry) => JsonSerialization.Deserialized<Test2Source>(entry.EntryData);
+        public override Test2Source FromEntry(TextEntry entry) => JsonSerialization.Deserialized<Test2Source>(entry.EntryData);
 
-        public override IEntry<string> ToEntry(Source<string> source, Metadata metadata)
+        public override TextEntry ToEntry(Test2Source source, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(typeof(Test2Source), 1, serialization, metadata);
         }
 
-        public override IEntry<string> ToEntry(Source<string> source, string id, Metadata metadata)
+        public override TextEntry ToEntry(Test2Source source, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, typeof(Test2Source), 1, serialization, metadata);

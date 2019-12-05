@@ -47,25 +47,25 @@ namespace Vlingo.Symbio
             _namedAdapters = new Dictionary<string, object>();
         }
         
-        public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter)
+        public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter) where TEntry : IEntry where TSource : Source
         {
             _adapters.Add(typeof(TSource), adapter);
             _namedAdapters.Add(typeof(TSource).FullName, adapter);
         }
 
-        public void RegisterAdapter<TSource, TEntry>(TSource sourceType, IEntryAdapter<TSource, TEntry> adapter, Action<TSource, IEntryAdapter<TSource, TEntry>> consumer)
+        public void RegisterAdapter<TSource, TEntry>(TSource sourceType, IEntryAdapter<TSource, TEntry> adapter, Action<TSource, IEntryAdapter<TSource, TEntry>> consumer) where TEntry : IEntry where TSource : Source
         {
             _adapters.Add(sourceType!.GetType(), adapter);
             _namedAdapters.Add(sourceType.GetType().Name, adapter);
             consumer(sourceType, adapter);
         }
         
-        public IEnumerable<IEntry<TEntry>> AsEntries<TSource, TEntry>(IEnumerable<Source<TSource>> sources, Metadata? metadata)
+        public IEnumerable<TEntry> AsEntries<TSource, TEntry>(IEnumerable<TSource> sources, Metadata? metadata) where TEntry : IEntry where TSource : Source
         {
             return sources.Select(source => AsEntry<TSource, TEntry>(source, metadata)).ToList();
         }
 
-        public IEntry<TEntry> AsEntry<TSource, TEntry>(Source<TSource> source, Metadata? metadata)
+        public TEntry AsEntry<TSource, TEntry>(TSource source, Metadata? metadata) where TEntry : IEntry where TSource : Source
         {
             var  adapter = Adapter<TSource, TEntry>();
             if (adapter != null)
@@ -73,15 +73,15 @@ namespace Vlingo.Symbio
                 return metadata == null ? adapter.ToEntry(source) : adapter.ToEntry(source, metadata);
             }
             // TODO: if called by AsSources we will create each new instance in the loop
-            return (IEntry<TEntry>) new DefaultTextEntryAdapter<TSource>().ToEntry(source, metadata!);
+            return (TEntry)(object) new DefaultTextEntryAdapter<TSource>().ToEntry(source, metadata!);
         }
         
-        public IEnumerable<Source<TSource>> AsSources<TSource, TEntry>(IEnumerable<IEntry<TEntry>> entries)
+        public IEnumerable<TSource> AsSources<TSource, TEntry>(IEnumerable<TEntry> entries) where TEntry : IEntry where TSource : Source
         {
             return entries.Select(AsSource<TSource, TEntry>).ToList();
         }
 
-        public Source<TSource> AsSource<TSource, TEntry>(IEntry<TEntry> entry)
+        public TSource AsSource<TSource, TEntry>(TEntry entry) where TEntry : IEntry where TSource : Source
         {
             var adapter = NamedAdapter<TSource, TEntry>(entry);
             if (adapter != null)
@@ -89,10 +89,10 @@ namespace Vlingo.Symbio
                 return adapter.FromEntry(entry);
             }
             // TODO: if called by AsSources we will create each new instance in the loop
-            return new DefaultTextEntryAdapter<TSource>().FromEntry((IEntry<string>)entry);
+            return new DefaultTextEntryAdapter<TSource>().FromEntry((TextEntry)(object)entry);
         }
         
-        private IEntryAdapter<TSource, TEntry>? Adapter<TSource, TEntry>()
+        private IEntryAdapter<TSource, TEntry>? Adapter<TSource, TEntry>() where TEntry : IEntry where TSource : Source
         {
             if (!_adapters.ContainsKey(typeof(TSource)))
             {
@@ -102,7 +102,7 @@ namespace Vlingo.Symbio
             return adapter;
         }
         
-        private IEntryAdapter<TSource, TEntry>? NamedAdapter<TSource, TEntry>(IEntry<TEntry> entry)
+        private IEntryAdapter<TSource, TEntry>? NamedAdapter<TSource, TEntry>(TEntry entry) where TEntry : IEntry where TSource : Source
         {
             if (!_namedAdapters.ContainsKey(entry.TypeName))
             {

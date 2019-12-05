@@ -7,6 +7,7 @@ using Vlingo.Common;
 namespace Vlingo.Symbio.Store.State
 {
     public class StateStoreEntryReader__Proxy<TEntry> : Vlingo.Symbio.Store.State.IStateStoreEntryReader<TEntry>
+        where TEntry : Vlingo.Symbio.IEntry
     {
         private const string CloseRepresentation1 = "Close()";
         private const string ReadNextRepresentation2 = "ReadNext()";
@@ -25,13 +26,13 @@ namespace Vlingo.Symbio.Store.State
             this.mailbox = mailbox;
         }
 
-        public string Beginning => default!;
-        public string End => default!;
-        public string Query => default!;
+        public string Beginning => null;
+        public string End => null;
+        public string Query => null;
         public int DefaultGapPreventionRetries => 0;
         public long DefaultGapPreventionRetryInterval => 0;
-        public Vlingo.Common.ICompletes<string> Name => default!;
-        public Vlingo.Common.ICompletes<long> Size => default!;
+        public Vlingo.Common.ICompletes<string> Name => null;
+        public Vlingo.Common.ICompletes<long> Size => null;
 
         public void Close()
         {
@@ -55,12 +56,12 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public ICompletes<IEntry<TEntry>> ReadNext()
+        public ICompletes<TEntry> ReadNext()
         {
             if (!this.actor.IsStopped)
             {
                 Action<Vlingo.Symbio.Store.State.IStateStoreEntryReader<TEntry>> cons128873 = __ => __.ReadNext();
-                var completes = new BasicCompletes<IEntry<TEntry>>(this.actor.Scheduler);
+                var completes = new BasicCompletes<TEntry>(this.actor.Scheduler);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, completes, ReadNextRepresentation2);
@@ -79,15 +80,15 @@ namespace Vlingo.Symbio.Store.State
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, ReadNextRepresentation2));
             }
 
-            return null!;
+            return null;
         }
 
-        public ICompletes<IEntry<TEntry>> ReadNext(string fromId)
+        public ICompletes<TEntry> ReadNext(string fromId)
         {
             if (!this.actor.IsStopped)
             {
                 Action<Vlingo.Symbio.Store.State.IStateStoreEntryReader<TEntry>> cons128873 = __ => __.ReadNext(fromId);
-                var completes = new BasicCompletes<IEntry<TEntry>>(this.actor.Scheduler);
+                var completes = new BasicCompletes<TEntry>(this.actor.Scheduler);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, completes, ReadNextRepresentation3);
@@ -106,16 +107,16 @@ namespace Vlingo.Symbio.Store.State
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, ReadNextRepresentation3));
             }
 
-            return null!;
+            return null;
         }
 
-        public ICompletes<IEnumerable<IEntry<TEntry>>> ReadNext(int maximumEntries)
+        public ICompletes<IEnumerable<TEntry>> ReadNext(int maximumEntries)
         {
             if (!this.actor.IsStopped)
             {
                 Action<Vlingo.Symbio.Store.State.IStateStoreEntryReader<TEntry>> cons128873 = __ =>
                     __.ReadNext(maximumEntries);
-                var completes = new BasicCompletes<IEnumerable<IEntry<TEntry>>>(this.actor.Scheduler);
+                var completes = new BasicCompletes<IEnumerable<TEntry>>(this.actor.Scheduler);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, completes, ReadNextRepresentation4);
@@ -134,16 +135,16 @@ namespace Vlingo.Symbio.Store.State
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, ReadNextRepresentation4));
             }
 
-            return null!;
+            return null;
         }
 
-        public ICompletes<IEnumerable<IEntry<TEntry>>> ReadNext(string fromId, int maximumEntries)
+        public ICompletes<IEnumerable<TEntry>> ReadNext(string fromId, int maximumEntries)
         {
             if (!this.actor.IsStopped)
             {
                 Action<Vlingo.Symbio.Store.State.IStateStoreEntryReader<TEntry>> cons128873 = __ =>
                     __.ReadNext(fromId, maximumEntries);
-                var completes = new BasicCompletes<IEnumerable<IEntry<TEntry>>>(this.actor.Scheduler);
+                var completes = new BasicCompletes<IEnumerable<TEntry>>(this.actor.Scheduler);
                 if (this.mailbox.IsPreallocated)
                 {
                     this.mailbox.Send(this.actor, cons128873, completes, ReadNextRepresentation5);
@@ -162,7 +163,7 @@ namespace Vlingo.Symbio.Store.State
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, ReadNextRepresentation5));
             }
 
-            return null!;
+            return null;
         }
 
         public void Rewind()
@@ -211,7 +212,7 @@ namespace Vlingo.Symbio.Store.State
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, SeekToRepresentation7));
             }
 
-            return null!;
+            return null;
         }
     }
 }

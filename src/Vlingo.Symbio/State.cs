@@ -10,10 +10,23 @@ using System.Collections.Generic;
 
 namespace Vlingo.Symbio
 {
-    public abstract class State<T> : IComparable<State<T>>
+    public interface IState
+    {
+        string Id { get; }
+        
+        int DataVersion { get; }
+        
+        Metadata Metadata { get; }
+        
+        string Type { get; }
+        
+        int TypeVersion { get; }
+    }
+
+    public abstract class State<T> : IComparable<State<T>>, IState
     {
         public static string NoOp = string.Empty;
-
+        
         protected static readonly byte[] EmptyBytesData = new byte[0];
         protected static readonly T EmptyObjectData = default!;
         protected static readonly string EmptyTextData = string.Empty;

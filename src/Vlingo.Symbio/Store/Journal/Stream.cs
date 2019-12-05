@@ -22,9 +22,9 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="streamName">the <code>string</code> name of this stream, which is generally a global unique identity
         /// of an associated entity/aggregate</param>
         /// <param name="streamVersion">The <code>int</code> version of the stream</param>
-        /// <param name="entries">The <code>IEnumerable{BaseEntry{T}}</code> of all entries in the named stream or some sub-stream</param>
+        /// <param name="entries">The <code>IEnumerable{BaseEntry}</code> of all entries in the named stream or some sub-stream</param>
         /// <param name="snapshot">the <see cref="State{T}"/> of a persisted state, or an empty <see cref="State{T}"/> if none</param>
-        public Stream(string streamName, int streamVersion, IEnumerable<BaseEntry<T>> entries, State<T> snapshot)
+        public Stream(string streamName, int streamVersion, IEnumerable<BaseEntry> entries, State<T> snapshot)
         {
             StreamName = streamName;
             StreamVersion = streamVersion;
@@ -38,9 +38,9 @@ namespace Vlingo.Symbio.Store.Journal
         public State<T> Snapshot { get; }
         
         /// <summary>
-        /// The list of <see cref="BaseEntry{T}"/> of the entries of the named stream, and possibly just a sub-stream.
+        /// The list of <see cref="BaseEntry"/> of the entries of the named stream, and possibly just a sub-stream.
         /// </summary>
-        public IEnumerable<BaseEntry<T>> Entries { get; }
+        public IEnumerable<BaseEntry> Entries { get; }
         
         /// <summary>
         /// The string name of the stream, which is generally a global unique identity

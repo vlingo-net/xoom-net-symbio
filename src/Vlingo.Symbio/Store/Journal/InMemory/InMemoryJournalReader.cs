@@ -11,13 +11,13 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
-    public class InMemoryJournalReader<TEntry> : IJournalReader<TEntry>
+    public class InMemoryJournalReader<TEntry> : IJournalReader<TEntry> where TEntry : IEntry
     {
         private int _currentIndex;
-        private readonly List<IEntry<TEntry>> _journalView;
+        private readonly List<TEntry> _journalView;
         private readonly string _name;
 
-        public InMemoryJournalReader(List<IEntry<TEntry>> journalView, string name)
+        public InMemoryJournalReader(List<TEntry> journalView, string name)
         {
             _journalView = journalView;
             _name = name;
@@ -26,7 +26,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 
         public void Close() => _journalView.Clear();
 
-        public ICompletes<IEntry<TEntry>> ReadNext()
+        public ICompletes<TEntry> ReadNext()
         {
             if (_currentIndex < _journalView.Count)
             {
@@ -35,15 +35,15 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             return null!;
         }
 
-        public ICompletes<IEntry<TEntry>> ReadNext(string fromId)
+        public ICompletes<TEntry> ReadNext(string fromId)
         {
             SeekTo(fromId);
             return ReadNext();
         }
 
-        public ICompletes<IEnumerable<IEntry<TEntry>>> ReadNext(int maximumEntries)
+        public ICompletes<IEnumerable<TEntry>> ReadNext(int maximumEntries)
         {
-            var entries = new List<IEntry<TEntry>>();
+            var entries = new List<TEntry>();
 
             for (int count = 0; count < maximumEntries; ++count)
             {
@@ -59,7 +59,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             return Completes.WithSuccess(entries.AsEnumerable());
         }
 
-        public ICompletes<IEnumerable<IEntry<TEntry>>> ReadNext(string fromId, int maximumEntries)
+        public ICompletes<IEnumerable<TEntry>> ReadNext(string fromId, int maximumEntries)
         {
             SeekTo(fromId);
             return ReadNext(maximumEntries);

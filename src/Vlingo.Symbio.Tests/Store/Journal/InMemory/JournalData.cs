@@ -14,7 +14,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
 {
     public class JournalData<TEntry, TState>
     {
-        public JournalData(string streamName, int streamVersion, Exception errorCauses, Result result, List<Source<TEntry>> sources, Optional<TState> snapshot)
+        public JournalData(string streamName, int streamVersion, Exception errorCauses, Result result, List<TEntry> sources, Optional<TState> snapshot)
         {
             StreamName = streamName;
             StreamVersion = streamVersion;
@@ -28,7 +28,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
         
         public int StreamVersion{ get; }
         
-        public List<Source<TEntry>> Sources { get; }
+        public List<TEntry> Sources { get; }
         
         public Optional<TState> Snapshot { get; }
 

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Vlingo.Actors;
 using Vlingo.Common;
 using Vlingo.Symbio.Store.Dispatch;
@@ -15,18 +16,18 @@ using Vlingo.Symbio.Store.Dispatch.InMemory;
 
 namespace Vlingo.Symbio.Store.State.InMemory
 {
-    public class InMemoryStateStoreActor<TRawState, TEntry> : Actor, IStateStore<TEntry>
+    public class InMemoryStateStoreActor<TRawState, TEntry> : Actor, IStateStore<TEntry> where TEntry : IEntry where TRawState : IState
     {
         private readonly List<Dispatchable<TEntry, TRawState>> _dispatchables;
         private readonly IDispatcher<Dispatchable<TEntry, TRawState>> _dispatcher;
         private readonly IDispatcherControl _dispatcherControl;
         // this is based on mock database design, it represents a database entries and it's shared (like database)
         // between this and InMemoryStateStoreEntryReaderActor
-        private readonly List<IEntry<TEntry>> _entries;
+        private readonly List<TEntry> _entries;
         private readonly Dictionary<string, IStateStoreEntryReader<TEntry>> _entryReaders;
         private readonly EntryAdapterProvider _entryAdapterProvider;
         private readonly StateAdapterProvider _stateAdapterProvider;
-        private readonly Dictionary<string, Dictionary<string, State<TRawState>>> _store;
+        private readonly Dictionary<string, Dictionary<string, TRawState>> _store;
 
         public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher) : this(dispatcher, 1000L, 1000L)
         {
@@ -42,9 +43,9 @@ namespace Vlingo.Symbio.Store.State.InMemory
             _dispatcher = dispatcher;
             _entryAdapterProvider = EntryAdapterProvider.Instance(Stage.World);
             _stateAdapterProvider = StateAdapterProvider.Instance(Stage.World);
-            _entries = new List<IEntry<TEntry>>();
+            _entries = new List<TEntry>();
             _entryReaders = new Dictionary<string, IStateStoreEntryReader<TEntry>>();
-            _store = new Dictionary<string, Dictionary<string, State<TRawState>>>();
+            _store = new Dictionary<string, Dictionary<string, TRawState>>();
             _dispatchables = new List<Dispatchable<TEntry, TRawState>>();
 
             var dispatcherControlDelegate = new InMemoryDispatcherControlDelegate<TEntry, TRawState>(_dispatchables);
@@ -181,7 +182,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
 
                         if (!_store.TryGetValue(storeName, out var typeStore))
                         {
-                            typeStore = new Dictionary<string, State<TRawState>>();
+                            typeStore = new Dictionary<string, TRawState>();
                             var existingTypeStore = _store.AddIfAbsent(storeName, typeStore);
                             if (existingTypeStore != null)
                             {
@@ -223,19 +224,23 @@ namespace Vlingo.Symbio.Store.State.InMemory
             }
         }
 
-        private IEnumerable<IEntry<TEntry>> AppendEntries<TSource>(IEnumerable<Source<TSource>> sources, Metadata? metadata)
+        private IEnumerable<TEntry> AppendEntries<TSource>(IEnumerable<Source<TSource>> sources, Metadata? metadata)
         {
-            var adapted = _entryAdapterProvider.AsEntries<TSource, TEntry>(sources, metadata);
-            foreach (var entry in adapted)
+            var adapted = _entryAdapterProvider.AsEntries<Source<TSource>, TEntry>(sources, metadata);
+            var appendEntries = adapted.ToList();
+            foreach (var entry in appendEntries)
             {
-                ((BaseEntry<TEntry>) entry).SetId(_entries.Count.ToString());
+                if (entry is BaseEntry baseEntry)
+                {
+                    baseEntry.SetId(_entries.Count.ToString());   
+                }
                 _entries.Add(entry);
             }
 
-            return adapted;
+            return appendEntries;
         }
         
-        private void Dispatch(string id, string storeName, State<TRawState> raw, IEnumerable<IEntry<TEntry>> entries)
+        private void Dispatch(string id, string storeName, TRawState raw, IEnumerable<TEntry> entries)
         {
             var dispatchId = $"{storeName}:{id}";
             var dispatchable = new Dispatchable<TEntry, TRawState>(dispatchId, DateTimeOffset.Now, raw, entries);
