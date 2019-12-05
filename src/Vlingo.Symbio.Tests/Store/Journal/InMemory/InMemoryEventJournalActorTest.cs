@@ -7,9 +7,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Vlingo.Actors;
 using Vlingo.Actors.TestKit;
 using Vlingo.Common.Serialization;
+using Vlingo.Symbio.Store;
 using Vlingo.Symbio.Store.Journal;
 using Vlingo.Symbio.Store.Journal.InMemory;
 using Vlingo.Symbio.Tests.Store.Dispatch;
@@ -22,7 +24,6 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
     public class InMemoryEventJournalActorTest : IDisposable
     {
         private object _object = new object();
-        private MockAppendResultInterest<TextEntry, SnapshotState> _interest = new MockAppendResultInterest<TextEntry, SnapshotState>();
         private IJournal<TextEntry> _journal;
         private readonly World _world;
         private readonly MockDispatcher<TextEntry, SnapshotState> _dispatcher;
@@ -30,7 +31,37 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
         [Fact]
         public void TestThatJournalAppendsOneEvent()
         {
-            
+            var interest = new MockAppendResultInterest<Test1Source, SnapshotState>();
+            _dispatcher.AfterCompleting(1);
+            interest.AfterCompleting(1);
+
+            var source = new Test1Source();
+            var streamName = "123";
+            var streamVersion = 1;
+            _journal.Append<Test1Source, SnapshotState>(streamName, streamVersion, source, interest, _object);
+
+            Assert.Equal(1, interest.ReceivedAppendsSize);
+
+            var entries = interest.Entries;
+            var journalData = entries.First();
+            Assert.NotNull(journalData);
+            Assert.Equal(streamName, journalData.StreamName);
+            Assert.Equal(streamVersion, journalData.StreamVersion);
+            Assert.Equal(Result.Success, journalData.Result);
+            Assert.False(journalData.Snapshot.IsPresent);
+
+            var sourceList = journalData.Sources;
+            Assert.Single(sourceList);
+            Assert.Equal(source, sourceList.First());
+
+            Assert.Equal(1, _dispatcher.DispatchedCount());
+            var dispatched = _dispatcher.GetDispatched()[0];
+
+            Assert.NotEqual(new DateTimeOffset(),  dispatched.CreatedOn);
+            Assert.False(dispatched.State.IsPresent);
+            Assert.NotNull(dispatched.Id);
+            var dispatchedEntries = dispatched.Entries;
+            Assert.Single(dispatchedEntries);
         }
 
         public InMemoryEventJournalActorTest(ITestOutputHelper output)
