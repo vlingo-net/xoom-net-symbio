@@ -26,13 +26,13 @@ namespace Vlingo.Symbio.Store.State
             this.mailbox = mailbox;
         }
 
-        public string Beginning => null;
-        public string End => null;
-        public string Query => null;
+        public string Beginning => null!;
+        public string End => null!;
+        public string Query => null!;
         public int DefaultGapPreventionRetries => 0;
         public long DefaultGapPreventionRetryInterval => 0;
-        public Vlingo.Common.ICompletes<string> Name => null;
-        public Vlingo.Common.ICompletes<long> Size => null;
+        public Vlingo.Common.ICompletes<string> Name => null!;
+        public Vlingo.Common.ICompletes<long> Size => null!;
 
         public void Close()
         {
@@ -80,7 +80,7 @@ namespace Vlingo.Symbio.Store.State
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, ReadNextRepresentation2));
             }
 
-            return null;
+            return null!;
         }
 
         public ICompletes<TEntry> ReadNext(string fromId)
@@ -107,7 +107,7 @@ namespace Vlingo.Symbio.Store.State
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, ReadNextRepresentation3));
             }
 
-            return null;
+            return null!;
         }
 
         public ICompletes<IEnumerable<TEntry>> ReadNext(int maximumEntries)
@@ -135,7 +135,7 @@ namespace Vlingo.Symbio.Store.State
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, ReadNextRepresentation4));
             }
 
-            return null;
+            return null!;
         }
 
         public ICompletes<IEnumerable<TEntry>> ReadNext(string fromId, int maximumEntries)
@@ -163,7 +163,7 @@ namespace Vlingo.Symbio.Store.State
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, ReadNextRepresentation5));
             }
 
-            return null;
+            return null!;
         }
 
         public void Rewind()
@@ -212,7 +212,7 @@ namespace Vlingo.Symbio.Store.State
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, SeekToRepresentation7));
             }
 
-            return null;
+            return null!;
         }
     }
 }

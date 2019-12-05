@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Vlingo.Symbio.Store.Dispatch.InMemory
 {
-    public class InMemoryDispatcherControlDelegate<TEntry, TState> : IDispatcherControlDelegate<TEntry, TState> where TEntry : IEntry where TState : IState
+    public class InMemoryDispatcherControlDelegate<TEntry, TState> : IDispatcherControlDelegate<TEntry, TState> where TEntry : IEntry where TState : class, IState
     {
         private readonly List<Dispatchable<TEntry, TState>> _dispatchables;
 

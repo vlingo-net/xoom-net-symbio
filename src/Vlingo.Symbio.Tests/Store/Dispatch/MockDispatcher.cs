@@ -12,7 +12,7 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Tests.Store.Dispatch
 {
-    public class MockDispatcher<TEntry, TState> : IDispatcher<Dispatchable<TEntry, TState>> where TEntry : IEntry where TState : IState
+    public class MockDispatcher<TEntry, TState> : IDispatcher<Dispatchable<TEntry, TState>> where TEntry : IEntry where TState : class, IState
     {
         private AccessSafely _access;
 

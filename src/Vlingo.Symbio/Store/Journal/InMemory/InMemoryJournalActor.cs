@@ -19,12 +19,12 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
         public InMemoryJournalActor(IDispatcher<Dispatchable<TEntry, TState>> dispatcher)
             => _journal = new InMemoryJournal<TEntry, TState>(dispatcher, Stage.World);
         
-        public IJournal<TEntry> Using<TActor, TNewState>(Stage stage, IDispatcher<Dispatchable<TEntry, TNewState>> dispatcher, params object[] additional) where TActor : Actor where TNewState : IState
+        public IJournal<TEntry> Using<TActor, TNewState>(Stage stage, IDispatcher<Dispatchable<TEntry, TNewState>> dispatcher, params object[] additional) where TActor : Actor where TNewState : class, IState
             => additional.Length == 0 ?
                     stage.ActorFor<IJournal<TEntry>>(typeof(TActor), dispatcher) :
                     stage.ActorFor<IJournal<TEntry>>(typeof(TActor), dispatcher, additional);
 
-        public IJournal<TEntry> Using<TActor, TState1>(Stage stage, IDispatcher<Dispatchable<IEntry<TEntry>, TState1>> dispatcher, params object[] additional) where TActor : Actor where TState1 : IState
+        public IJournal<TEntry> Using<TActor, TState1>(Stage stage, IDispatcher<Dispatchable<IEntry<TEntry>, TState1>> dispatcher, params object[] additional) where TActor : Actor where TState1 : class, IState
             => Using<TActor, TState1>(stage, dispatcher, additional);
 
         public void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, IAppendResultInterest interest, object @object) where TSource : Source =>

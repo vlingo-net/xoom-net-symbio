@@ -33,7 +33,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <typeparam name="TActor">The concrete type of the Actor implementing the <code>IJournal{T}</code> protocol</typeparam>
         /// <typeparam name="TState">The raw snapshot state type</typeparam>
         /// <returns><code>IJournal{T}</code></returns>
-        IJournal<TEntry> Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional) where TActor : Actor where TState : IState;
+        IJournal<TEntry> Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional) where TActor : Actor where TState : class, IState;
 
         /// <summary>
         /// Appends the single <see cref="Source{T}"/> as an <see cref="IEntry{T}"/> to the end of the journal
@@ -217,7 +217,7 @@ namespace Vlingo.Symbio.Store.Journal
     
     public abstract class Journal<T> : IJournal<T> where T : IEntry
     {
-        public static IJournal<T> Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<T, TState>> dispatcher, params object[] additional) where TActor : Actor where TState : IState
+        public static IJournal<T> Using<TActor, TState>(Stage stage, IDispatcher<Dispatchable<T, TState>> dispatcher, params object[] additional) where TActor : Actor where TState : class, IState
         {
             return additional.Length == 0 ?
                     stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher) :

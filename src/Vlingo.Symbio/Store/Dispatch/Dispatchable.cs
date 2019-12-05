@@ -18,9 +18,9 @@ namespace Vlingo.Symbio.Store.Dispatch
     /// </summary>
     /// <typeparam name="TEntry">The concrete <see cref="IEntry{T}"/> type of the entries</typeparam>
     /// <typeparam name="TState">The concrete <see cref="State{T}"/> type of the storage</typeparam>
-    public class Dispatchable<TEntry, TState> where TEntry : IEntry where TState : IState
+    public class Dispatchable<TEntry, TState> where TEntry : IEntry where TState : class, IState
     {
-        public Dispatchable(string id, DateTimeOffset createdOn, TState state, IEnumerable<TEntry> entries)
+        public Dispatchable(string id, DateTimeOffset createdOn, TState? state, IEnumerable<TEntry> entries)
         {
             Id = id;
             CreatedOn = createdOn;
@@ -41,7 +41,7 @@ namespace Vlingo.Symbio.Store.Dispatch
         /// <summary>
         /// My <typeparamref name="TState"/> concrete <see cref="State{T}"/> type.
         /// </summary>
-        public TState State { get; }
+        public TState? State { get; }
 
         /// <summary>
         /// My <code>List{TEntry}</code> to dispatch

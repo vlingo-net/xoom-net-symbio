@@ -10,7 +10,7 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Store.Object
 {
-    public interface IObjectStoreDelegate<TEntry, TState> : IDispatcherControlDelegate<TEntry, TState> where TEntry : IEntry where TState : IState
+    public interface IObjectStoreDelegate<TEntry, TState> : IDispatcherControlDelegate<TEntry, TState> where TEntry : IEntry where TState : class, IState
     {
         /// <summary>
         /// Gets all registered <see cref="StateObjectMapper"/>s

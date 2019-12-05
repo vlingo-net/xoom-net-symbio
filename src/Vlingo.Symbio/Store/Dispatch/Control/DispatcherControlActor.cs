@@ -12,7 +12,7 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Dispatch.Control
 {
-    public sealed class DispatcherControlActor<TEntry, TState> : Actor, IDispatcherControl, IScheduled<object?> where TEntry : IEntry where TState : IState
+    public sealed class DispatcherControlActor<TEntry, TState> : Actor, IDispatcherControl, IScheduled<object?> where TEntry : IEntry where TState : class, IState
     {
         private static readonly long DefaultRedispatchDelay = 2000L;
 

@@ -64,7 +64,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
         {
             var entry = _entryAdapterProvider.AsEntry<TSource, TEntry>(source, metadata);
             Insert(streamName, streamVersion, entry);
-            TState raw;
+            TState? raw;
             Optional<TSnapshotState> snapshotResult;
             if (snapshot != null)
             {
@@ -100,7 +100,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(sourcesForEntries, metadata);
             var dispatchableEntries = entries.ToList();
             Insert(streamName, fromStreamVersion, dispatchableEntries);
-            TState raw;
+            TState? raw;
             Optional<TSnapshotState> snapshotResult;
             if (snapshot != null)
             {
@@ -179,7 +179,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             }
         }
 
-        private void Dispatch(string streamName, int streamVersion, IEnumerable<TEntry> entries, TState snapshot)
+        private void Dispatch(string streamName, int streamVersion, IEnumerable<TEntry> entries, TState? snapshot)
         {
             var dispatchableEntries = entries as TEntry[] ?? entries.ToArray();
             var id = GetDispatchId(streamName, streamVersion, dispatchableEntries);

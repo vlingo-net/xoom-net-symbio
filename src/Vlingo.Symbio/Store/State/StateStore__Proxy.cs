@@ -73,7 +73,7 @@ namespace Vlingo.Symbio.Store.State
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, EntryReaderRepresentation1));
             }
 
-            return null;
+            return null!;
         }
 
         public void Read<TState>(string id, Vlingo.Symbio.Store.State.IReadResultInterest interest)
@@ -98,7 +98,7 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public void Read<TState>(string id, Vlingo.Symbio.Store.State.IReadResultInterest interest, object @object)
+        public void Read<TState>(string id, Vlingo.Symbio.Store.State.IReadResultInterest interest, object? @object)
         {
             if (!this.actor.IsStopped)
             {

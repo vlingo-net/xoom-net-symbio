@@ -225,7 +225,7 @@ namespace Vlingo.Symbio.Store.Object
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, EntryReaderRepresentation4));
             }
 
-            return null;
+            return null!;
         }
 
         public void QueryAll(Vlingo.Symbio.Store.Object.QueryExpression expression,
@@ -252,7 +252,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void QueryAll(Vlingo.Symbio.Store.Object.QueryExpression expression,
-            Vlingo.Symbio.Store.Object.IQueryResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IQueryResultInterest interest, object? @object)
         {
             if (!this.actor.IsStopped)
             {
@@ -298,7 +298,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void QueryObject(Vlingo.Symbio.Store.Object.QueryExpression expression,
-            Vlingo.Symbio.Store.Object.IQueryResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IQueryResultInterest interest, object? @object)
         {
             if (!this.actor.IsStopped)
             {
@@ -420,7 +420,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void Persist<TState>(TState stateObject, Vlingo.Symbio.Store.Object.IPersistResultInterest interest,
-            object @object) where TState : Vlingo.Symbio.Store.Object.StateObject
+            object? @object) where TState : Vlingo.Symbio.Store.Object.StateObject
         {
             if (!this.actor.IsStopped)
             {
@@ -444,7 +444,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void Persist<TState>(TState stateObject, Vlingo.Symbio.Metadata metadata,
-            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject
         {
             if (!this.actor.IsStopped)
@@ -469,7 +469,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources,
-            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject where TSource : Source
         {
             if (!this.actor.IsStopped)
@@ -494,7 +494,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources,
-            Vlingo.Symbio.Metadata metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Metadata metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject where TSource : Source
         {
             if (!this.actor.IsStopped)
@@ -619,7 +619,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void Persist<TState>(TState stateObject, long updateId,
-            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject
         {
             if (!this.actor.IsStopped)
@@ -644,7 +644,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void Persist<TState>(TState stateObject, Vlingo.Symbio.Metadata metadata, long updateId,
-            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject
         {
             if (!this.actor.IsStopped)
@@ -669,7 +669,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources, long updateId,
-            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject where TSource : Source
         {
             if (!this.actor.IsStopped)
@@ -695,7 +695,7 @@ namespace Vlingo.Symbio.Store.Object
 
         public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources,
             Vlingo.Symbio.Metadata metadata, long updateId, Vlingo.Symbio.Store.Object.IPersistResultInterest interest,
-            object @object) where TState : Vlingo.Symbio.Store.Object.StateObject where TSource : Source
+            object? @object) where TState : Vlingo.Symbio.Store.Object.StateObject where TSource : Source
         {
             if (!this.actor.IsStopped)
             {
@@ -815,7 +815,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void PersistAll<TState>(IEnumerable<TState> stateObjects,
-            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject
         {
             if (!this.actor.IsStopped)
@@ -839,7 +839,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void PersistAll<TState>(IEnumerable<TState> stateObjects, Vlingo.Symbio.Metadata metadata,
-            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject
         {
             if (!this.actor.IsStopped)
@@ -863,7 +863,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
-            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject where TSource : Source
         {
             if (!this.actor.IsStopped)
@@ -887,7 +887,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
-            Vlingo.Symbio.Metadata metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Metadata metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject where TSource : Source
         {
             if (!this.actor.IsStopped)
@@ -1007,7 +1007,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void PersistAll<TState>(IEnumerable<TState> stateObjects, long updateId,
-            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject
         {
             if (!this.actor.IsStopped)
@@ -1031,7 +1031,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void PersistAll<TState>(IEnumerable<TState> stateObjects, Vlingo.Symbio.Metadata metadata, long updateId,
-            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject
         {
             if (!this.actor.IsStopped)
@@ -1055,7 +1055,7 @@ namespace Vlingo.Symbio.Store.Object
         }
 
         public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
-            long updateId, Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object @object)
+            long updateId, Vlingo.Symbio.Store.Object.IPersistResultInterest interest, object? @object)
             where TState : Vlingo.Symbio.Store.Object.StateObject where TSource : Source
         {
             if (!this.actor.IsStopped)
@@ -1080,7 +1080,7 @@ namespace Vlingo.Symbio.Store.Object
 
         public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
             Vlingo.Symbio.Metadata metadata, long updateId, Vlingo.Symbio.Store.Object.IPersistResultInterest interest,
-            object @object) where TState : Vlingo.Symbio.Store.Object.StateObject where TSource : Source
+            object? @object) where TState : Vlingo.Symbio.Store.Object.StateObject where TSource : Source
         {
             if (!this.actor.IsStopped)
             {

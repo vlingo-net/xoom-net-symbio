@@ -16,7 +16,7 @@ using Vlingo.Symbio.Store.Dispatch.InMemory;
 
 namespace Vlingo.Symbio.Store.State.InMemory
 {
-    public class InMemoryStateStoreActor<TRawState, TEntry> : Actor, IStateStore<TEntry> where TEntry : IEntry where TRawState : IState
+    public class InMemoryStateStoreActor<TRawState, TEntry> : Actor, IStateStore<TEntry> where TEntry : IEntry where TRawState : class, IState
     {
         private readonly List<Dispatchable<TEntry, TRawState>> _dispatchables;
         private readonly IDispatcher<Dispatchable<TEntry, TRawState>> _dispatcher;

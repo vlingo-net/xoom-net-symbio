@@ -51,7 +51,7 @@ namespace Vlingo.Symbio.Store.Journal
 
         public Vlingo.Symbio.Store.Journal.IJournal<TEntry> Using<TActor, TState>(Vlingo.Actors.Stage stage,
             IDispatcher<Dispatchable<TEntry, TState>> dispatcher, System.Object[] additional)
-            where TActor : Vlingo.Actors.Actor where TState : Vlingo.Symbio.IState
+            where TActor : Vlingo.Actors.Actor where TState : class, IState
         {
             if (!this.actor.IsStopped)
             {
@@ -73,7 +73,7 @@ namespace Vlingo.Symbio.Store.Journal
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, UsingRepresentation1));
             }
 
-            return null;
+            return null!;
         }
 
         public void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source,
@@ -276,7 +276,7 @@ namespace Vlingo.Symbio.Store.Journal
             }
         }
 
-        public ICompletes<IJournalReader<TNewEntry>> JournalReader<TNewEntry>(string name)
+        public ICompletes<IJournalReader<TNewEntry>?> JournalReader<TNewEntry>(string name)
             where TNewEntry : Vlingo.Symbio.IEntry
         {
             if (!this.actor.IsStopped)
@@ -294,17 +294,17 @@ namespace Vlingo.Symbio.Store.Journal
                         cons128873, completes, JournalReaderRepresentation10));
                 }
 
-                return completes;
+                return completes!;
             }
             else
             {
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, JournalReaderRepresentation10));
             }
 
-            return null;
+            return null!;
         }
 
-        public ICompletes<IStreamReader<TEntry>> StreamReader(string name)
+        public ICompletes<IStreamReader<TEntry>?> StreamReader(string name)
         {
             if (!this.actor.IsStopped)
             {
@@ -320,14 +320,14 @@ namespace Vlingo.Symbio.Store.Journal
                         cons128873, completes, StreamReaderRepresentation11));
                 }
 
-                return completes;
+                return completes!;
             }
             else
             {
                 this.actor.DeadLetters.FailedDelivery(new DeadLetter(this.actor, StreamReaderRepresentation11));
             }
 
-            return null;
+            return null!;
         }
     }
 }
