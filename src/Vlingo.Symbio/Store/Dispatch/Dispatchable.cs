@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Dispatch
 {
@@ -24,7 +25,7 @@ namespace Vlingo.Symbio.Store.Dispatch
         {
             Id = id;
             CreatedOn = createdOn;
-            State = state;
+            State = Optional.OfNullable(state);
             Entries = new List<TEntry>(entries);
         }
 
@@ -41,7 +42,7 @@ namespace Vlingo.Symbio.Store.Dispatch
         /// <summary>
         /// My <typeparamref name="TState"/> concrete <see cref="State{T}"/> type.
         /// </summary>
-        public TState? State { get; }
+        public Optional<TState> State { get; }
 
         /// <summary>
         /// My <code>List{TEntry}</code> to dispatch
@@ -50,7 +51,7 @@ namespace Vlingo.Symbio.Store.Dispatch
 
         public bool HasEntries => Entries != null && Entries.Any();
 
-        public TNewState TypedState<TNewState>() where TNewState : IState => (TNewState) (object) State!;
+        public TNewState TypedState<TNewState>() where TNewState : IState => (TNewState) (object) State.Get()!;
 
         public override bool Equals(object obj)
         {

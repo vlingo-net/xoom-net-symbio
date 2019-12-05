@@ -116,7 +116,7 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
             Assert.NotNull(dispatched);
             Assert.NotNull(dispatched.Id);
 
-            Assert.NotNull(dispatched.State);
+            Assert.NotNull(dispatched.State.Get());
             var state = dispatched.TypedState<State<string>>();
             Assert.Equal(persistedObject.PersistenceId.ToString(), state.Id);
             Assert.Equal(persistedObject.GetType().AssemblyQualifiedName, state.Type);
