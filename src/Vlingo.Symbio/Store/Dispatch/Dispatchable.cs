@@ -25,7 +25,7 @@ namespace Vlingo.Symbio.Store.Dispatch
         {
             Id = id;
             CreatedOn = createdOn;
-            State = Optional.OfNullable(state);
+            State = Optional.OfNullable(state!);
             Entries = new List<TEntry>(entries);
         }
 
