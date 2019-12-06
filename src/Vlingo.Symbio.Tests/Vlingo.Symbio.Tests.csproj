@@ -16,43 +16,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Vlingo.Symbio\Vlingo.Symbio.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <_UnmanagedRegistrationCache Remove="obj\Vlingo.Symbio.Tests.csproj.UnmanagedRegistration.cache" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <_ResolveComReferenceCache Remove="obj\Debug\netcoreapp3.0\Vlingo.Symbio.Tests.csproj.ResolveComReference.cache" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <IntermediateAssembly Remove="obj\Debug\netcoreapp3.0\Vlingo.Symbio.Tests.dll" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <_DebugSymbolsIntermediatePath Remove="obj\Debug\netcoreapp3.0\Vlingo.Symbio.Tests.pdb" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <_DeploymentManifestEntryPoint Remove="obj\Debug\netcoreapp3.0\Vlingo.Symbio.Tests.dll" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ApplicationManifest Remove="obj\Debug\netcoreapp3.0\Native.Vlingo.Symbio.Tests.manifest" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <DeployManifest Remove="obj\Debug\netcoreapp3.0\Vlingo.Symbio.Tests.application" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ClsidMap Remove="obj\Debug\netcoreapp3.0\Vlingo.Symbio.Tests.clsidmap" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <RegFreeComManifest Remove="obj\Debug\netcoreapp3.0\Vlingo.Symbio.Tests.X.manifest" />
-    </ItemGroup>
-
+    
     <ItemGroup>
       <None Update="vlingo-actors.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
