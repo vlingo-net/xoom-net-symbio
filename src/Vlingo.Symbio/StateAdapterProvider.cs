@@ -21,15 +21,13 @@ namespace Vlingo.Symbio
         
         public static StateAdapterProvider Instance(World world)
         {
-            // TODO: Refactor when https://github.com/vlingo-net/vlingo-net-actors/issues/75 is done merged and deployed
-            try
-            {
-                return world.ResolveDynamic<StateAdapterProvider>(InternalName);
-            }
-            catch (Exception)
+            var stateAdapterProvider = world.ResolveDynamic<StateAdapterProvider>(InternalName);
+            if (stateAdapterProvider == null)
             {
                 return new StateAdapterProvider(world);
             }
+            
+            return stateAdapterProvider;
         }
 
         public StateAdapterProvider(World world) : this() => world.RegisterDynamic(InternalName, this);

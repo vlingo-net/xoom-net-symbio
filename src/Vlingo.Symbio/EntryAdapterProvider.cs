@@ -28,15 +28,13 @@ namespace Vlingo.Symbio
         /// <returns><see cref="EntryAdapterProvider"/></returns>
         public static EntryAdapterProvider Instance(World world)
         {
-            // TODO: Refactor when https://github.com/vlingo-net/vlingo-net-actors/issues/75 is done merged and deployed
-            try
-            {
-                return world.ResolveDynamic<EntryAdapterProvider>(InternalName);
-            }
-            catch (Exception)
+            var entryAdapterProvider = world.ResolveDynamic<EntryAdapterProvider>(InternalName);
+            if (entryAdapterProvider == null)
             {
                 return new EntryAdapterProvider(world);
             }
+            
+            return entryAdapterProvider;
         }
         
         public EntryAdapterProvider(World world) : this() => world.RegisterDynamic(InternalName, this);
