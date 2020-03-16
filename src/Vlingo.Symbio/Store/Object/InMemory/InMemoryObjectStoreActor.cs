@@ -11,6 +11,7 @@ using System.Linq;
 using Vlingo.Actors;
 using Vlingo.Common;
 using Vlingo.Symbio.Store.Dispatch;
+using Vlingo.Symbio.Store.Dispatch.Control;
 
 namespace Vlingo.Symbio.Store.Object.InMemory
 {
@@ -20,10 +21,10 @@ namespace Vlingo.Symbio.Store.Object.InMemory
     /// </summary>
     public class InMemoryObjectStoreActor<T, TEntry, TState> : Actor, IObjectStore where TEntry : IEntry<T> where TState : class, IState
     {
-        private EntryAdapterProvider _entryAdapterProvider;
+        private readonly EntryAdapterProvider _entryAdapterProvider;
 
         private readonly IDispatcher<Dispatchable<TEntry, TState>> _dispatcher;
-        private IDispatcherControl _dispatcherControl;
+        private readonly IDispatcherControl _dispatcherControl;
         private readonly Dictionary<string, IObjectStoreEntryReader<IEntry<T>>> _entryReaders;
         private readonly IObjectStoreDelegate<TEntry, TState> _storeDelegate;
 
@@ -45,8 +46,8 @@ namespace Vlingo.Symbio.Store.Object.InMemory
             _storeDelegate = new InMemoryObjectStoreDelegate<TEntry, TState>(StateAdapterProvider.Instance(Stage.World));
 
             _dispatcherControl = Stage.ActorFor<IDispatcherControl>(
-                Definition.Has<Dispatch.Control.DispatcherControlActor<TEntry, TState>>(
-                    Definition.Parameters(dispatcher, _storeDelegate, checkConfirmationExpirationInterval, confirmationExpiration)));
+                () => new DispatcherControlActor<TEntry, TState>(dispatcher, _storeDelegate,
+                    checkConfirmationExpirationInterval, confirmationExpiration));
         }
 
         public void Close() => _storeDelegate.Close();
@@ -251,9 +252,6 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         private static string GetDispatchId(TState raw, IEnumerable<TEntry> entries) =>
             $"{raw.Id}:{string.Join(":", entries.Select(entry => entry.Id))}";
         
-        private List<IEntry<T>> ReadOnlyJournal()
-        {
-            return ((InMemoryObjectStoreDelegate<IEntry<T>, TState>) _storeDelegate).ReadOnlyJournal();
-        }
+        private List<IEntry<T>> ReadOnlyJournal() => ((InMemoryObjectStoreDelegate<IEntry<T>, TState>) _storeDelegate).ReadOnlyJournal();
     }
 }

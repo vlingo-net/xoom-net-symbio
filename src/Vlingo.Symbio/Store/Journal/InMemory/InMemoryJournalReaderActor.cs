@@ -13,9 +13,9 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 {
     public class InMemoryJournalReaderActor<TEntry> : Actor, IJournalReader<TEntry> where TEntry : IEntry
     {
-        private InMemoryJournalReader<TEntry> _reader;
+        private IJournalReader<TEntry> _reader;
 
-        public InMemoryJournalReaderActor(InMemoryJournalReader<TEntry> reader) => _reader = reader;
+        public InMemoryJournalReaderActor(IJournalReader<TEntry> reader) => _reader = reader;
 
         public void Close() => _reader.Close();
 

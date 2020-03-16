@@ -12,9 +12,9 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 {
     public class InMemoryStreamReaderActor<TEntry> : Actor, IStreamReader<TEntry>
     {
-        private InMemoryStreamReader<TEntry> _reader;
+        private readonly IStreamReader<TEntry> _reader;
 
-        public InMemoryStreamReaderActor(InMemoryStreamReader<TEntry> reader) => _reader = reader;
+        public InMemoryStreamReaderActor(IStreamReader<TEntry> reader) => _reader = reader;
 
         public override void Start()
         {
@@ -25,5 +25,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
         public ICompletes<Stream<TEntry>> StreamFor(string streamName) => Completes().With(_reader.StreamFor(streamName).Outcome);
 
         public ICompletes<Stream<TEntry>> StreamFor(string streamName, int fromStreamVersion) => Completes().With(_reader.StreamFor(streamName, fromStreamVersion).Outcome);
+
+        public string Name => _reader.Name;
     }
 }

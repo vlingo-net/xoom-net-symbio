@@ -51,12 +51,11 @@ namespace Vlingo.Symbio.Store.State.InMemory
             var dispatcherControlDelegate = new InMemoryDispatcherControlDelegate<TEntry, TRawState>(_dispatchables);
 
             _dispatcherControl = Stage.ActorFor<IDispatcherControl>(
-                Definition.Has<DispatcherControlActor<TEntry, TRawState>>(
-                    Definition.Parameters(
-                        dispatcher,
-                        dispatcherControlDelegate,
-                        checkConfirmationExpirationInterval,
-                        confirmationExpiration)));
+                () => new DispatcherControlActor<TEntry, TRawState>(
+                    dispatcher,
+                    dispatcherControlDelegate,
+                    checkConfirmationExpirationInterval,
+                    confirmationExpiration));
         }
 
         public void Read<TState>(string id, IReadResultInterest interest) => Read<TState>(id, interest, null);
@@ -91,7 +90,8 @@ namespace Vlingo.Symbio.Store.State.InMemory
         {
             if (!_entryReaders.TryGetValue(name, out var reader))
             {
-                reader = ChildActorFor<IStateStoreEntryReader<TEntry>>(Definition.Has<InMemoryStateStoreEntryReaderActor<TEntry>>(Definition.Parameters(_entries, name)));
+                reader = ChildActorFor<IStateStoreEntryReader<TEntry>>(
+                    () => new InMemoryStateStoreEntryReaderActor<TEntry>(_entries, name));
                 _entryReaders.Add(name, reader);
             }
             

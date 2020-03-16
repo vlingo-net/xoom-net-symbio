@@ -51,14 +51,14 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
         public ICompletes<IJournalReader<TNewEntry>?> JournalReader<TNewEntry>(string name) where TNewEntry : IEntry
         {
             var inmemory = _journal.JournalReader<TNewEntry>(name).Outcome!;
-            var actor = ChildActorFor<IJournalReader<TNewEntry>?>(Definition.Has<InMemoryJournalReaderActor<TEntry>>(Definition.Parameters(inmemory)));
+            var actor = ChildActorFor<IJournalReader<TNewEntry>?>(() => new InMemoryJournalReaderActor<TNewEntry>(inmemory));
             return Completes().With(actor);
         }
 
         public ICompletes<IStreamReader<T>?> StreamReader(string name)
         {
             var inmemory = _journal.StreamReader(name).Outcome!;
-            var actor = ChildActorFor<IStreamReader<T>?>(Definition.Has<InMemoryStreamReaderActor<T>>(Definition.Parameters(inmemory)));
+            var actor = ChildActorFor<IStreamReader<T>?>(() => new InMemoryStreamReaderActor<T>(inmemory));
             return Completes().With(actor);
         }
     }

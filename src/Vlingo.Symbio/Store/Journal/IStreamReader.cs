@@ -38,6 +38,11 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="fromStreamVersion">The <code>int</code> version from which to begin reading, inclusive</param>
         /// <returns>The <see cref="ICompletes{T}"/> of <see cref="Stream{T}"/> of all full stream</returns>
         ICompletes<Stream<T>> StreamFor(string streamName, int fromStreamVersion);
+        
+        /// <summary>
+        /// Gets the name of the reader.
+        /// </summary>
+        string Name { get; }
     }
 
     public static class StreamReaderExtensions

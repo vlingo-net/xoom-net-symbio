@@ -42,14 +42,13 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             _dispatchables = new List<Dispatchable<TEntry, TState>>();
 
             var dispatcherControlDelegate = new InMemoryDispatcherControlDelegate<TEntry, TState>(_dispatchables);
-            
+
             _dispatcherControl = world.Stage.ActorFor<IDispatcherControl>(
-                    Definition.Has<DispatcherControlActor<TEntry, TState>>(
-                        Definition.Parameters(
-                            dispatcher,
-                            dispatcherControlDelegate,
-                            checkConfirmationExpirationInterval,
-                            confirmationExpiration)));
+                () => new DispatcherControlActor<TEntry, TState>(
+                    dispatcher,
+                    dispatcherControlDelegate,
+                    checkConfirmationExpirationInterval,
+                    confirmationExpiration));
         }
         
         public override void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, IAppendResultInterest interest, object @object)
