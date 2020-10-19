@@ -22,6 +22,6 @@ namespace Vlingo.Symbio.Store.Object
 
         public object? StateObject { get; }
         
-        public T ToStateObject<T>() => StateObject != null ? (T) StateObject : default;
+        public T ToStateObject<T>() => (StateObject != null ? (T) StateObject : default)!;
     }
 }
