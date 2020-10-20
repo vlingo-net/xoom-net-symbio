@@ -42,7 +42,7 @@ namespace Vlingo.Symbio
         public void RegisterAdapter<TState, TRawState>(IStateAdapter<TState, TRawState> adapter) where TRawState : IState
         {
             _adapters.Add(typeof(TState), adapter);
-            _namedAdapters.Add(typeof(TState).FullName, adapter);
+            _namedAdapters.Add(typeof(TState).FullName!, adapter);
         }
         
         public void RegisterAdapter<TState, TRawState>(TState stateType, IStateAdapter<TState, TRawState> adapter, Action<TState, IStateAdapter<TState, TRawState>> consumer) where TRawState : IState

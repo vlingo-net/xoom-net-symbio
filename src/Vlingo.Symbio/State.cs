@@ -75,7 +75,7 @@ namespace Vlingo.Symbio
             }
         }
 
-        public int CompareTo(State<T> other)
+        public int CompareTo(State<T>? other)
         {
             if (ReferenceEquals(this, other))
             {
@@ -114,7 +114,7 @@ namespace Vlingo.Symbio
         public override int GetHashCode() => 31 * Id.GetHashCode();
 
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null || obj.GetType() != GetType())
             {
@@ -135,6 +135,7 @@ namespace Vlingo.Symbio
         {
             if (id == null) throw new ArgumentNullException(nameof(id), "State id must not be null.");
             if (type == null) throw new ArgumentNullException(nameof(type), "State type must not be null.");
+            if (string.IsNullOrEmpty(type.AssemblyQualifiedName)) throw new ArgumentNullException(nameof(type.AssemblyQualifiedName), "State type.AssemblyQualifiedName must not be null.");
             if (typeVersion <= 0) throw new ArgumentOutOfRangeException(nameof(typeVersion), "State typeVersion must be greater than 0.");
             if (data == null) throw new ArgumentNullException(nameof(data), "State data must not be null.");
             if (dataVersion <= 0) throw new ArgumentOutOfRangeException(nameof(dataVersion), "State dataVersion must be greater than 0.");

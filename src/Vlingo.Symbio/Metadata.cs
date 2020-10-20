@@ -29,7 +29,7 @@ namespace Vlingo.Symbio
 
         public static Metadata With<TOperation>(object @object, string value, bool compact)
         {
-            var operation = compact ? typeof(TOperation).Name : typeof(TOperation).FullName;
+            var operation = compact ? typeof(TOperation).Name : typeof(TOperation).FullName!;
             return new Metadata(@object, value, operation);
         }
 
@@ -62,9 +62,9 @@ namespace Vlingo.Symbio
 
         public bool IsEmpty => !HasOperation && !HasValue;
         
-        public int CompareTo(Metadata other)
+        public int CompareTo(Metadata? other)
         {
-            if (!Object.Equals(other.Object))
+            if (!Object.Equals(other?.Object))
             {
                 return 1;
             }
@@ -77,7 +77,7 @@ namespace Vlingo.Symbio
             return string.Compare(other.Value, Value, StringComparison.Ordinal);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null || obj.GetType() != GetType())
             {
@@ -97,7 +97,7 @@ namespace Vlingo.Symbio
 
         private class DummyObject
         {
-            public override bool Equals(object obj) => ToString() == obj?.ToString();
+            public override bool Equals(object? obj) => ToString() == obj?.ToString();
 
             public override int GetHashCode()
             {

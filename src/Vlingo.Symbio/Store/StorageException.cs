@@ -23,7 +23,7 @@ namespace Vlingo.Symbio.Store
             Result = result;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null || !obj.GetType().Equals(GetType()))
             {

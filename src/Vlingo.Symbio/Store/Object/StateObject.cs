@@ -58,7 +58,7 @@ namespace Vlingo.Symbio.Store.Object
 
         internal void SetPersistenceId(long persistenceId) => _persistenceId = persistenceId;
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (this == obj)
             {

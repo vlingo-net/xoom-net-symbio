@@ -18,9 +18,9 @@ namespace Vlingo.Symbio.Store.State
         public static IEnumerable<string> AllStoreNames => StateStoreNames.Values;
 
         public static void StateTypeToStoreName(string storeName, Type stateType) =>
-            StateStoreNames.AddOrUpdate(stateType.FullName, storeName, (key, value) => storeName);
+            StateStoreNames.AddOrUpdate(stateType.FullName!, storeName, (key, value) => storeName);
 
-        public static string? StoreNameFrom(Type stateType) => StoreNameFrom(stateType.FullName);
+        public static string? StoreNameFrom(Type stateType) => StoreNameFrom(stateType.FullName!);
         
         public static string? StoreNameFrom(string typeName) => StateStoreNames.TryGetValue(typeName, out var name) ? name : null;
         

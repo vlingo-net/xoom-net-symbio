@@ -38,7 +38,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
                 }
                 else
                 {
-                    snapshot = null!; // reading from beyond snapshot
+                    snapshot = null; // reading from beyond snapshot
                 }
             }
             

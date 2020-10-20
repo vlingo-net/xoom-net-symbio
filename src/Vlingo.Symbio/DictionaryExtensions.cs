@@ -12,7 +12,7 @@ namespace Vlingo.Symbio
 {
     public static class DictionaryExtensions
     {
-        public static TValue AddIfAbsent<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        public static TValue AddIfAbsent<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value) where TKey : notnull
         {
             if (dictionary.TryGetValue(key, out var ret))
             {
@@ -20,10 +20,11 @@ namespace Vlingo.Symbio
             }
 
             dictionary.Add(key, value);
+            
             return default!;
         }
 
-        public static TValue ComputeIfAbsent<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Func<TKey, TValue> mappingFunction)
+        public static TValue ComputeIfAbsent<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Func<TKey, TValue> mappingFunction) where TKey : notnull
         {
             TValue v = default!;
             if (!dictionary.ContainsKey(key))

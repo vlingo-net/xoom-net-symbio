@@ -17,7 +17,7 @@ namespace Vlingo.Symbio
             try
             {
                 var sourceType = Type.GetType(entry.TypeName);
-                var bland = JsonSerialization.Deserialized(entry.EntryData, sourceType);
+                var bland = JsonSerialization.Deserialized(entry.EntryData, sourceType!);
                 return (TState) bland!;
             } 
             catch (Exception) 

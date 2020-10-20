@@ -70,7 +70,7 @@ namespace Vlingo.Symbio
         public override int GetHashCode() => Id.GetHashCode();
 
         /// <inheritdoc/>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj != null && obj.GetType() != GetType())
             {
@@ -85,7 +85,7 @@ namespace Vlingo.Symbio
         {
             var id = Id;
             return
-                $"Source [id={(id == null || string.IsNullOrEmpty(id) ? "(none)" : id)} " +
+                $"Source [id={(string.IsNullOrEmpty(id) ? "(none)" : id)} " +
                 $"dateTimeSourced={DateTimeOffset.FromUnixTimeMilliseconds(_dateTimeSourced).UtcDateTime.ToShortTimeString()} " +
                 $"sourceTypeVersion={SemanticVersion.ToString(_sourceTypeVersion)}]";
         }

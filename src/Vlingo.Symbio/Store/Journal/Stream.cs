@@ -24,7 +24,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="streamVersion">The <code>int</code> version of the stream</param>
         /// <param name="entries">The <code>IEnumerable{BaseEntry}</code> of all entries in the named stream or some sub-stream</param>
         /// <param name="snapshot">the <see cref="State{T}"/> of a persisted state, or an empty <see cref="State{T}"/> if none</param>
-        public Stream(string streamName, int streamVersion, IEnumerable<BaseEntry> entries, State<T> snapshot)
+        public Stream(string streamName, int streamVersion, IEnumerable<BaseEntry> entries, State<T>? snapshot)
         {
             StreamName = streamName;
             StreamVersion = streamVersion;
@@ -35,7 +35,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <summary>
         /// The most recent <see cref="State{T}"/> snapshot, if any.
         /// </summary>
-        public State<T> Snapshot { get; }
+        public State<T>? Snapshot { get; }
         
         /// <summary>
         /// The list of <see cref="BaseEntry"/> of the entries of the named stream, and possibly just a sub-stream.

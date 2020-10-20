@@ -19,7 +19,7 @@ namespace Vlingo.Symbio
             try
             {
                 var stateType = Type.GetType(raw.Type);
-                return JsonSerialization.Deserialized(raw.Data, stateType)!;
+                return JsonSerialization.Deserialized(raw.Data, stateType!)!;
             } 
             catch (Exception) 
             {

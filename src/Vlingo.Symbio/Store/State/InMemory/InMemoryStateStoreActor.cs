@@ -118,7 +118,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
                     return;
                 }
 
-                var storeName = StateTypeStateStoreMap.StoreNameFrom(typeof(TState).FullName);
+                var storeName = StateTypeStateStoreMap.StoreNameFrom(typeof(TState).FullName!);
 
                 if (storeName == null)
                 {

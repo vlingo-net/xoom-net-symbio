@@ -70,7 +70,8 @@ namespace Vlingo.Symbio
 
         public BaseEntry(string id, Type type, int typeVersion, T entryData, Metadata metadata) : base(id)
         {
-            if (type == null) throw new ArgumentNullException(nameof(id), "Entry type must not be null.");
+            if (type == null) throw new ArgumentNullException(nameof(type), "Entry type must not be null.");
+            if (string.IsNullOrEmpty(type.AssemblyQualifiedName)) throw new ArgumentNullException(nameof(type.AssemblyQualifiedName), "Entry type.AssemblyQualifiedName must not be null.");
             if (typeVersion <= 0) throw new ArgumentOutOfRangeException(nameof(typeVersion), "Entry typeVersion must be greater than 0.");
             if (entryData == null) throw new ArgumentNullException(nameof(entryData), "Entry entryData must not be null.");
             if (metadata == null) throw new ArgumentNullException(nameof(metadata), "Entry metadata must not be null.");
@@ -144,8 +145,13 @@ namespace Vlingo.Symbio
 
         public abstract IEntry<T> WithId(string id);
 
-        public int CompareTo(IEntry<T> other)
+        public int CompareTo(IEntry<T>? other)
         {
+            if (other == null)
+            {
+                return -1;
+            }
+            
             var that = (BaseEntry<T>) other;
             var dataDiff = CompareData(this, that);
             if (dataDiff != 0) return dataDiff;
@@ -172,7 +178,7 @@ namespace Vlingo.Symbio
         public override int GetHashCode() => 31 * InternalId.GetHashCode();
 
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj == null || obj.GetType() != GetType())
             {

@@ -53,7 +53,7 @@ namespace Vlingo.Symbio.Store.Dispatch
 
         public TNewState TypedState<TNewState>() where TNewState : IState => (TNewState) (object) State.Get()!;
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (this == obj)
             {

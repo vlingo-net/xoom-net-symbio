@@ -81,9 +81,9 @@ namespace Vlingo.Symbio.Store.Object
     /// <summary>
     /// Support a <code>Dictionary{TK, TV}</code> with extension method <code>And(TK, TV)</code>.
     /// </summary>
-    /// <typeparam name="TK">The key type</typeparam>
-    /// <typeparam name="TV">The value type</typeparam>
-    public class FluentMap<TK, TV> : Dictionary<TK, TV>
+    /// <typeparam name="Tk">The key type</typeparam>
+    /// <typeparam name="Tv">The value type</typeparam>
+    public class FluentMap<Tk, Tv> : Dictionary<Tk, Tv> where Tk : notnull
     {
         /// <summary>
         /// Answer a new <code>FluentMap{TK, TV}</code> with <paramref name="key"/> and <paramref name="value"/> as the first entry.
@@ -91,7 +91,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="key">The key</param>
         /// <param name="value">The value</param>
         /// <returns><code>FluentMap{TK, TV}</code></returns>
-        public static FluentMap<TK, TV> Has(TK key, TV value) => new FluentMap<TK, TV>().And(key, value);
+        public static FluentMap<Tk, Tv> Has(Tk key, Tv value) => new FluentMap<Tk, Tv>().And(key, value);
 
         /// <summary>
         /// Constructs my default state.
@@ -112,15 +112,15 @@ namespace Vlingo.Symbio.Store.Object
         /// <summary>
         /// Answer myself after adding <paramref name="value"/> at <paramref name="key"/>.
         /// </summary>
-        /// <param name="key">The <typeparamref name="TK1"/> typed key</param>
-        /// <param name="value">The <typeparamref name="TV1"/> typed value</param>
-        /// <typeparam name="TK1">The key type, which is same as K but for specific casting</typeparam>
-        /// <typeparam name="TV1">The value type, which is same as V but for specific casting</typeparam>
+        /// <param name="key">The <typeparamref name="Tk1"/> typed key</param>
+        /// <param name="value">The <typeparamref name="Tv1"/> typed value</param>
+        /// <typeparam name="Tk1">The key type, which is same as K but for specific casting</typeparam>
+        /// <typeparam name="Tv1">The value type, which is same as V but for specific casting</typeparam>
         /// <returns><code>FluentMap{TK, TV}</code></returns>
-        public FluentMap<TK1, TV1> And<TK1, TV1>(TK1 key, TV1 value)
+        public FluentMap<Tk1, Tv1> And<Tk1, Tv1>(Tk1 key, Tv1 value) where Tk1 : notnull
         {
-            Add((TK)(object)key!, (TV)(object)value!);
-            return (FluentMap<TK1, TV1>)(object) this!;
+            Add((Tk)(object)key!, (Tv)(object)value!);
+            return (FluentMap<Tk1, Tv1>)(object) this!;
         }
     }
 }
