@@ -25,7 +25,7 @@ namespace Vlingo.Symbio.Store.Object.InMemory
 
         private readonly IDispatcher<Dispatchable<TEntry, TState>> _dispatcher;
         private readonly IDispatcherControl _dispatcherControl;
-        private readonly Dictionary<string, IObjectStoreEntryReader<IEntry<T>>> _entryReaders;
+        private readonly IReadOnlyDictionary<string, IObjectStoreEntryReader<IEntry<T>>> _entryReaders;
         private readonly IObjectStoreDelegate<TEntry, TState> _storeDelegate;
 
         /// <summary>

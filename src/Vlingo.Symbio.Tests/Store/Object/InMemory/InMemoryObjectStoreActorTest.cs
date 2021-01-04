@@ -11,7 +11,6 @@ using Vlingo.Actors;
 using Vlingo.Symbio.Store.Dispatch;
 using Vlingo.Symbio.Store.Object;
 using Vlingo.Symbio.Tests.Store.Dispatch;
-using Vlingo.Symbio.Tests.Store.Journal.InMemory;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,11 +18,10 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
 {
     public class InMemoryObjectStoreActorTest
     {
-        private MockPersistResultInterest _persistInterest;
-        private MockQueryResultInterest _queryResultInterest;
-        private IObjectStore _objectStore;
-        private World _world;
-        private MockDispatcher<Test1Source, ObjectEntry<Test1Source>, State<string>> _dispatcher;
+        private readonly MockPersistResultInterest _persistInterest;
+        private readonly MockQueryResultInterest _queryResultInterest;
+        private readonly IObjectStore _objectStore;
+        private readonly MockDispatcher<Test1Source, ObjectEntry<Test1Source>, State<string>> _dispatcher;
 
         [Fact]
         public void TestThatObjectPersistsQueries()
@@ -103,12 +101,12 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
             
             _persistInterest = new MockPersistResultInterest();
             _queryResultInterest = new MockQueryResultInterest();
-            _world = World.StartWithDefaults("test-object-store");
-            var entryAdapterProvider = new EntryAdapterProvider(_world);
+            var world = World.StartWithDefaults("test-object-store");
+            var entryAdapterProvider = new EntryAdapterProvider(world);
             entryAdapterProvider.RegisterAdapter(new Test1SourceAdapter());
     
             _dispatcher = new MockDispatcher<Test1Source, ObjectEntry<Test1Source>, State<string>>(new MockConfirmDispatchedResultInterest());
-            _objectStore = _world.ActorFor<IObjectStore>(typeof(Vlingo.Symbio.Store.Object.InMemory.InMemoryObjectStoreActor<Test1Source, ObjectEntry<Test1Source>, State<string>>), _dispatcher);
+            _objectStore = world.ActorFor<IObjectStore>(typeof(Vlingo.Symbio.Store.Object.InMemory.InMemoryObjectStoreActor<Test1Source, ObjectEntry<Test1Source>, State<string>>), _dispatcher);
         }
         
         private void ValidateDispatchedState(Person persistedObject, Dispatchable<ObjectEntry<Test1Source>, State<string>> dispatched)

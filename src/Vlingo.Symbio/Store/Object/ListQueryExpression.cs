@@ -19,21 +19,23 @@ namespace Vlingo.Symbio.Store.Object
         private readonly IEnumerable<object> _parameters;
 
         /// <summary>
-        /// Answer a new <code>QueryExpression</code> for <typeparam name="T" />, <paramref name="query"/> and <paramref name="parameters"/>.
+        /// Answer a new <code>QueryExpression</code> for <param name="type" />, <paramref name="query"/> and <paramref name="parameters"/>.
         /// </summary>
+        /// <param name="type">The concrete type of the state object.</param>
         /// <param name="query">The string expression of the query</param>
-        /// <param name="parameters"></param>
+        /// <param name="parameters">Parameters for the query</param>
         /// <returns><see cref="ListQueryExpression"/><code>IEnumerable{object}</code> containing query parameters</returns>
-        public static ListQueryExpression Using<T>(string query, IEnumerable<object> parameters) => new ListQueryExpression(typeof(T), query, parameters);
+        public static ListQueryExpression Using(Type type, string query, IEnumerable<object> parameters) => new ListQueryExpression(type, query, parameters);
 
         /// <summary>
-        /// Answer a new <code>QueryExpression</code> for <typeparam name="T" />, <paramref name="query"/> and <see cref="QueryMode"/>.
+        /// Answer a new <code>QueryExpression</code> for <param name="type" />, <paramref name="query"/> and <see cref="QueryMode"/>.
         /// </summary>
+        /// <param name="type">The concrete type of the state object.</param>
         /// <param name="query">The string expression of the query</param>
         /// <param name="mode"><see cref="QueryMode"/></param>
         /// <param name="parameters"><code>IEnumerable{object}</code> containing query parameters</param>
         /// <returns><see cref="ListQueryExpression"/></returns>
-        public static ListQueryExpression Using<T>(string query, QueryMode mode, IEnumerable<object> parameters) => new ListQueryExpression(typeof(T), query, mode, parameters);
+        public static ListQueryExpression Using(Type type, string query, QueryMode mode, IEnumerable<object> parameters) => new ListQueryExpression(type, query, mode, parameters);
 
         /// <summary>
         /// Constructs my default state.
