@@ -6,6 +6,7 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System;
+using Vlingo.Common;
 
 namespace Vlingo.Symbio
 {
@@ -49,6 +50,8 @@ namespace Vlingo.Symbio
         }
 
         public object Object { get; }
+
+        public Optional<object> OptionalObject => HasObject ? Optional.Of(Object) : Optional.Empty<object>();
         
         public string Operation { get; }
         
