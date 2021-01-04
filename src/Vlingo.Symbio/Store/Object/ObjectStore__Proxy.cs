@@ -17,7 +17,7 @@ namespace Vlingo.Symbio.Store.Object
         private const string CloseRepresentation1 = "Close()";
         private const string IsNoIdRepresentation2 = "IsNoId(long)";
         private const string IsIdRepresentation3 = "IsId(long)";
-        private const string EntryReaderRepresentation4 = "EntryReader<T>(string)";
+        private const string EntryReaderRepresentation4 = "EntryReader<TNewEntry>(string)";
 
         private const string QueryAllRepresentation5 =
             "QueryAll(Vlingo.Symbio.Store.Object.QueryExpression, Vlingo.Symbio.Store.Object.IQueryResultInterest)";
@@ -32,153 +32,96 @@ namespace Vlingo.Symbio.Store.Object
             "QueryObject(Vlingo.Symbio.Store.Object.QueryExpression, Vlingo.Symbio.Store.Object.IQueryResultInterest, object)";
 
         private const string PersistRepresentation9 =
-            "Persist<TState>(TState, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
+            "Persist<TState, TSource>(StateSources<TState, TSource>, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
 
         private const string PersistRepresentation10 =
-            "Persist<TState>(TState, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
+            "Persist<TState, TSource>(StateSources<TState, TSource>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
 
         private const string PersistRepresentation11 =
-            "Persist<TState, TSource>(TState, IEnumerable<TSource>, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
+            "Persist<TState, TSource>(StateSources<TState, TSource>, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
 
         private const string PersistRepresentation12 =
-            "Persist<TState, TSource>(TState, IEnumerable<TSource>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
+            "Persist<TState, TSource>(StateSources<TState, TSource>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
 
         private const string PersistRepresentation13 =
-            "Persist<TState>(TState, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
+            "Persist<TState, TSource>(StateSources<TState, TSource>, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
 
         private const string PersistRepresentation14 =
-            "Persist<TState>(TState, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
+            "Persist<TState, TSource>(StateSources<TState, TSource>, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
 
         private const string PersistRepresentation15 =
-            "Persist<TState, TSource>(TState, IEnumerable<TSource>, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
+            "Persist<TState, TSource>(StateSources<TState, TSource>, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
 
         private const string PersistRepresentation16 =
-            "Persist<TState, TSource>(TState, IEnumerable<TSource>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
+            "Persist<TState, TSource>(StateSources<TState, TSource>, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
 
-        private const string PersistRepresentation17 =
-            "Persist<TState>(TState, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
+        private const string PersistAllRepresentation17 =
+            "PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>>, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
 
-        private const string PersistRepresentation18 =
-            "Persist<TState>(TState, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
+        private const string PersistAllRepresentation18 =
+            "PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
 
-        private const string PersistRepresentation19 =
-            "Persist<TState, TSource>(TState, IEnumerable<TSource>, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
+        private const string PersistAllRepresentation19 =
+            "PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>>, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
 
-        private const string PersistRepresentation20 =
-            "Persist<TState, TSource>(TState, IEnumerable<TSource>, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
+        private const string PersistAllRepresentation20 =
+            "PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
 
-        private const string PersistRepresentation21 =
-            "Persist<TState>(TState, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
+        private const string PersistAllRepresentation21 =
+            "PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>>, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
 
-        private const string PersistRepresentation22 =
-            "Persist<TState>(TState, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
+        private const string PersistAllRepresentation22 =
+            "PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>>, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
 
-        private const string PersistRepresentation23 =
-            "Persist<TState, TSource>(TState, IEnumerable<TSource>, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
+        private const string PersistAllRepresentation23 =
+            "PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>>, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
 
-        private const string PersistRepresentation24 =
-            "Persist<TState, TSource>(TState, IEnumerable<TSource>, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
+        private const string PersistAllRepresentation24 =
+            "PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>>, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
 
-        private const string PersistAllRepresentation25 =
-            "PersistAll<TState>(IEnumerable<TState>, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
-
-        private const string PersistAllRepresentation26 =
-            "PersistAll<TState>(IEnumerable<TState>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
-
-        private const string PersistAllRepresentation27 =
-            "PersistAll<TState, TSource>(IEnumerable<TState>, IEnumerable<TSource>, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
-
-        private const string PersistAllRepresentation28 =
-            "PersistAll<TState, TSource>(IEnumerable<TState>, IEnumerable<TSource>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
-
-        private const string PersistAllRepresentation29 =
-            "PersistAll<TState>(IEnumerable<TState>, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
-
-        private const string PersistAllRepresentation30 =
-            "PersistAll<TState>(IEnumerable<TState>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
-
-        private const string PersistAllRepresentation31 =
-            "PersistAll<TState, TSource>(IEnumerable<TState>, IEnumerable<TSource>, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
-
-        private const string PersistAllRepresentation32 =
-            "PersistAll<TState, TSource>(IEnumerable<TState>, IEnumerable<TSource>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
-
-        private const string PersistAllRepresentation33 =
-            "PersistAll<TState>(IEnumerable<TState>, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
-
-        private const string PersistAllRepresentation34 =
-            "PersistAll<TState>(IEnumerable<TState>, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
-
-        private const string PersistAllRepresentation35 =
-            "PersistAll<TState, TSource>(IEnumerable<TState>, IEnumerable<TSource>, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
-
-        private const string PersistAllRepresentation36 =
-            "PersistAll<TState, TSource>(IEnumerable<TState>, IEnumerable<TSource>, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest)";
-
-        private const string PersistAllRepresentation37 =
-            "PersistAll<TState>(IEnumerable<TState>, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
-
-        private const string PersistAllRepresentation38 =
-            "PersistAll<TState>(IEnumerable<TState>, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
-
-        private const string PersistAllRepresentation39 =
-            "PersistAll<TState, TSource>(IEnumerable<TState>, IEnumerable<TSource>, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
-
-        private const string PersistAllRepresentation40 =
-            "PersistAll<TState, TSource>(IEnumerable<TState>, IEnumerable<TSource>, Vlingo.Symbio.Metadata, long, Vlingo.Symbio.Store.Object.IPersistResultInterest, object)";
-
-        private readonly Actor _actor;
-        private readonly IMailbox _mailbox;
+        private readonly Actor actor;
+        private readonly IMailbox mailbox;
 
         public ObjectStore__Proxy(Actor actor, IMailbox mailbox)
         {
-            _actor = actor;
-            _mailbox = mailbox;
+            this.actor = actor;
+            this.mailbox = mailbox;
         }
 
         public long NoId => 0;
 
         public void Close()
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ => __.Close();
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, CloseRepresentation1);
-                }
+                Action<IObjectStore> cons743684197 = __ => __.Close();
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons743684197, null, CloseRepresentation1);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
+                    mailbox.Send(
+                        new LocalMessage<IObjectStore>(actor, cons743684197,
                             CloseRepresentation1));
-                }
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, CloseRepresentation1));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, CloseRepresentation1));
             }
         }
 
         public bool IsNoId(long id)
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ => __.IsNoId(id);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, IsNoIdRepresentation2);
-                }
+                Action<IObjectStore> cons1686390220 = __ => __.IsNoId(id);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1686390220, null, IsNoIdRepresentation2);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            IsNoIdRepresentation2));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons1686390220, IsNoIdRepresentation2));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, IsNoIdRepresentation2));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, IsNoIdRepresentation2));
             }
 
             return false;
@@ -186,925 +129,437 @@ namespace Vlingo.Symbio.Store.Object
 
         public bool IsId(long id)
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ => __.IsId(id);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, IsIdRepresentation3);
-                }
+                Action<IObjectStore> cons1390614019 = __ => __.IsId(id);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1390614019, null, IsIdRepresentation3);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
+                    mailbox.Send(
+                        new LocalMessage<IObjectStore>(actor, cons1390614019,
                             IsIdRepresentation3));
-                }
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, IsIdRepresentation3));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, IsIdRepresentation3));
             }
 
             return false;
         }
 
-        public ICompletes<IEntryReader<T>> EntryReader<T>(string name) where T : IEntry
+        public ICompletes<IEntryReader<TNewEntry>> EntryReader<TNewEntry>(string name)
+            where TNewEntry : IEntry
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ => __.EntryReader<T>(name);
-                var completes = new BasicCompletes<IEntryReader<T>>(_actor.Scheduler);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, completes, EntryReaderRepresentation4);
-                }
+                Action<IObjectStore> cons371671809 = __ => __.EntryReader<TNewEntry>(name);
+                var completes = new BasicCompletes<IEntryReader<TNewEntry>>(actor.Scheduler);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons371671809, completes, EntryReaderRepresentation4);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        completes, EntryReaderRepresentation4));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons371671809, completes, EntryReaderRepresentation4));
 
                 return completes;
             }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, EntryReaderRepresentation4));
-            }
 
-            return null!;
+            actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, EntryReaderRepresentation4));
+
+            return null;
         }
 
         public void QueryAll(QueryExpression expression,
             IQueryResultInterest interest)
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ => __.QueryAll(expression, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, QueryAllRepresentation5);
-                }
+                Action<IObjectStore> cons956609003 = __ => __.QueryAll(expression, interest);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons956609003, null, QueryAllRepresentation5);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            QueryAllRepresentation5));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons956609003, QueryAllRepresentation5));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, QueryAllRepresentation5));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, QueryAllRepresentation5));
             }
         }
 
         public void QueryAll(QueryExpression expression,
-            IQueryResultInterest interest, object? @object)
+            IQueryResultInterest interest, object @object)
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
+                Action<IObjectStore> cons272555097 = __ =>
                     __.QueryAll(expression, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, QueryAllRepresentation6);
-                }
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons272555097, null, QueryAllRepresentation6);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            QueryAllRepresentation6));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons272555097, QueryAllRepresentation6));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, QueryAllRepresentation6));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, QueryAllRepresentation6));
             }
         }
 
         public void QueryObject(QueryExpression expression,
             IQueryResultInterest interest)
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ => __.QueryObject(expression, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, QueryObjectRepresentation7);
-                }
+                Action<IObjectStore> cons1823632399 = __ =>
+                    __.QueryObject(expression, interest);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1823632399, null, QueryObjectRepresentation7);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        QueryObjectRepresentation7));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons1823632399, QueryObjectRepresentation7));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, QueryObjectRepresentation7));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, QueryObjectRepresentation7));
             }
         }
 
         public void QueryObject(QueryExpression expression,
-            IQueryResultInterest interest, object? @object)
+            IQueryResultInterest interest, object @object)
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
+                Action<IObjectStore> cons1357924112 = __ =>
                     __.QueryObject(expression, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, QueryObjectRepresentation8);
-                }
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1357924112, null, QueryObjectRepresentation8);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        QueryObjectRepresentation8));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons1357924112, QueryObjectRepresentation8));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, QueryObjectRepresentation8));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, QueryObjectRepresentation8));
             }
         }
 
-        public void Persist<TState>(TState stateObject, IPersistResultInterest interest)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState>(stateObject, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation9);
-                }
-                else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation9));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation9));
-            }
-        }
-
-        public void Persist<TState>(TState stateObject, Metadata metadata,
-            IPersistResultInterest interest)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState>(stateObject, metadata, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation10);
-                }
-                else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation10));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation10));
-            }
-        }
-
-        public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources,
+        public void Persist<TState, TSource>(StateSources<TState, TSource> stateSources,
             IPersistResultInterest interest)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState, TSource>(stateObject, sources, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation11);
-                }
+                Action<IObjectStore> cons738467078 = __ =>
+                    __.Persist(stateSources, interest);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons738467078, null, PersistRepresentation9);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation11));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons738467078, PersistRepresentation9));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation11));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistRepresentation9));
             }
         }
 
-        public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources,
+        public void Persist<TState, TSource>(StateSources<TState, TSource> stateSources,
             Metadata metadata, IPersistResultInterest interest)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState, TSource>(stateObject, sources, metadata, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation12);
-                }
+                Action<IObjectStore> cons297809971 = __ =>
+                    __.Persist(stateSources, metadata, interest);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons297809971, null, PersistRepresentation10);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation12));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons297809971, PersistRepresentation10));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation12));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistRepresentation10));
             }
         }
 
-        public void Persist<TState>(TState stateObject, IPersistResultInterest interest,
-            object? @object) where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState>(stateObject, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation13);
-                }
-                else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation13));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation13));
-            }
-        }
-
-        public void Persist<TState>(TState stateObject, Metadata metadata,
-            IPersistResultInterest interest, object? @object)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState>(stateObject, metadata, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation14);
-                }
-                else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation14));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation14));
-            }
-        }
-
-        public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources,
-            IPersistResultInterest interest, object? @object)
+        public void Persist<TState, TSource>(StateSources<TState, TSource> stateSources,
+            IPersistResultInterest interest, object @object)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState, TSource>(stateObject, sources, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation15);
-                }
+                Action<IObjectStore> cons1425279528 = __ =>
+                    __.Persist(stateSources, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1425279528, null, PersistRepresentation11);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation15));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons1425279528, PersistRepresentation11));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation15));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistRepresentation11));
             }
         }
 
-        public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources,
-            Metadata metadata, IPersistResultInterest interest, object? @object)
+        public void Persist<TState, TSource>(StateSources<TState, TSource> stateSources,
+            Metadata metadata, IPersistResultInterest interest, object @object)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState, TSource>(stateObject, sources, metadata, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation16);
-                }
+                Action<IObjectStore> cons1263382963 = __ =>
+                    __.Persist(stateSources, metadata, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1263382963, null, PersistRepresentation12);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation16));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons1263382963, PersistRepresentation12));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation16));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistRepresentation12));
             }
         }
 
-        public void Persist<TState>(TState stateObject, long updateId,
-            IPersistResultInterest interest)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState>(stateObject, updateId, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation17);
-                }
-                else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation17));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation17));
-            }
-        }
-
-        public void Persist<TState>(TState stateObject, Metadata metadata, long updateId,
-            IPersistResultInterest interest)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState>(stateObject, metadata, updateId, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation18);
-                }
-                else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation18));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation18));
-            }
-        }
-
-        public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources, long updateId,
+        public void Persist<TState, TSource>(StateSources<TState, TSource> stateSources, long updateId,
             IPersistResultInterest interest)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState, TSource>(stateObject, sources, updateId, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation19);
-                }
+                Action<IObjectStore> cons440866163 = __ =>
+                    __.Persist(stateSources, updateId, interest);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons440866163, null, PersistRepresentation13);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation19));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons440866163, PersistRepresentation13));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation19));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistRepresentation13));
             }
         }
 
-        public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources,
+        public void Persist<TState, TSource>(StateSources<TState, TSource> stateSources,
             Metadata metadata, long updateId, IPersistResultInterest interest)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState, TSource>(stateObject, sources, metadata, updateId, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation20);
-                }
+                Action<IObjectStore> cons1787697675 = __ =>
+                    __.Persist(stateSources, metadata, updateId, interest);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1787697675, null, PersistRepresentation14);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation20));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons1787697675, PersistRepresentation14));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation20));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistRepresentation14));
             }
         }
 
-        public void Persist<TState>(TState stateObject, long updateId,
-            IPersistResultInterest interest, object? @object)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState>(stateObject, updateId, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation21);
-                }
-                else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation21));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation21));
-            }
-        }
-
-        public void Persist<TState>(TState stateObject, Metadata metadata, long updateId,
-            IPersistResultInterest interest, object? @object)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState>(stateObject, metadata, updateId, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation22);
-                }
-                else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation22));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation22));
-            }
-        }
-
-        public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources, long updateId,
-            IPersistResultInterest interest, object? @object)
+        public void Persist<TState, TSource>(StateSources<TState, TSource> stateSources, long updateId,
+            IPersistResultInterest interest, object @object)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState, TSource>(stateObject, sources, updateId, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation23);
-                }
+                Action<IObjectStore> cons1658623364 = __ =>
+                    __.Persist(stateSources, updateId, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1658623364, null, PersistRepresentation15);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation23));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons1658623364, PersistRepresentation15));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation23));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistRepresentation15));
             }
         }
 
-        public void Persist<TState, TSource>(TState stateObject, IEnumerable<TSource> sources,
+        public void Persist<TState, TSource>(StateSources<TState, TSource> stateSources,
             Metadata metadata, long updateId, IPersistResultInterest interest,
-            object? @object) where TState : StateObject where TSource : Source
+            object @object) where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.Persist<TState, TSource>(stateObject, sources, metadata, updateId, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistRepresentation24);
-                }
+                Action<IObjectStore> cons1567165775 = __ =>
+                    __.Persist(stateSources, metadata, updateId, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1567165775, null, PersistRepresentation16);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IObjectStore>(_actor, cons128873,
-                            PersistRepresentation24));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons1567165775, PersistRepresentation16));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistRepresentation24));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistRepresentation16));
             }
         }
 
-        public void PersistAll<TState>(IEnumerable<TState> stateObjects,
-            IPersistResultInterest interest)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState>(stateObjects, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation25);
-                }
-                else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation25));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation25));
-            }
-        }
-
-        public void PersistAll<TState>(IEnumerable<TState> stateObjects, Metadata metadata,
-            IPersistResultInterest interest)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState>(stateObjects, metadata, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation26);
-                }
-                else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation26));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation26));
-            }
-        }
-
-        public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
+        public void PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>> allStateSources,
             IPersistResultInterest interest)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState, TSource>(stateObjects, sources, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation27);
-                }
+                Action<IObjectStore> cons542297984 = __ =>
+                    __.PersistAll(allStateSources, interest);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons542297984, null, PersistAllRepresentation17);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation27));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons542297984, PersistAllRepresentation17));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation27));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistAllRepresentation17));
             }
         }
 
-        public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
+        public void PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>> allStateSources,
             Metadata metadata, IPersistResultInterest interest)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState, TSource>(stateObjects, sources, metadata, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation28);
-                }
+                Action<IObjectStore> cons964439767 = __ =>
+                    __.PersistAll(allStateSources, metadata, interest);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons964439767, null, PersistAllRepresentation18);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation28));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons964439767, PersistAllRepresentation18));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation28));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistAllRepresentation18));
             }
         }
 
-        public void PersistAll<TState>(IEnumerable<TState> stateObjects,
-            IPersistResultInterest interest, object? @object)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState>(stateObjects, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation29);
-                }
-                else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation29));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation29));
-            }
-        }
-
-        public void PersistAll<TState>(IEnumerable<TState> stateObjects, Metadata metadata,
-            IPersistResultInterest interest, object? @object)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState>(stateObjects, metadata, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation30);
-                }
-                else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation30));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation30));
-            }
-        }
-
-        public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
-            IPersistResultInterest interest, object? @object)
+        public void PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>> allStateSources,
+            IPersistResultInterest interest, object @object)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState, TSource>(stateObjects, sources, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation31);
-                }
+                Action<IObjectStore> cons1292430346 = __ =>
+                    __.PersistAll(allStateSources, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1292430346, null, PersistAllRepresentation19);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation31));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons1292430346, PersistAllRepresentation19));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation31));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistAllRepresentation19));
             }
         }
 
-        public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
-            Metadata metadata, IPersistResultInterest interest, object? @object)
+        public void PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>> allStateSources,
+            Metadata metadata, IPersistResultInterest interest, object @object)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState, TSource>(stateObjects, sources, metadata, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation32);
-                }
+                Action<IObjectStore> cons106955477 = __ =>
+                    __.PersistAll(allStateSources, metadata, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons106955477, null, PersistAllRepresentation20);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation32));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons106955477, PersistAllRepresentation20));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation32));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistAllRepresentation20));
             }
         }
 
-        public void PersistAll<TState>(IEnumerable<TState> stateObjects, long updateId,
-            IPersistResultInterest interest)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState>(stateObjects, updateId, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation33);
-                }
-                else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation33));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation33));
-            }
-        }
-
-        public void PersistAll<TState>(IEnumerable<TState> stateObjects, Metadata metadata, long updateId,
-            IPersistResultInterest interest)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState>(stateObjects, metadata, updateId, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation34);
-                }
-                else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation34));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation34));
-            }
-        }
-
-        public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
+        public void PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>> allStateSources,
             long updateId, IPersistResultInterest interest)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState, TSource>(stateObjects, sources, updateId, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation35);
-                }
+                Action<IObjectStore> cons1805700743 = __ =>
+                    __.PersistAll(allStateSources, updateId, interest);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1805700743, null, PersistAllRepresentation21);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation35));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons1805700743, PersistAllRepresentation21));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation35));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistAllRepresentation21));
             }
         }
 
-        public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
+        public void PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>> allStateSources,
             Metadata metadata, long updateId, IPersistResultInterest interest)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState, TSource>(stateObjects, sources, metadata, updateId, interest);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation36);
-                }
+                Action<IObjectStore> cons56923825 = __ =>
+                    __.PersistAll(allStateSources, metadata, updateId, interest);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons56923825, null, PersistAllRepresentation22);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation36));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons56923825, PersistAllRepresentation22));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation36));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistAllRepresentation22));
             }
         }
 
-        public void PersistAll<TState>(IEnumerable<TState> stateObjects, long updateId,
-            IPersistResultInterest interest, object? @object)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState>(stateObjects, updateId, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation37);
-                }
-                else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation37));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation37));
-            }
-        }
-
-        public void PersistAll<TState>(IEnumerable<TState> stateObjects, Metadata metadata, long updateId,
-            IPersistResultInterest interest, object? @object)
-            where TState : StateObject
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState>(stateObjects, metadata, updateId, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation38);
-                }
-                else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation38));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation38));
-            }
-        }
-
-        public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
-            long updateId, IPersistResultInterest interest, object? @object)
+        public void PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>> allStateSources,
+            long updateId, IPersistResultInterest interest, object @object)
             where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState, TSource>(stateObjects, sources, updateId, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation39);
-                }
+                Action<IObjectStore> cons1420492840 = __ =>
+                    __.PersistAll(allStateSources, updateId, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1420492840, null, PersistAllRepresentation23);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation39));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons1420492840, PersistAllRepresentation23));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation39));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistAllRepresentation23));
             }
         }
 
-        public void PersistAll<TState, TSource>(IEnumerable<TState> stateObjects, IEnumerable<TSource> sources,
+        public void PersistAll<TState, TSource>(IEnumerable<StateSources<TState, TSource>> allStateSources,
             Metadata metadata, long updateId, IPersistResultInterest interest,
-            object? @object) where TState : StateObject where TSource : Source
+            object @object) where TState : StateObject where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IObjectStore> cons128873 = __ =>
-                    __.PersistAll<TState, TSource>(stateObjects, sources, metadata, updateId, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, PersistAllRepresentation40);
-                }
+                Action<IObjectStore> cons129016173 = __ =>
+                    __.PersistAll(allStateSources, metadata, updateId, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons129016173, null, PersistAllRepresentation24);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IObjectStore>(_actor, cons128873,
-                        PersistAllRepresentation40));
-                }
+                    mailbox.Send(new LocalMessage<IObjectStore>(actor,
+                        cons129016173, PersistAllRepresentation24));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, PersistAllRepresentation40));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, PersistAllRepresentation24));
             }
         }
     }

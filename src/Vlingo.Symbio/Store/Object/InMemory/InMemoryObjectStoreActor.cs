@@ -92,56 +92,34 @@ namespace Vlingo.Symbio.Store.Object.InMemory
                 interest.QueryObjectResultedIn(Failure.Of<StorageException, Result>(new StorageException(Result.NotFound, "No object identified by expression: " + expression)), QuerySingleResult.Of(null), @object);
             }
         }
+        
+        public void Persist<TNewState, TSource>(StateSources<TNewState, TSource> stateSources, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
+            => Persist(stateSources, Metadata.NullMetadata(), -1, interest, null);
 
-        public void Persist<TNewState>(TNewState stateObject, IPersistResultInterest interest)
-            where TNewState : StateObject => Persist(stateObject, Source<TState>.None(), Metadata.NullMetadata(), -1, interest, null);
+        public void Persist<TNewState, TSource>(StateSources<TNewState, TSource> stateSources, Metadata metadata, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
+            => Persist(stateSources, metadata, -1, interest, null);
+       
+        public void Persist<TNewState, TSource>(StateSources<TNewState, TSource> stateSources, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
+            => Persist(stateSources, Metadata.NullMetadata(), -1, interest, @object);
 
-        public void Persist<TNewState>(TNewState stateObject, Metadata metadata, IPersistResultInterest interest)
-            where TNewState : StateObject => Persist(stateObject, Source<TState>.None(), metadata, -1, interest, null);
+        public void Persist<TNewState, TSource>(StateSources<TNewState, TSource> stateSources, Metadata metadata, IPersistResultInterest interest, object? @object)
+            where TNewState : StateObject where TSource : Source => Persist(stateSources, metadata, -1, interest, @object);
+        
+        public void Persist<TNewState, TSource>(StateSources<TNewState, TSource> stateSources, long updateId, IPersistResultInterest interest)
+            where TNewState : StateObject where TSource : Source => Persist(stateSources, Metadata.NullMetadata(), updateId, interest, null);
 
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
-            => Persist(stateObject, sources, Metadata.NullMetadata(), -1, interest, null);
+        public void Persist<TNewState, TSource>(StateSources<TNewState, TSource> stateSources, Metadata metadata, long updateId, IPersistResultInterest interest)
+            where TNewState : StateObject where TSource : Source => Persist(stateSources, metadata, updateId, interest, null);
+        
+        public void Persist<TNewState, TSource>(StateSources<TNewState, TSource> stateSources, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
+            => Persist(stateSources, Metadata.NullMetadata(), updateId, interest, @object);
 
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, Metadata metadata, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
-            => Persist(stateObject, sources, metadata, -1, interest, null);
-
-        public void Persist<TNewState>(TNewState stateObject, IPersistResultInterest interest, object? @object)
-            where TNewState : StateObject => Persist(stateObject, Source<TState>.None(), Metadata.NullMetadata(), -1, interest, @object);
-
-        public void Persist<TNewState>(TNewState stateObject, Metadata metadata, IPersistResultInterest interest, object? @object)
-            where TNewState : StateObject => Persist(stateObject, Source<TState>.None(), metadata, -1, interest, @object);
-
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
-            => Persist(stateObject, sources, Metadata.NullMetadata(), -1, interest, @object);
-
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, Metadata metadata, IPersistResultInterest interest, object? @object)
-            where TNewState : StateObject where TSource : Source => Persist(stateObject, sources, metadata, -1, interest, @object);
-
-        public void Persist<TNewState>(TNewState stateObject, long updateId, IPersistResultInterest interest)
-            where TNewState : StateObject => Persist(stateObject, Source<TState>.None(), Metadata.NullMetadata(), updateId, interest, null);
-
-        public void Persist<TNewState>(TNewState stateObject, Metadata metadata, long updateId, IPersistResultInterest interest)
-            where TNewState : StateObject => Persist(stateObject,Source<TState>.None(), metadata, updateId, interest, null);
-
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, long updateId, IPersistResultInterest interest)
-            where TNewState : StateObject where TSource : Source => Persist(stateObject, sources, Metadata.NullMetadata(), updateId, interest, null);
-
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, Metadata metadata, long updateId, IPersistResultInterest interest)
-            where TNewState : StateObject where TSource : Source => Persist(stateObject, sources, metadata, updateId, interest, null);
-
-        public void Persist<TNewState>(TNewState stateObject, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
-            => Persist(stateObject, Source<TState>.None(), Metadata.NullMetadata(), updateId, interest, @object);
-
-        public void Persist<TNewState>(TNewState stateObject, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
-            => Persist(stateObject, Source<TState>.None(), metadata, updateId, interest, @object);
-
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
-            => Persist(stateObject, sources, Metadata.NullMetadata(), updateId, interest, @object);
-
-        public void Persist<TNewState, TSource>(TNewState stateObject, IEnumerable<TSource> sources, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
+        public void Persist<TNewState, TSource>(StateSources<TNewState, TSource> stateSources, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
         {
             try
             {
+                var stateObject = stateSources.StateObject;
+                var sources = stateSources.Sources;
                 var raw = _storeDelegate.Persist(stateObject, updateId, metadata);
 
                 var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(sources, metadata).ToList();
@@ -159,72 +137,49 @@ namespace Vlingo.Symbio.Store.Object.InMemory
                 interest.PersistResultedIn(Failure.Of<StorageException, Result>(e), null, 0, 0, @object);
             }
         }
+        
+        public void PersistAll<TNewState, TSource>(IEnumerable<StateSources<TNewState, TSource>> allStateSources, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source =>
+            PersistAll(allStateSources, Metadata.NullMetadata(), -1, interest, null);
 
-        public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, IPersistResultInterest interest) where TNewState : StateObject 
-            => PersistAll(stateObjects, Source<TState>.None(), Metadata.NullMetadata(), -1, interest, null);
+        public void PersistAll<TNewState, TSource>(IEnumerable<StateSources<TNewState, TSource>> allStateSources, Metadata metadata, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
+            => PersistAll(allStateSources, metadata, -1, interest, null);
+        
+        public void PersistAll<TNewState, TSource>(IEnumerable<StateSources<TNewState, TSource>> allStateSources, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
+            => PersistAll(allStateSources, Metadata.NullMetadata(), -1, interest, @object);
 
-        public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, Metadata metadata, IPersistResultInterest interest) where TNewState : StateObject
-            => PersistAll(stateObjects, Source<TState>.None(), metadata, -1, interest, null);
+        public void PersistAll<TNewState, TSource>(IEnumerable<StateSources<TNewState, TSource>> allStateSources, Metadata metadata, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
+            => PersistAll(allStateSources, metadata, -1, interest, @object);
 
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source =>
-            PersistAll(stateObjects, sources, Metadata.NullMetadata(), -1, interest, null);
+        public void PersistAll<TNewState, TSource>(IEnumerable<StateSources<TNewState, TSource>> allStateSources, long updateId, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
+            => PersistAll(allStateSources, Metadata.NullMetadata(), updateId, interest, null);
 
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, Metadata metadata, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
-            => PersistAll(stateObjects, sources, metadata, -1, interest, null);
+        public void PersistAll<TNewState, TSource>(IEnumerable<StateSources<TNewState, TSource>> allStateSources, Metadata metadata, long updateId, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
+            => PersistAll(allStateSources, metadata, updateId, interest, null);
+        
+        public void PersistAll<TNewState, TSource>(IEnumerable<StateSources<TNewState, TSource>> allStateSources, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
+            => PersistAll(allStateSources, Metadata.NullMetadata(), updateId, interest, @object);
 
-        public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, IPersistResultInterest interest, object? @object) where TNewState : StateObject
-            => PersistAll(stateObjects, Source<TState>.None(), Metadata.NullMetadata(), -1, interest, @object);
-
-        public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, Metadata metadata, IPersistResultInterest interest, object? @object) where TNewState : StateObject
-            => PersistAll(stateObjects, Source<TState>.None(), metadata, -1, interest, @object);
-
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
-            => PersistAll(stateObjects, sources, Metadata.NullMetadata(), -1, interest, @object);
-
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, Metadata metadata, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
-            => PersistAll(stateObjects, sources, metadata, -1, interest, @object);
-
-        public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, long updateId, IPersistResultInterest interest) where TNewState : StateObject
-            => PersistAll(stateObjects, Source<TState>.None(), Metadata.NullMetadata(), updateId, interest, null);
-
-        public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, Metadata metadata, long updateId, IPersistResultInterest interest) where TNewState : StateObject
-            => PersistAll(stateObjects, Source<TState>.None(), metadata, updateId, interest, null);
-
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, long updateId, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
-            => PersistAll(stateObjects, sources, Metadata.NullMetadata(), updateId, interest, null);
-
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, Metadata metadata, long updateId, IPersistResultInterest interest) where TNewState : StateObject where TSource : Source
-            => PersistAll(stateObjects, sources, metadata, updateId, interest, null);
-
-        public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
-            => PersistAll(stateObjects, Source<TState>.None(), Metadata.NullMetadata(), updateId, interest, @object);
-
-        public void PersistAll<TNewState>(IEnumerable<TNewState> stateObjects, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject
-            => PersistAll(stateObjects, Source<TState>.None(), metadata, updateId, interest, @object);
-
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
-            => PersistAll(stateObjects, sources, Metadata.NullMetadata(), updateId, interest, @object);
-
-        public void PersistAll<TNewState, TSource>(IEnumerable<TNewState> stateObjects, IEnumerable<TSource> sources, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
+        public void PersistAll<TNewState, TSource>(IEnumerable<StateSources<TNewState, TSource>> allStateSources, Metadata metadata, long updateId, IPersistResultInterest interest, object? @object) where TNewState : StateObject where TSource : Source
         {
+            var allPersistentObjects = new List<TNewState>();
             try
             {
-                var stateObjectsToPersist = stateObjects as TNewState[] ?? stateObjects.ToArray();
-                var states = _storeDelegate.PersistAll(stateObjectsToPersist, updateId, metadata);
-
-                var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(sources, metadata).ToList();
-
-                _storeDelegate.PersistEntries(entries);
-
-                foreach (var state in states)
+                foreach (var stateSources in allStateSources)
                 {
+                    var stateObject = stateSources.StateObject;
+                    var state = _storeDelegate.Persist(stateObject, updateId, metadata);
+                    allPersistentObjects.Add(stateObject);
+
+                    var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(stateSources.Sources, metadata).ToList();
+                    _storeDelegate.PersistEntries(entries);
+
                     var dispatchable = BuildDispatchable(state, entries);
                     _storeDelegate.PersistDispatchable(dispatchable);
-                    //dispatch each persistent object
+
                     Dispatch(BuildDispatchable(state, entries));
                 }
-
-                interest.PersistResultedIn(Success.Of<StorageException, Result>(Result.Success), stateObjects, stateObjectsToPersist.Length, stateObjectsToPersist.Length, @object);
+                
+                interest.PersistResultedIn(Success.Of<StorageException, Result>(Result.Success), allPersistentObjects, allPersistentObjects.Count, allPersistentObjects.Count, @object);
             }
             catch (StorageException e)
             {

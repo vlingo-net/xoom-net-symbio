@@ -30,7 +30,7 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
             var persistAccess = _persistInterest.AfterCompleting(1);
             var person = new Person("Tom Jones", 85);
             var source = new Test1Source();
-            _objectStore.Persist(person, new List<Test1Source> { source }, _persistInterest);
+            _objectStore.Persist(StateSources<Person, Test1Source>.Of(person, source), _persistInterest);
             var persistSize = persistAccess.ReadFrom<int>("size");
             Assert.Equal(1, persistSize);
             Assert.Equal(person, persistAccess.ReadFrom<int ,object>("object", 0));
@@ -64,7 +64,12 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
             var person1 = new Person("Tom Jones", 78);
             var person2 = new Person("Dean Martin", 78);
             var person3 = new Person("Sally Struthers", 71);
-            _objectStore.PersistAll(new List<Person> { person1, person2, person3 }, _persistInterest);
+            _objectStore.PersistAll(new List<StateSources<Person, Test1Source>>
+            {
+                StateSources<Person, Test1Source>.Of(person1),
+                StateSources<Person, Test1Source>.Of(person2),
+                StateSources<Person, Test1Source>.Of(person3)
+            }, _persistInterest);
             var persistSize = persistAllAccess.ReadFrom<int>("size");
             Assert.Equal(3, persistSize);
 

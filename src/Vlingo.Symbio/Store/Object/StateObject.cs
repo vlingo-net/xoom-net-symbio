@@ -135,9 +135,6 @@ namespace Vlingo.Symbio.Store.Object
         /// Construct my default state with <paramref name="persistenceId"/>
         /// </summary>
         /// <param name="persistenceId">The long unique identity used for my persistence</param>
-        protected StateObject(long persistenceId)
-        {
-            _persistenceId = persistenceId;
-        }
+        protected StateObject(long persistenceId) => _persistenceId = persistenceId;
     }
 }
