@@ -13,13 +13,8 @@ namespace Vlingo.Symbio
 {
     public abstract class BaseEntry
     {
-        public BaseEntry(string id)
-        {
-            if (id == null) throw new ArgumentNullException(nameof(id), "Entry id must not be null.");
-            
-            InternalId = id;
-        }
-        
+        public BaseEntry(string id) => InternalId = id ?? throw new ArgumentNullException(nameof(id), "Entry id must not be null.");
+
         /// <summary>
         /// My <c>string</c> id that is unique within the <see cref="IJournal{T}"/> where persisted,
         /// and is (generally) assigned by the journal.
@@ -64,11 +59,17 @@ namespace Vlingo.Symbio
         /// </summary>
         private readonly int _typeVersion;
         
-        protected BaseEntry(string id, Type type, int typeVersion, T entryData): this(id, type, typeVersion, entryData, Metadata.NullMetadata())
+        private readonly int _entryVersion;
+        
+        protected BaseEntry(string id, Type type, int typeVersion, T entryData): this(id, type, typeVersion, entryData, Entry<T>.DefaultVersion, Metadata.NullMetadata())
+        {
+        }
+        
+        protected BaseEntry(string id, Type type, int typeVersion, T entryData, Metadata metadata): this(id, type, typeVersion, entryData, Entry<T>.DefaultVersion, metadata)
         {
         }
 
-        public BaseEntry(string id, Type type, int typeVersion, T entryData, Metadata metadata) : base(id)
+        public BaseEntry(string id, Type type, int typeVersion, T entryData, int entryVersion, Metadata metadata) : base(id)
         {
             if (type == null) throw new ArgumentNullException(nameof(type), "Entry type must not be null.");
             if (string.IsNullOrEmpty(type.AssemblyQualifiedName)) throw new ArgumentNullException(nameof(type.AssemblyQualifiedName), "Entry type.AssemblyQualifiedName must not be null.");
@@ -79,10 +80,11 @@ namespace Vlingo.Symbio
             _type = type.AssemblyQualifiedName;
             _typeVersion = typeVersion;
             _entryData = entryData;
+            _entryVersion = entryVersion;
             _metadata = metadata;
         }
 
-        public BaseEntry(Type type, int typeVersion, T entryData, Metadata metadata) : this(UnknownId, type, typeVersion, entryData, metadata)
+        public BaseEntry(Type type, int typeVersion, T entryData, Metadata metadata) : this(UnknownId, type, typeVersion, entryData, Entry<T>.DefaultVersion, metadata)
         {
         }
 
@@ -104,6 +106,9 @@ namespace Vlingo.Symbio
         
         /// <inheritdoc/>
         public int TypeVersion => _typeVersion;
+        
+        /// <inheritdoc/>
+        public int EntryVersion =>  _entryVersion;
 
         public BinaryEntry? AsBinaryEntry() => this as BinaryEntry;
         
@@ -189,7 +194,7 @@ namespace Vlingo.Symbio
 
         public override string ToString()
         {
-            return $"{GetType().Name}[id={InternalId} type={_type} typeVersion={_typeVersion} " +
+            return $"{GetType().Name}[id={InternalId} type={_type} typeVersion={_typeVersion} entryVersion={_entryVersion}" +
                 $"entryData={(IsText || IsObject ? _entryData?.ToString() : "(binary)")} metadata={_metadata}]";
         }
 
@@ -234,11 +239,11 @@ namespace Vlingo.Symbio
         {
         }
         
-        public BinaryEntry(Type type, int typeVersion, byte[] entryData, Metadata metadata) : base(UnknownId, type, typeVersion, entryData, metadata)
+        public BinaryEntry(Type type, int typeVersion, byte[] entryData, int entryVersion, Metadata metadata) : base(UnknownId, type, typeVersion, entryData, entryVersion, metadata)
         {
         }
 
-        public BinaryEntry() : base(UnknownId, typeof(object), 1, EmptyBytesData, Metadata.NullMetadata())
+        public BinaryEntry() : base(UnknownId, typeof(object), 1, EmptyBytesData)
         {
         }
 
@@ -262,11 +267,19 @@ namespace Vlingo.Symbio
         {
         }
         
-        public ObjectEntry(Type type, int typeVersion, T entryData, Metadata metadata) : base(UnknownId, type, typeVersion, entryData, metadata)
+        public ObjectEntry(Type type, int typeVersion, T entryData, int entryVersion, Metadata metadata) : base(UnknownId, type, typeVersion, entryData, entryVersion, metadata)
+        {
+        }
+        
+        public ObjectEntry(string id, Type type, int typeVersion, T entryData, int entryVersion, Metadata metadata) : base(id, type, typeVersion, entryData, entryVersion, metadata)
+        {
+        }
+        
+        public ObjectEntry(Type type, int typeVersion, T entryData, Metadata metadata) : base(UnknownId, type, typeVersion, entryData, Entry<T>.DefaultVersion, metadata)
         {
         }
 
-        public ObjectEntry() : base(UnknownId, typeof(T), 1, EmptyObjectData, Metadata.NullMetadata())
+        public ObjectEntry() : base(UnknownId, typeof(T), 1, EmptyObjectData)
         {
         }
 
@@ -286,15 +299,23 @@ namespace Vlingo.Symbio
         {
         }
         
+        public TextEntry(string id, Type type, int typeVersion, string entryData, int entryVersion, Metadata metadata) : base(id, type, typeVersion, entryData, entryVersion, metadata)
+        {
+        }
+        
         public TextEntry(string id, Type type, int typeVersion, string entryData) : base(id, type, typeVersion, entryData)
         {
         }
         
-        public TextEntry(Type type, int typeVersion, string entryData, Metadata metadata) : base(UnknownId, type, typeVersion, entryData, metadata)
+        public TextEntry(Type type, int typeVersion, string entryData, int entryVersion, Metadata metadata) : base(UnknownId, type, typeVersion, entryData, entryVersion, metadata)
+        {
+        }
+        
+        public TextEntry(Type type, int typeVersion, string entryData, Metadata metadata) : base(UnknownId, type, typeVersion, entryData, Entry<string>.DefaultVersion, metadata)
         {
         }
 
-        public TextEntry() : base(UnknownId, typeof(string), 1, EmptyTextData, Metadata.NullMetadata())
+        public TextEntry() : base(UnknownId, typeof(string), 1, EmptyTextData)
         {
         }
 
@@ -310,7 +331,7 @@ namespace Vlingo.Symbio
     /// </summary>
     public sealed class NullEntry<T> : BaseEntry<T>
     {
-        public NullEntry(T entryData) : base(UnknownId, typeof(T), 1, entryData, Metadata.NullMetadata())
+        public NullEntry(T entryData) : base(UnknownId, typeof(T), 1, entryData)
         {
         }
 

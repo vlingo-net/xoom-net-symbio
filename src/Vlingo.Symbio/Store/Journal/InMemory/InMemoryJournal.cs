@@ -61,7 +61,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 
         public override void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
         {
-            var entry = _entryAdapterProvider.AsEntry<TSource, TEntry>(source, metadata);
+            var entry = _entryAdapterProvider.AsEntry<TSource, TEntry>(source, streamVersion, metadata);
             Insert(streamName, streamVersion, entry);
             TState? raw;
             Optional<TSnapshotState> snapshotResult;
@@ -84,7 +84,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
         public override void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<TSource> sources, Metadata metadata, IAppendResultInterest interest, object @object)
         {
             var sourcesForEntries = sources.ToList();
-            var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(sourcesForEntries, metadata);
+            var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(sourcesForEntries, fromStreamVersion, metadata);
             var dispatchableEntries = entries.ToList();
             Insert(streamName, fromStreamVersion, dispatchableEntries);
 
@@ -96,7 +96,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
         {
             var sourcesForEntries = sources.ToList();
-            var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(sourcesForEntries, metadata);
+            var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(sourcesForEntries, fromStreamVersion, metadata);
             var dispatchableEntries = entries.ToList();
             Insert(streamName, fromStreamVersion, dispatchableEntries);
             TState? raw;

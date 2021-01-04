@@ -47,6 +47,11 @@ namespace Vlingo.Symbio
         int TypeVersion { get; }
         
         /// <summary>
+        /// Gets entry version that is the state version with which I am associated.
+        /// </summary>
+        int EntryVersion { get; }
+        
+        /// <summary>
         /// Gets whether or not I have non-empty Metadata.
         /// </summary>
         bool HasMetadata { get; }
@@ -101,6 +106,8 @@ namespace Vlingo.Symbio
 
     public static class Entry<T>
     {
+        public static int DefaultVersion => -1;
+        
         public static IEnumerable<IEntry<T>> None => Enumerable.Empty<IEntry<T>>();
         
         public static Type TypedFrom(string type)

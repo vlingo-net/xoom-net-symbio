@@ -43,6 +43,15 @@ namespace Vlingo.Symbio
         TEntry ToEntry(TSource source, Metadata metadata);
 
         /// <summary>
+        /// Gets the <see cref="IEntry{T}"/> state from the <see cref="Source{T}"/> native state.
+        /// </summary>
+        /// <param name="source">The <see cref="Source{T}"/> native state.</param>
+        /// <param name="version">The int state version with which source is associated</param>
+        /// <param name="metadata">The <see cref="Metadata"/> for this entry.</param>
+        /// <returns>Adapted <see cref="IEntry{T}"/>.</returns>
+        TEntry ToEntry(TSource source, int version, Metadata metadata);
+
+        /// <summary>
         /// Gets the <see cref="IEntry{T}"/> state with its <paramref name="id"/> from the <see cref="Source{T}"/> native state.
         /// </summary>
         /// <param name="source">The <see cref="Source{T}"/> native state.</param>
@@ -50,7 +59,7 @@ namespace Vlingo.Symbio
         /// <returns>Adapted <see cref="IEntry{T}"/>.</returns>
         TEntry ToEntry(TSource source, string id);
 
-            /// <summary>
+        /// <summary>
         /// Gets the <see cref="IEntry{T}"/> state with its <paramref name="id"/> from the <see cref="Source{T}"/> native state.
         /// </summary>
         /// <param name="source">The <see cref="Source{T}"/> native state.</param>
@@ -58,6 +67,16 @@ namespace Vlingo.Symbio
         /// <param name="metadata">The <see cref="Metadata"/> for this entry.</param>
         /// <returns>Adapted <see cref="IEntry{T}"/>.</returns>
         TEntry ToEntry(TSource source, string id, Metadata metadata);
+
+        /// <summary>
+        /// Gets the <see cref="IEntry{T}"/> state with its <paramref name="id"/> from the <see cref="Source{T}"/> native state.
+        /// </summary>
+        /// <param name="source">The <see cref="Source{T}"/> native state.</param>
+        /// <param name="version">The int state version with which source is associated</param>
+        /// <param name="id">The string unique identity to assign to the <see cref="IEntry{T}"/>.</param>
+        /// <param name="metadata">The <see cref="Metadata"/> for this entry.</param>
+        /// <returns>Adapted <see cref="IEntry{T}"/>.</returns>
+        TEntry ToEntry(TSource source, int version, string id, Metadata metadata);
     }
 
     public abstract class EntryAdapter<TSource, TEntry> : IEntryAdapter<TSource, TEntry> where TEntry : IEntry where TSource : Source
@@ -65,9 +84,14 @@ namespace Vlingo.Symbio
         public abstract TSource FromEntry(TEntry entry);
 
         public abstract TEntry ToEntry(TSource source, Metadata metadata);
+        
+        public abstract TEntry ToEntry(TSource source, int version, Metadata metadata);
+        
+        public abstract TEntry ToEntry(TSource source, int version, string id, Metadata metadata);
 
-        public abstract TEntry ToEntry(TSource source, string id, Metadata metadata);
-
+        public virtual TEntry ToEntry(TSource source, string id, Metadata metadata) =>
+            ToEntry(source, Entry<TSource>.DefaultVersion, id, metadata);
+        
         public virtual TEntry ToEntry(TSource source) => ToEntry(source, Metadata.NullMetadata());
 
         public virtual TEntry ToEntry(TSource source, string id) => ToEntry(source, id, Metadata.NullMetadata());

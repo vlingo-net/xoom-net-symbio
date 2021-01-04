@@ -29,13 +29,25 @@ namespace Vlingo.Symbio
         public override TextEntry ToEntry(TState source, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
-            return new TextEntry(source.GetType(), 1, serialization, metadata);
+            return new TextEntry(source.GetType(), 1, serialization, 1, metadata);
         }
-        
+
         public override TextEntry ToEntry(TState source, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, source.GetType(), 1, serialization, metadata);
+        }
+        
+        public override TextEntry ToEntry(TState source, int version, string id, Metadata metadata)
+        {
+            var serialization = JsonSerialization.Serialized(source);
+            return new TextEntry(id, source.GetType(), 1, serialization, version, metadata);
+        }
+        
+        public override TextEntry ToEntry(TState source, int version, Metadata metadata)
+        {
+            var serialization = JsonSerialization.Serialized(source);
+            return new TextEntry(source.GetType(), 1, serialization, version, metadata);
         }
     }
 }

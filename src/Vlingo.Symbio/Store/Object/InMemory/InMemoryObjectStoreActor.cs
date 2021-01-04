@@ -122,7 +122,8 @@ namespace Vlingo.Symbio.Store.Object.InMemory
                 var sources = stateSources.Sources;
                 var raw = _storeDelegate.Persist(stateObject, updateId, metadata);
 
-                var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(sources, metadata).ToList();
+                var entryVersion = (int) stateSources.StateObject.Version;
+                var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(sources, entryVersion, metadata).ToList();
                 var dispatchable = BuildDispatchable(raw, entries);
 
                 _storeDelegate.PersistEntries(entries);
@@ -170,7 +171,8 @@ namespace Vlingo.Symbio.Store.Object.InMemory
                     var state = _storeDelegate.Persist(stateObject, updateId, metadata);
                     allPersistentObjects.Add(stateObject);
 
-                    var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(stateSources.Sources, metadata).ToList();
+                    var entryVersion = (int) stateSources.StateObject.Version;
+                    var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(stateSources.Sources, entryVersion, metadata).ToList();
                     _storeDelegate.PersistEntries(entries);
 
                     var dispatchable = BuildDispatchable(state, entries);

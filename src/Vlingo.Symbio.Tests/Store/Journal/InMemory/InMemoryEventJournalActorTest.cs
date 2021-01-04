@@ -239,6 +239,18 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             return new TextEntry(typeof(Test1Source), 1, serialization, metadata);
         }
 
+        public override TextEntry ToEntry(Test1Source source, int version, Metadata metadata)
+        {
+            var serialization = JsonSerialization.Serialized(source);
+            return new TextEntry(typeof(Test1Source), 1, serialization, version, metadata);
+        }
+
+        public override TextEntry ToEntry(Test1Source source, int version, string id, Metadata metadata)
+        {
+            var serialization = JsonSerialization.Serialized(source);
+            return new TextEntry(id, typeof(Test1Source), 1, serialization, version, metadata);
+        }
+
         public override TextEntry ToEntry(Test1Source source, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
@@ -254,6 +266,18 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(typeof(Test2Source), 1, serialization, metadata);
+        }
+
+        public override TextEntry ToEntry(Test2Source source, int version, Metadata metadata)
+        {
+            var serialization = JsonSerialization.Serialized(source);
+            return new TextEntry(typeof(Test2Source), 1, serialization, version, metadata);
+        }
+
+        public override TextEntry ToEntry(Test2Source source, int version, string id, Metadata metadata)
+        {
+            var serialization = JsonSerialization.Serialized(source);
+            return new TextEntry(id, typeof(Test2Source), 1, serialization, version, metadata);
         }
 
         public override TextEntry ToEntry(Test2Source source, string id, Metadata metadata)

@@ -144,6 +144,12 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
         public override ObjectEntry<Test1Source> ToEntry(Test1Source source, Metadata metadata) =>
             new ObjectEntry<Test1Source>(typeof(Test1Source), 1, source, metadata);
 
+        public override ObjectEntry<Test1Source> ToEntry(Test1Source source, int version, Metadata metadata)
+            => new ObjectEntry<Test1Source>(typeof(Test1Source), 1, source, version, metadata);
+
+        public override ObjectEntry<Test1Source> ToEntry(Test1Source source, int version, string id, Metadata metadata)
+            => new ObjectEntry<Test1Source>(id, typeof(Test1Source), 1, source, version, metadata);
+
         public override ObjectEntry<Test1Source> ToEntry(Test1Source source, string id, Metadata metadata)=>
             new ObjectEntry<Test1Source>(id, typeof(Test1Source), 1, source, metadata);
     }
