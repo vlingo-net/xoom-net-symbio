@@ -25,6 +25,8 @@ namespace Vlingo.Symbio.Store.Gap
         /// Successfully loaded entries up to now.
         /// </summary>
         public List<IEntry<T>> LoadedEntries { get; }
+
+        public List<IEntry<T>> SortedLoadedEntries => LoadedEntries.OrderBy(e => long.Parse(e.Id)).ToList();
         
         /// <summary>
         /// List of ids failed to be loaded (gaps).

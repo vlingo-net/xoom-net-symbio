@@ -43,6 +43,14 @@ namespace Vlingo.Symbio.Tests.Store.Gap
             var entries2 = _readerActor.ReadNext(50).Await();
             // 4 entries out of 50 didn't get loaded at all
             Assert.Equal(46, entries2.Count);
+            
+            long previousId = -1;
+            foreach (var currentEntry in entries2)
+            {
+                long currentId = long.Parse(currentEntry.Id);
+                Assert.True(previousId < currentId);
+                previousId = currentId;
+            }
         }
     }
     

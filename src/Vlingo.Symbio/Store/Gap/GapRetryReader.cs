@@ -19,7 +19,7 @@ namespace Vlingo.Symbio.Store.Gap
     public class GapRetryReader<T>
     {
         private readonly IScheduled<RetryGappedEntries<T>> _actor;
-        private Scheduler _scheduler;
+        private readonly Scheduler _scheduler;
         
         public GapRetryReader(Stage stage, Scheduler scheduler)
         {

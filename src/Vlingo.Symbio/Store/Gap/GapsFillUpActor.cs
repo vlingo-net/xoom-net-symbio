@@ -29,7 +29,7 @@ namespace Vlingo.Symbio.Store.Gap
                 }
                 else
                 {
-                    eventually.With(nextGappedEntries.LoadedEntries);
+                    eventually.With(nextGappedEntries.SortedLoadedEntries);
                 }
             }
             else
