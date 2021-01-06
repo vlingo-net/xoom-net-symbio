@@ -59,7 +59,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 
         public override void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, IAppendResultInterest interest, object @object)
         {
-            var entry = _entryAdapterProvider.AsEntry<TSource, TEntry>(source, metadata);
+            var entry = _entryAdapterProvider.AsEntry<TSource, TEntry>(source, streamVersion, metadata);
             Insert(streamName, streamVersion, entry);
             Dispatch(streamName, streamVersion, new List<TEntry> { entry }, null);
             interest.AppendResultedIn(Success.Of<StorageException, Result>(Result.Success), streamName, streamVersion, source, Optional.Empty<TSnapshotState>(), @object);

@@ -42,11 +42,11 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal(new Event3(), access.ReadFrom<object>("sources"));
 
             var entry1 = _reader.ReadNext().Await();
-            Assert.True(_entryAdapterProvider.AsEntry<Event, IEntry<string>>(new Event1(), Metadata.NullMetadata()).WithId("0").Equals(entry1));
+            Assert.True(_entryAdapterProvider.AsEntry<Event, IEntry<string>>(new Event1(), 1, Metadata.NullMetadata()).WithId("0").Equals(entry1));
             var entry2 = _reader.ReadNext().Await();
-            Assert.True(_entryAdapterProvider.AsEntry<Event, IEntry<string>>(new Event2(), Metadata.NullMetadata()).WithId("1").Equals(entry2));
+            Assert.True(_entryAdapterProvider.AsEntry<Event, IEntry<string>>(new Event2(), 1, Metadata.NullMetadata()).WithId("1").Equals(entry2));
             var entry3 = _reader.ReadNext().Await();
-            Assert.True(_entryAdapterProvider.AsEntry<Event, IEntry<string>>(new Event3(), Metadata.NullMetadata()).WithId("2").Equals(entry3));
+            Assert.True(_entryAdapterProvider.AsEntry<Event, IEntry<string>>(new Event3(), 1, Metadata.NullMetadata()).WithId("2").Equals(entry3));
 
             _reader.Rewind();
             Assert.Equal(new List<IEntry<string>> { entry1, entry2, entry3}, _reader.ReadNext(3).Await());
