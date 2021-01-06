@@ -16,320 +16,269 @@ namespace Vlingo.Symbio.Store.Journal
     public class Journal__Proxy<T> : IJournal<T>
     {
         private const string UsingRepresentation1 =
-            "Using<TActor, TState>(Vlingo.Actors.Stage, IDispatcher<Dispatchable<TEntry, TState>>, System.Object[])";
+            "Using<TActor, TEntry, TState>(Vlingo.Actors.Stage, IDispatcher<Dispatchable<TEntry, TState>>, System.Object[])";
 
-        private const string AppendRepresentation2 =
-            "Append<TSource, TSnapshotState>(string, int, Source<TSource>, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+        private const string UsingRepresentation2 =
+            "Using<TActor, TEntry, TState>(Vlingo.Actors.Stage, IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>>, System.Object[])";
 
         private const string AppendRepresentation3 =
-            "Append<TSource, TSnapshotState>(string, int, Source<TSource>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+            "Append<TSource, TSnapshotState>(string, int, TSource, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
-        private const string AppendWithRepresentation4 =
-            "AppendWith<TSource, TSnapshotState>(string, int, Source<TSource>, TSnapshotState, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+        private const string AppendRepresentation4 =
+            "Append<TSource, TSnapshotState>(string, int, TSource, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
         private const string AppendWithRepresentation5 =
-            "AppendWith<TSource, TSnapshotState>(string, int, Source<TSource>, Vlingo.Symbio.Metadata, TSnapshotState, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+            "AppendWith<TSource, TSnapshotState>(string, int, TSource, TSnapshotState, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
-        private const string AppendAllRepresentation6 =
-            "AppendAll<TSource, TSnapshotState>(string, int, IEnumerable<Source<TSource>>, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+        private const string AppendWithRepresentation6 =
+            "AppendWith<TSource, TSnapshotState>(string, int, TSource, Vlingo.Symbio.Metadata, TSnapshotState, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
         private const string AppendAllRepresentation7 =
-            "AppendAll<TSource, TSnapshotState>(string, int, IEnumerable<Source<TSource>>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+            "AppendAll<TSource, TSnapshotState>(string, int, IEnumerable<TSource>, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
-        private const string AppendAllWithRepresentation8 =
-            "AppendAllWith<TSource, TSnapshotState>(string, int, IEnumerable<Source<TSource>>, TSnapshotState, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+        private const string AppendAllRepresentation8 =
+            "AppendAll<TSource, TSnapshotState>(string, int, IEnumerable<TSource>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
         private const string AppendAllWithRepresentation9 =
-            "AppendAllWith<TSource, TSnapshotState>(string, int, IEnumerable<Source<TSource>>, Vlingo.Symbio.Metadata, TSnapshotState, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+            "AppendAllWith<TSource, TSnapshotState>(string, int, IEnumerable<TSource>, TSnapshotState, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
-        private const string JournalReaderRepresentation10 = "JournalReader<TNewEntry>(string)";
-        private const string StreamReaderRepresentation11 = "StreamReader(string)";
+        private const string AppendAllWithRepresentation10 =
+            "AppendAllWith<TSource, TSnapshotState>(string, int, IEnumerable<TSource>, Vlingo.Symbio.Metadata, TSnapshotState, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
-        private readonly Actor _actor;
-        private readonly IMailbox _mailbox;
+        private const string JournalReaderRepresentation11 = "JournalReader<TNewEntry>(string)";
+        private const string StreamReaderRepresentation12 = "StreamReader(string)";
+
+        private readonly Actor actor;
+        private readonly IMailbox mailbox;
 
         public Journal__Proxy(Actor actor, IMailbox mailbox)
         {
-            _actor = actor;
-            _mailbox = mailbox;
-        }
-
-        public IJournal<T> Using<TActor, TEntry, TState>(Stage stage,
-            IDispatcher<Dispatchable<TEntry, TState>> dispatcher, System.Object[] additional)
-            where TActor : Actor where TEntry : IEntry<T> where TState : class, IState
-        {
-            if (!_actor.IsStopped)
-            {
-                Action<IJournal<T>> cons128873 = __ =>
-                    __.Using<TActor, TEntry, TState>(stage, dispatcher, additional);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, UsingRepresentation1);
-                }
-                else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IJournal<T>>(_actor, cons128873,
-                            UsingRepresentation1));
-                }
-            }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, UsingRepresentation1));
-            }
-
-            return null!;
+            this.actor = actor;
+            this.mailbox = mailbox;
         }
 
         public void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source,
             IAppendResultInterest interest, object @object) where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IJournal<T>> cons128873 = __ =>
+                Action<IJournal<T>> cons1113662861 = __ =>
                     __.Append<TSource, TSnapshotState>(streamName, streamVersion, source, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, AppendRepresentation2);
-                }
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1113662861, null, AppendRepresentation3);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IJournal<T>>(_actor, cons128873,
-                            AppendRepresentation2));
-                }
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons1113662861, AppendRepresentation3));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, AppendRepresentation2));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, AppendRepresentation3));
             }
         }
 
         public void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source,
             Metadata metadata, IAppendResultInterest interest, object @object) where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IJournal<T>> cons128873 = __ =>
+                Action<IJournal<T>> cons397294566 = __ =>
                     __.Append<TSource, TSnapshotState>(streamName, streamVersion, source, metadata, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, AppendRepresentation3);
-                }
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons397294566, null, AppendRepresentation4);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IJournal<T>>(_actor, cons128873,
-                            AppendRepresentation3));
-                }
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons397294566, AppendRepresentation4));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, AppendRepresentation3));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, AppendRepresentation4));
             }
         }
 
         public void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source,
             TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IJournal<T>> cons128873 = __ =>
-                    __.AppendWith<TSource, TSnapshotState>(streamName, streamVersion, source, snapshot, interest,
-                        @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, AppendWithRepresentation4);
-                }
+                Action<IJournal<T>> cons1922720892 = __ =>
+                    __.AppendWith(streamName, streamVersion, source, snapshot, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1922720892, null, AppendWithRepresentation5);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IJournal<T>>(_actor, cons128873,
-                            AppendWithRepresentation4));
-                }
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons1922720892, AppendWithRepresentation5));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, AppendWithRepresentation4));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, AppendWithRepresentation5));
             }
         }
 
         public void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source,
-            Metadata metadata, TSnapshotState snapshot,
-            IAppendResultInterest interest, object @object) where TSource : Source
+            Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
+            where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IJournal<T>> cons128873 = __ =>
-                    __.AppendWith<TSource, TSnapshotState>(streamName, streamVersion, source, metadata, snapshot,
-                        interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, AppendWithRepresentation5);
-                }
+                Action<IJournal<T>> cons1778464441 = __ =>
+                    __.AppendWith(streamName, streamVersion, source, metadata, snapshot, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1778464441, null, AppendWithRepresentation6);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IJournal<T>>(_actor, cons128873,
-                            AppendWithRepresentation5));
-                }
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons1778464441, AppendWithRepresentation6));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, AppendWithRepresentation5));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, AppendWithRepresentation6));
             }
         }
 
         public void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion,
-            IEnumerable<TSource> sources, IAppendResultInterest interest,
-            object @object) where TSource : Source
+            IEnumerable<TSource> sources, IAppendResultInterest interest, object @object) where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IJournal<T>> cons128873 = __ =>
+                Action<IJournal<T>> cons1438749561 = __ =>
                     __.AppendAll<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, AppendAllRepresentation6);
-                }
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1438749561, null, AppendAllRepresentation7);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IJournal<T>>(_actor, cons128873,
-                            AppendAllRepresentation6));
-                }
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons1438749561, AppendAllRepresentation7));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, AppendAllRepresentation6));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, AppendAllRepresentation7));
             }
         }
 
         public void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion,
-            IEnumerable<TSource> sources, Metadata metadata,
-            IAppendResultInterest interest, object @object) where TSource : Source
+            IEnumerable<TSource> sources, Metadata metadata, IAppendResultInterest interest, object @object)
+            where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IJournal<T>> cons128873 = __ =>
+                Action<IJournal<T>> cons1619280850 = __ =>
                     __.AppendAll<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, metadata, interest,
                         @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, AppendAllRepresentation7);
-                }
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1619280850, null, AppendAllRepresentation8);
                 else
-                {
-                    _mailbox.Send(
-                        new LocalMessage<IJournal<T>>(_actor, cons128873,
-                            AppendAllRepresentation7));
-                }
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons1619280850, AppendAllRepresentation8));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, AppendAllRepresentation7));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, AppendAllRepresentation8));
             }
         }
 
         public void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion,
-            IEnumerable<TSource> sources, TSnapshotState snapshot,
-            IAppendResultInterest interest, object @object) where TSource : Source
+            IEnumerable<TSource> sources, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
+            where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IJournal<T>> cons128873 = __ =>
-                    __.AppendAllWith<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, snapshot,
-                        interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, AppendAllWithRepresentation8);
-                }
+                Action<IJournal<T>> cons329572136 = __ =>
+                    __.AppendAllWith(streamName, fromStreamVersion, sources, snapshot, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons329572136, null, AppendAllWithRepresentation9);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IJournal<T>>(_actor,
-                        cons128873, AppendAllWithRepresentation8));
-                }
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons329572136, AppendAllWithRepresentation9));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, AppendAllWithRepresentation8));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, AppendAllWithRepresentation9));
             }
         }
 
         public void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion,
-            IEnumerable<TSource> sources, Metadata metadata, TSnapshotState snapshot,
-            IAppendResultInterest interest, object @object) where TSource : Source
+            IEnumerable<TSource> sources, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest,
+            object @object) where TSource : Source
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IJournal<T>> cons128873 = __ =>
-                    __.AppendAllWith<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, metadata,
-                        snapshot, interest, @object);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, null, AppendAllWithRepresentation9);
-                }
+                Action<IJournal<T>> cons2042766341 = __ =>
+                    __.AppendAllWith(streamName, fromStreamVersion, sources, metadata, snapshot, interest, @object);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons2042766341, null, AppendAllWithRepresentation10);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IJournal<T>>(_actor,
-                        cons128873, AppendAllWithRepresentation9));
-                }
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons2042766341, AppendAllWithRepresentation10));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, AppendAllWithRepresentation9));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, AppendAllWithRepresentation10));
             }
         }
 
-        public ICompletes<IJournalReader<TNewEntry>?> JournalReader<TNewEntry>(string name)
-            where TNewEntry : IEntry
+        public ICompletes<IJournalReader<TNewEntry>?> JournalReader<TNewEntry>(string name) where TNewEntry : IEntry
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IJournal<T>> cons128873 = __ =>
-                    __.JournalReader<TNewEntry>(name);
-                var completes = new BasicCompletes<IJournalReader<TNewEntry>>(_actor.Scheduler);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, completes, JournalReaderRepresentation10);
-                }
+                Action<IJournal<T>> cons1385350909 = __ => __.JournalReader<TNewEntry>(name);
+                var completes = new BasicCompletes<IJournalReader<TNewEntry>>(actor.Scheduler);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1385350909, completes, JournalReaderRepresentation11);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IJournal<T>>(_actor,
-                        cons128873, completes, JournalReaderRepresentation10));
-                }
-
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons1385350909, completes,
+                        JournalReaderRepresentation11));
                 return completes!;
             }
-            else
-            {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, JournalReaderRepresentation10));
-            }
 
+            actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, JournalReaderRepresentation11));
             return null!;
         }
 
         public ICompletes<IStreamReader<T>?> StreamReader(string name)
         {
-            if (!_actor.IsStopped)
+            if (!actor.IsStopped)
             {
-                Action<IJournal<T>> cons128873 = __ => __.StreamReader(name);
-                var completes = new BasicCompletes<IStreamReader<T>>(_actor.Scheduler);
-                if (_mailbox.IsPreallocated)
-                {
-                    _mailbox.Send(_actor, cons128873, completes, StreamReaderRepresentation11);
-                }
+                Action<IJournal<T>> cons165823724 = __ => __.StreamReader(name);
+                var completes = new BasicCompletes<IStreamReader<T>>(actor.Scheduler);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons165823724, completes, StreamReaderRepresentation12);
                 else
-                {
-                    _mailbox.Send(new LocalMessage<IJournal<T>>(_actor,
-                        cons128873, completes, StreamReaderRepresentation11));
-                }
-
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons165823724, completes,
+                        StreamReaderRepresentation12));
                 return completes!;
+            }
+
+            actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, StreamReaderRepresentation12));
+            return null!;
+        }
+
+        public IJournal<T> Using<TActor, TEntry, TState>(Stage stage,
+            IDispatcher<Dispatchable<TEntry, TState>> dispatcher, object[] additional)
+            where TActor : Actor where TState : class, IState where TEntry : IEntry<T>
+        {
+            if (!actor.IsStopped)
+            {
+                Action<IJournal<T>> cons617400048 =
+                    __ => __.Using<TActor, TEntry, TState>(stage, dispatcher, additional);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons617400048, null, UsingRepresentation1);
+                else
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons617400048, UsingRepresentation1));
             }
             else
             {
-                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, StreamReaderRepresentation11));
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, UsingRepresentation1));
+            }
+
+            return null!;
+        }
+
+        public IJournal<T> Using<TActor, TEntry, TState>(Stage stage,
+            IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, object[] additional)
+            where TActor : Actor where TState : class, IState where TEntry : IEntry<T>
+        {
+            if (!actor.IsStopped)
+            {
+                Action<IJournal<T>> cons1486857027 =
+                    __ => __.Using<TActor, TEntry, TState>(stage, dispatchers, additional);
+                if (mailbox.IsPreallocated)
+                    mailbox.Send(actor, cons1486857027, null, UsingRepresentation2);
+                else
+                    mailbox.Send(new LocalMessage<IJournal<T>>(actor, cons1486857027, UsingRepresentation2));
+            }
+            else
+            {
+                actor.DeadLetters?.FailedDelivery(new DeadLetter(actor, UsingRepresentation2));
             }
 
             return null!;

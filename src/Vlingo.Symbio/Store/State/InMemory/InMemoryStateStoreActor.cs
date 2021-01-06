@@ -19,7 +19,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
     public class InMemoryStateStoreActor<TRawState, TEntry> : Actor, IStateStore<TEntry> where TEntry : IEntry where TRawState : class, IState
     {
         private readonly List<Dispatchable<TEntry, TRawState>> _dispatchables;
-        private readonly IDispatcher<Dispatchable<TEntry, TRawState>> _dispatcher;
+        private readonly List<IDispatcher<Dispatchable<TEntry, TRawState>>> _dispatchers;
         private readonly IDispatcherControl _dispatcherControl;
         // this is based on mock database design, it represents a database entries and it's shared (like database)
         // between this and InMemoryStateStoreEntryReaderActor
@@ -29,18 +29,24 @@ namespace Vlingo.Symbio.Store.State.InMemory
         private readonly StateAdapterProvider _stateAdapterProvider;
         private readonly Dictionary<string, Dictionary<string, TRawState>> _store;
 
-        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher) : this(dispatcher, 1000L, 1000L)
+        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher) : this(new []{dispatcher}, 1000L, 1000L)
         {
         }
-        
-        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher, long checkConfirmationExpirationInterval, long confirmationExpiration)
+
+        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher,
+            long checkConfirmationExpirationInterval, long confirmationExpiration)
+        : this (new []{dispatcher}, checkConfirmationExpirationInterval, confirmationExpiration)
         {
-            if (dispatcher == null)
+        }
+
+        public InMemoryStateStoreActor(IEnumerable<IDispatcher<Dispatchable<TEntry, TRawState>>> dispatchers, long checkConfirmationExpirationInterval, long confirmationExpiration)
+        {
+            if (dispatchers == null)
             {
-                throw new ArgumentNullException(nameof(dispatcher), "Dispatcher must not be null.");
+                throw new ArgumentNullException(nameof(dispatchers), "Dispatcher must not be null.");
             }
             
-            _dispatcher = dispatcher;
+            _dispatchers = dispatchers.ToList();
             _entryAdapterProvider = EntryAdapterProvider.Instance(Stage.World);
             _stateAdapterProvider = StateAdapterProvider.Instance(Stage.World);
             _entries = new List<TEntry>();
@@ -52,7 +58,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
 
             _dispatcherControl = Stage.ActorFor<IDispatcherControl>(
                 () => new DispatcherControlActor<TEntry, TRawState>(
-                    dispatcher,
+                    _dispatchers,
                     dispatcherControlDelegate,
                     checkConfirmationExpirationInterval,
                     confirmationExpiration));
@@ -245,7 +251,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
             var dispatchId = $"{storeName}:{id}";
             var dispatchable = new Dispatchable<TEntry, TRawState>(dispatchId, DateTimeOffset.Now, raw, entries);
             _dispatchables.Add(dispatchable);
-            _dispatcher.Dispatch(dispatchable);
+            _dispatchers.ForEach(d => d.Dispatch(dispatchable));
         }
     }
 }

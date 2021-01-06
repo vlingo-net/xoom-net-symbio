@@ -26,12 +26,12 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
         private readonly Dictionary<string, Dictionary<int, int>> _streamIndexes;
         private readonly Dictionary<string, TState> _snapshots;
         private readonly List<Dispatchable<TEntry, TState>> _dispatchables;
-        private readonly IDispatcher<Dispatchable<TEntry, TState>> _dispatcher;
+        private readonly List<IDispatcher<Dispatchable<TEntry, TState>>> _dispatchers;
         private readonly IDispatcherControl _dispatcherControl;
 
-        public InMemoryJournal(IDispatcher<Dispatchable<TEntry, TState>> dispatcher, World world, long checkConfirmationExpirationInterval = 1000L, long confirmationExpiration = 1000L)
+        public InMemoryJournal(IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, World world, long checkConfirmationExpirationInterval = 1000L, long confirmationExpiration = 1000L)
         {
-            _dispatcher = dispatcher;
+            _dispatchers = dispatchers.ToList();
             _entryAdapterProvider = EntryAdapterProvider.Instance(world);
             _stateAdapterProvider = StateAdapterProvider.Instance(world);
             _journal = new List<TEntry>();
@@ -45,12 +45,18 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 
             _dispatcherControl = world.Stage.ActorFor<IDispatcherControl>(
                 () => new DispatcherControlActor<TEntry, TState>(
-                    dispatcher,
+                    _dispatchers,
                     dispatcherControlDelegate,
                     checkConfirmationExpirationInterval,
                     confirmationExpiration));
         }
-        
+
+        public InMemoryJournal(IDispatcher<Dispatchable<TEntry, TState>> dispatcher, World world,
+            long checkConfirmationExpirationInterval = 1000L, long confirmationExpiration = 1000L)
+        : this (new []{dispatcher}, world, checkConfirmationExpirationInterval, confirmationExpiration)
+        {
+        }
+
         public override void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, IAppendResultInterest interest, object @object)
         {
             var entry = _entryAdapterProvider.AsEntry<TSource, TEntry>(source, metadata);
@@ -184,7 +190,10 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             var id = GetDispatchId(streamName, streamVersion, dispatchableEntries);
             var dispatchable = new Dispatchable<TEntry, TState>(id,  DateTimeOffset.Now, snapshot, dispatchableEntries);
             _dispatchables.Add(dispatchable);
-            _dispatcher.Dispatch(dispatchable);
+            foreach (var dispatcher in _dispatchers)
+            {
+                dispatcher.Dispatch(dispatchable);
+            }
         }
 
         private static string GetDispatchId(string streamName, int streamVersion, IEnumerable<TEntry> entries) => $"{streamName}:{streamVersion}:{string.Join(":", entries.Select(e => e.Id))}";
