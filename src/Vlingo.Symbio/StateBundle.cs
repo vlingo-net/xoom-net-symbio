@@ -20,7 +20,5 @@ namespace Vlingo.Symbio
         }
 
         public StateBundle(IState state) => State = state;
-        {
-        }
     }
 }
