@@ -12,9 +12,9 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Gap
 {
-    public class GappedEntries<T, TEntry> where TEntry : IEntry<T>
+    public class GappedEntries<T>
     {
-        public GappedEntries(IEnumerable<TEntry> loadedEntries, IEnumerable<long> gapIds, ICompletesEventually completesEventually)
+        public GappedEntries(IEnumerable<IEntry<T>> loadedEntries, IEnumerable<long> gapIds, ICompletesEventually completesEventually)
         {
             CompletesEventually = completesEventually;
             LoadedEntries = loadedEntries.ToList();
@@ -24,9 +24,9 @@ namespace Vlingo.Symbio.Store.Gap
         /// <summary>
         /// Successfully loaded entries up to now.
         /// </summary>
-        public List<TEntry> LoadedEntries { get; }
+        public List<IEntry<T>> LoadedEntries { get; }
 
-        public List<TEntry> SortedLoadedEntries => LoadedEntries.OrderBy(e => long.Parse(e.Id)).ToList();
+        public List<IEntry<T>> SortedLoadedEntries => LoadedEntries.OrderBy(e => long.Parse(e.Id)).ToList();
         
         /// <summary>
         /// List of ids failed to be loaded (gaps).
@@ -49,19 +49,19 @@ namespace Vlingo.Symbio.Store.Gap
         /// Get first successfully loaded entry.
         /// </summary>
         /// <returns>First successfully loaded entry</returns>
-        public Optional<TEntry> GetFirst()
+        public Optional<IEntry<T>> GetFirst()
         {
             if (LoadedEntries.Count > 0)
             {
                 return Optional.Of(LoadedEntries[0]);
             }
 
-            return Optional.Empty<TEntry>();
+            return Optional.Empty<IEntry<T>>();
         }
         
-        public GappedEntries<T, TEntry> FillupWith(IEnumerable<TEntry> fillups)
+        public GappedEntries<T> FillupWith(IEnumerable<IEntry<T>> fillups)
         {
-            var newLoadedEntries = new List<TEntry>(LoadedEntries);
+            var newLoadedEntries = new List<IEntry<T>>(LoadedEntries);
             var newGapIds = new List<long>(GapIds);
             foreach (var fillup in fillups)
             {
@@ -70,7 +70,7 @@ namespace Vlingo.Symbio.Store.Gap
                 newLoadedEntries.Add(fillup);
             }
 
-            return new GappedEntries<T, TEntry>(newLoadedEntries, newGapIds, CompletesEventually);
+            return new GappedEntries<T>(newLoadedEntries, newGapIds, CompletesEventually);
         }
     }
 }

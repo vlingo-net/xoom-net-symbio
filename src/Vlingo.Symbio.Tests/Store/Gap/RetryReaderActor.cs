@@ -15,16 +15,16 @@ namespace Vlingo.Symbio.Tests.Store.Gap
 {
     public class RetryReaderActor : Actor, IReader
     {
-        private readonly GapRetryReader<string, IEntry<string>> _reader;
+        private readonly GapRetryReader<string> _reader;
         private int _offset = 0;
 
         public RetryReaderActor() => _reader = Reader();
 
-        public GapRetryReader<string, IEntry<string>> Reader()
+        public GapRetryReader<string> Reader()
         {
             if (_reader == null)
             {
-                var reader = new GapRetryReader<string, IEntry<string>>(Stage, Scheduler);
+                var reader = new GapRetryReader<string>(Stage, Scheduler);
                 return reader;
             }
 
@@ -36,7 +36,7 @@ namespace Vlingo.Symbio.Tests.Store.Gap
             // Simulate failed read of one entry
             IEntry<string> entry = null;
             var gapIds = _reader.DetectGaps(entry, _offset, 1);
-            var gappedEntries = new GappedEntries<string, IEntry<string>>(new List<IEntry<string>>(), gapIds, CompletesEventually());
+            var gappedEntries = new GappedEntries<string>(new List<IEntry<string>>(), gapIds, CompletesEventually());
 
             _reader.ReadGaps(gappedEntries, 3, TimeSpan.FromMilliseconds(10), ReadIds);
             _offset++;
@@ -58,7 +58,7 @@ namespace Vlingo.Symbio.Tests.Store.Gap
             }
 
             var gapIds = _reader.DetectGaps(entries, _offset, count);
-            var gappedEntries = new GappedEntries<string, IEntry<string>>(entries, gapIds, CompletesEventually());
+            var gappedEntries = new GappedEntries<string>(entries, gapIds, CompletesEventually());
             _offset += count;
             _reader.ReadGaps(gappedEntries, 3, TimeSpan.FromMilliseconds(10), ReadIds);
 

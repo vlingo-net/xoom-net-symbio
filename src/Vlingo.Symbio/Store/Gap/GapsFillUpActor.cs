@@ -11,9 +11,9 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Gap
 {
-    public class GapsFillUpActor<T, TEntry> : Actor, IScheduled<RetryGappedEntries<T, TEntry>> where TEntry : class, IEntry<T>
+    public class GapsFillUpActor<T> : Actor, IScheduled<RetryGappedEntries<T>>
     {
-        public void IntervalSignal(IScheduled<RetryGappedEntries<T, TEntry>> scheduled, RetryGappedEntries<T, TEntry> data)
+        public void IntervalSignal(IScheduled<RetryGappedEntries<T>> scheduled, RetryGappedEntries<T> data)
         {
             var gappedReader = data.GappedReader;
             var fillups = gappedReader(data.GappedEntries.GapIds);

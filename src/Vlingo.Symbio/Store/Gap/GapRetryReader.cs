@@ -16,14 +16,14 @@ namespace Vlingo.Symbio.Store.Gap
     /// <summary>
     /// Detection and fill up (gap prevention) functionality related to <see cref="IEntryReader{T}"/>
     /// </summary>
-    public class GapRetryReader<T, TEntry> where TEntry : class, IEntry<T>
+    public class GapRetryReader<T>
     {
-        private readonly IScheduled<RetryGappedEntries<T, TEntry>> _actor;
+        private readonly IScheduled<RetryGappedEntries<T>> _actor;
         private readonly Scheduler _scheduler;
         
         public GapRetryReader(Stage stage, Scheduler scheduler)
         {
-            _actor = stage.ActorFor<IScheduled<RetryGappedEntries<T, TEntry>>>(() => new GapsFillUpActor<T, TEntry>());
+            _actor = stage.ActorFor<IScheduled<RetryGappedEntries<T>>>(() => new GapsFillUpActor<T>());
             _scheduler = scheduler;
         }
         
@@ -34,13 +34,13 @@ namespace Vlingo.Symbio.Store.Gap
         /// <param name="startIndex">This index refers to <see cref="M:IEntry.Id"/></param>
         /// <param name="count">The number of entries</param>
         /// <returns></returns>
-        public IEnumerable<long> DetectGaps(TEntry? entry, long startIndex, long count)
+        public IEnumerable<long> DetectGaps(IEntry<T>? entry, long startIndex, long count)
         {
-            var entries = entry == null ? Enumerable.Empty<TEntry>() : new []{entry};
+            var entries = entry == null ? Enumerable.Empty<IEntry<T>>() : new []{entry};
             return DetectGaps(entries, startIndex, count);
         }
         
-        public IEnumerable<long> DetectGaps(IEnumerable<TEntry> entries, long startIndex, long count)
+        public IEnumerable<long> DetectGaps(IEnumerable<IEntry<T>> entries, long startIndex, long count)
         {
             var allIds = CollectIds(entries);
             var gapIds = new List<long>();
@@ -56,13 +56,13 @@ namespace Vlingo.Symbio.Store.Gap
             return gapIds;
         }
         
-        public void ReadGaps(GappedEntries<T, TEntry> gappedEntries, int retries, TimeSpan retryInterval, Func<List<long>, List<TEntry>> gappedReader)
+        public void ReadGaps(GappedEntries<T> gappedEntries, int retries, TimeSpan retryInterval, Func<List<long>, List<IEntry<T>>> gappedReader)
         {
-            var entries = new RetryGappedEntries<T, TEntry>(gappedEntries, 1, retries, retryInterval, gappedReader);
+            var entries = new RetryGappedEntries<T>(gappedEntries, 1, retries, retryInterval, gappedReader);
             _scheduler.ScheduleOnce(_actor, entries, TimeSpan.Zero, retryInterval);
         }
         
-        private List<long> CollectIds(IEnumerable<TEntry>? entries)
+        private List<long> CollectIds(IEnumerable<IEntry<T>>? entries)
         {
             if (entries == null)
             {
