@@ -32,7 +32,7 @@ namespace Vlingo.Symbio.Tests.Store.State
         private readonly AtomicReference<object> _objectState = new AtomicReference<object>();
         private readonly ConcurrentQueue<Exception> _errorCauses = new ConcurrentQueue<Exception>();
         private readonly ConcurrentQueue<object> _sources = new ConcurrentQueue<object>();
-        private readonly ConcurrentBag<object> _readAllState = new ConcurrentBag<object>();
+        private readonly ConcurrentBag<object> _readAllStates = new ConcurrentBag<object>();
 
         public MockStateStoreResultInterest() => _access = AfterCompleting<object, object>(0);
 
@@ -49,7 +49,7 @@ namespace Vlingo.Symbio.Tests.Store.State
                 });
         }
 
-        public void ReadResultedIn<TState>(IOutcome<StorageException, Result> outcome, IEnumerable<TypedStateBundle> bundles, object? @object)
+        public void ReadResultedIn<TState>(IOutcome<StorageException, Result> outcome, IEnumerable<TypedStateBundle> bundles, object @object)
         {
             outcome
                 .AndThen(result => {
@@ -124,7 +124,7 @@ namespace Vlingo.Symbio.Tests.Store.State
                 })
                 .WritingWith<StoreData<TSource>>("readAllStates", data =>
                 {
-                    _readAllState.Add(data);
+                    _readAllStates.Add(data);
                     _readObjectResultedIn.AddAndGet(data.ResultedIn);
                     _objectReadResult.Set(data.Result);
                     _objectWriteAccumulatedResults.Enqueue(data.Result);
@@ -159,7 +159,7 @@ namespace Vlingo.Symbio.Tests.Store.State
                 })
                 .ReadingWith("errorCausesCount", () => _errorCauses.Count)
                 .ReadingWith("writeObjectResultedIn", () => _writeObjectResultedIn.Get())
-                .ReadingWith("readAllStates", () => _readAllState.Reverse().ToList());
+                .ReadingWith("readAllStates", () => _readAllStates.Reverse().ToList());
 
             return _access;
         }
