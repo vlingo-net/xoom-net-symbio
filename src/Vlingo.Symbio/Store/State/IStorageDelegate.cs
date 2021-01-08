@@ -25,5 +25,7 @@ namespace Vlingo.Symbio.Store.State
         string? OriginalId { get; }
 
         TState StateFrom<TState, TResult>(TResult result, string id);
+        
+        TState StateFrom<TState, TResult>(TResult result, string id, int columnOffset);
     }
 }

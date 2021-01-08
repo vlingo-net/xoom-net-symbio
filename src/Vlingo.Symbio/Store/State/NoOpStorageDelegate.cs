@@ -22,5 +22,7 @@ namespace Vlingo.Symbio.Store.State
         public string? OriginalId => null;
         
         public TState StateFrom<TState, TResult>(TResult result, string id) => default!;
+        
+        public TState StateFrom<TState, TResult>(TResult result, string id, int columnOffset) => default!;
     }
 }
