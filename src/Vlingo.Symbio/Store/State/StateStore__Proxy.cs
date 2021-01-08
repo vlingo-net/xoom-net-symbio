@@ -22,6 +22,9 @@ namespace Vlingo.Symbio.Store.State
 
         private const string ReadRepresentation3 =
             "Read<TState>(string, Vlingo.Symbio.Store.State.IReadResultInterest, object)";
+        
+        private const string ReadRepresentation3A =
+            "Read<TState>(IEnumerable<TypedStateBundle>, Vlingo.Symbio.Store.State.IReadResultInterest, object)";
 
         private const string WriteRepresentation4 =
             "Write<TState>(string, TState, int, Vlingo.Symbio.Store.State.IWriteResultInterest)";
@@ -124,6 +127,27 @@ namespace Vlingo.Symbio.Store.State
             else
             {
                 _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, ReadRepresentation3));
+            }
+        }
+
+        public void ReadAll<TState>(IEnumerable<TypedStateBundle> bundles, IReadResultInterest interest, object? @object)
+        {
+            if (!_actor.IsStopped)
+            {
+                Action<IStateStore<TEntry>> cons128873 = __ => __.ReadAll<TState>(bundles, interest, @object);
+                if (_mailbox.IsPreallocated)
+                {
+                    _mailbox.Send(_actor, cons128873, null, ReadRepresentation3A);
+                }
+                else
+                {
+                    _mailbox.Send(
+                        new LocalMessage<IStateStore<TEntry>>(_actor, cons128873, ReadRepresentation3A));
+                }
+            }
+            else
+            {
+                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, ReadRepresentation3A));
             }
         }
 

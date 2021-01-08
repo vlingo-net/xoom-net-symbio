@@ -27,6 +27,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
         private readonly Dictionary<string, IStateStoreEntryReader<TEntry>> _entryReaders;
         private readonly EntryAdapterProvider _entryAdapterProvider;
         private readonly StateAdapterProvider _stateAdapterProvider;
+        private readonly ReadAllResultCollector _readAllResultCollector;
         private readonly Dictionary<string, Dictionary<string, TRawState>> _store;
 
         public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher) : this(new []{dispatcher}, 1000L, 1000L)
@@ -57,6 +58,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
             _entryReaders = new Dictionary<string, IStateStoreEntryReader<TEntry>>();
             _store = new Dictionary<string, Dictionary<string, TRawState>>();
             _dispatchables = new List<Dispatchable<TEntry, TRawState>>();
+            _readAllResultCollector = new ReadAllResultCollector();
 
             var dispatcherControlDelegate = new InMemoryDispatcherControlDelegate<TEntry, TRawState>(_dispatchables);
 
@@ -71,6 +73,20 @@ namespace Vlingo.Symbio.Store.State.InMemory
         public void Read<TState>(string id, IReadResultInterest interest) => Read<TState>(id, interest, null);
 
         public void Read<TState>(string id, IReadResultInterest interest, object? @object) => ReadFor<TState>(id, interest, @object);
+        
+        public void ReadAll<TState>(IEnumerable<TypedStateBundle> bundles, IReadResultInterest interest, object? @object)
+        {
+            _readAllResultCollector.Prepare();
+
+            var typedStateBundles = bundles.ToList();
+            foreach (var bundle in typedStateBundles)
+            {
+                ReadFor<TState>(bundle.Id!, _readAllResultCollector, null);
+            }
+
+            var outcome = _readAllResultCollector.ReadResultOutcome(typedStateBundles.Count);
+            interest.ReadResultedIn<TState>(outcome!, _readAllResultCollector.ReadBundles, @object);
+        }
 
         public void Write<TState>(string id, TState state, int stateVersion, IWriteResultInterest interest) =>
             Write(id, state, stateVersion, Source<TState>.None(), Metadata.NullMetadata(), interest, null);
@@ -166,7 +182,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
             }
             else
             {
-                Logger.Warn($"{GetType().FullName} readText() missing ReadResultInterest for: {id ?? "unknown id"}");
+                Logger.Warn($"{GetType().FullName} ReadFor() missing ReadResultInterest for: {id ?? "unknown id"}");
             }
         }
 
@@ -223,14 +239,14 @@ namespace Vlingo.Symbio.Store.State.InMemory
                     }
                     catch (Exception e)
                     {
-                        Logger.Error($"{GetType().FullName} WriteText() error because: {e.Message}", e);
+                        Logger.Error($"{GetType().FullName} WriteWith() error because: {e.Message}", e);
                         interest.WriteResultedIn(Failure.Of<StorageException, Result>(new StorageException(Result.Error, e.Message, e)), id, state, stateVersion, sources, @object);
                     }
                 }
             }
             else
             {
-              Logger.Warn($"{GetType().FullName} WriteText() missing WriteResultInterest for: {(state == null ? "unknown id" : id)}");
+              Logger.Warn($"{GetType().FullName} WriteWith() missing WriteResultInterest for: {(state == null ? "unknown id" : id)}");
             }
         }
 

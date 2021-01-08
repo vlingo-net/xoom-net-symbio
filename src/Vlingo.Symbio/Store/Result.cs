@@ -17,6 +17,8 @@ namespace Vlingo.Symbio.Store
         
         NotFound,
         
+        NotAllFound,
+        
         NoTypeStore,
         
         Success

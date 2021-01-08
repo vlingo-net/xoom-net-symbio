@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Vlingo.Actors;
 using Vlingo.Actors.TestKit;
 using Vlingo.Symbio.Store;
@@ -189,6 +190,47 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             Assert.Equal("456", state456.Id);
             var state567 = accessDispatcher1.ReadFrom<string, State<string>>("dispatchedState", DispatchId("567"));
             Assert.Equal("567", state567.Id);
+        }
+
+        [Fact]
+        public void TestThatReadAllReadsAll()
+        {
+            var accessWrites = _interest.AfterCompleting<Entity1, Entity1>(3);
+
+            var entity1 = new Entity1("123", 1);
+            _store.Write(entity1.Id, entity1, 1, _interest);
+            var entity2 = new Entity1("234", 2);
+            _store.Write(entity2.Id, entity2, 1, _interest);
+            var entity3 = new Entity1("345", 3);
+            _store.Write(entity3.Id, entity3, 1, _interest);
+
+            var totalWrites = accessWrites.ReadFrom<int>("objectWriteAccumulatedResultsCount");
+
+            Assert.Equal(3, totalWrites);
+
+            var accessReads = _interest.AfterCompleting<Entity1, Entity1>(3);
+
+            var bundles = new List<TypedStateBundle>
+            {
+                new TypedStateBundle(entity1.Id, typeof(Entity1)),
+                new TypedStateBundle(entity2.Id, typeof(Entity1)),
+                new TypedStateBundle(entity3.Id, typeof(Entity1))
+            };
+
+            _store.ReadAll<Entity1>(bundles, _interest, null);
+
+            var allStates = accessReads.ReadFrom<List<object>>("readAllStates").Cast<StoreData<Entity1>>().ToList();
+
+            Assert.Equal(3, allStates.Count);
+            var state123 = allStates[0].TypedState;
+            Assert.Equal("123", state123.Id);
+            Assert.Equal(1, state123.Value);
+            var state234 = allStates[1].TypedState;
+            Assert.Equal("234", state234.Id);
+            Assert.Equal(2, state234.Value);
+            var state345 = allStates[2].TypedState;
+            Assert.Equal("345", state345.Id);
+            Assert.Equal(3, state345.Value);
         }
 
         [Fact]

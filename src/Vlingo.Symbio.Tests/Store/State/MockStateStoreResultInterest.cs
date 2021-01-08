@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Vlingo.Actors.TestKit;
 using Vlingo.Common;
 using Vlingo.Symbio.Store;
@@ -31,12 +32,10 @@ namespace Vlingo.Symbio.Tests.Store.State
         private readonly AtomicReference<object> _objectState = new AtomicReference<object>();
         private readonly ConcurrentQueue<Exception> _errorCauses = new ConcurrentQueue<Exception>();
         private readonly ConcurrentQueue<object> _sources = new ConcurrentQueue<object>();
+        private readonly ConcurrentBag<object> _readAllState = new ConcurrentBag<object>();
 
-        public MockStateStoreResultInterest()
-        {
-            _access = AfterCompleting<object, object>(0);
-        }
-        
+        public MockStateStoreResultInterest() => _access = AfterCompleting<object, object>(0);
+
         public void ReadResultedIn<TState>(IOutcome<StorageException, Result> outcome, string id, TState state, int stateVersion, Metadata metadata, object @object)
         {
             outcome
@@ -46,6 +45,27 @@ namespace Vlingo.Symbio.Tests.Store.State
                 })
                 .Otherwise(cause => {
                     _access.WriteUsing("readStoreData", new StoreData<TState>(1, cause.Result, state, new List<Source<TState>>(), metadata, cause));
+                    return cause.Result;
+                });
+        }
+
+        public void ReadResultedIn<TState>(IOutcome<StorageException, Result> outcome, IEnumerable<TypedStateBundle> bundles, object? @object)
+        {
+            outcome
+                .AndThen(result => {
+                    foreach (var bundle in bundles)
+                    {
+                        _access.WriteUsing("readAllStates", new StoreData<TState>(1, result, bundle.State, new List<Source<TState>>(), bundle.Metadata, null));
+
+                    }
+                    return result; 
+                })
+                .Otherwise(cause => {
+                    foreach (var bundle in bundles)
+                    {
+                        _access.WriteUsing("readAllStates", new StoreData<TState>(1, cause.Result, bundle.State, new List<Source<TState>>(), bundle.Metadata, cause));
+
+                    }
                     return cause.Result;
                 });
         }
@@ -102,6 +122,20 @@ namespace Vlingo.Symbio.Tests.Store.State
                         _errorCauses.Enqueue(data.ErrorCauses);
                     }
                 })
+                .WritingWith<StoreData<TSource>>("readAllStates", data =>
+                {
+                    _readAllState.Add(data);
+                    _readObjectResultedIn.AddAndGet(data.ResultedIn);
+                    _objectReadResult.Set(data.Result);
+                    _objectWriteAccumulatedResults.Enqueue(data.Result);
+                    _objectState.Set(data.State);
+                    data.Sources.ForEach(source => _sources.Enqueue(source));
+                    _metadataHolder.Set(data.Metadata);
+                    if (data.ErrorCauses != null)
+                    {
+                        _errorCauses.Enqueue(data.ErrorCauses);
+                    }
+                })
                 .ReadingWith("readObjectResultedIn", () => _readObjectResultedIn.Get())
                 .ReadingWith("objectReadResult", () => _objectReadResult.Get())
                 .ReadingWith("objectWriteResult", () => _objectWriteResult.Get())
@@ -124,7 +158,8 @@ namespace Vlingo.Symbio.Tests.Store.State
                     return result;
                 })
                 .ReadingWith("errorCausesCount", () => _errorCauses.Count)
-                .ReadingWith("writeObjectResultedIn", () => _writeObjectResultedIn.Get());
+                .ReadingWith("writeObjectResultedIn", () => _writeObjectResultedIn.Get())
+                .ReadingWith("readAllStates", () => _readAllState.Reverse().ToList());
 
             return _access;
         }
@@ -136,6 +171,7 @@ namespace Vlingo.Symbio.Tests.Store.State
         public Result Result { get; }
         public List<Source<TSource>> Sources { get; }
         public object State { get; }
+        public TSource TypedState => (TSource) State;
         public int ResultedIn { get; }
 
         public StoreData(int resultedIn, Result objectResult, object state, IEnumerable<Source<TSource>> sources, Metadata metadata, Exception errorCauses) {
