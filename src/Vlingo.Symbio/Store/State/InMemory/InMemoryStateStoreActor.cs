@@ -33,9 +33,13 @@ namespace Vlingo.Symbio.Store.State.InMemory
         {
         }
 
-        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher,
-            long checkConfirmationExpirationInterval, long confirmationExpiration)
+        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher, long checkConfirmationExpirationInterval, long confirmationExpiration)
         : this (new []{dispatcher}, checkConfirmationExpirationInterval, confirmationExpiration)
+        {
+        }
+
+        public InMemoryStateStoreActor(IEnumerable<IDispatcher<Dispatchable<TEntry, TRawState>>> dispatchers)
+        : this (dispatchers, 1000L, 1000L)
         {
         }
 

@@ -6,9 +6,11 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System;
+using System.Collections.Generic;
 using Vlingo.Actors;
 using Vlingo.Actors.TestKit;
 using Vlingo.Symbio.Store;
+using Vlingo.Symbio.Store.Dispatch;
 using Vlingo.Symbio.Store.State;
 using Vlingo.Symbio.Store.State.InMemory;
 using Xunit;
@@ -256,7 +258,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
             // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = _world.ActorFor<IStateStore<TextEntry>>(typeof(InMemoryStateStoreActor<TextState, TextEntry>), _dispatcher);
+            _store = _world.ActorFor<IStateStore<TextEntry>>(typeof(InMemoryStateStoreActor<TextState, TextEntry>), new List<IDispatcher<Dispatchable<TextEntry, TextState>>> {_dispatcher});
 
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName1, typeof(Entity1));
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName2, typeof(Entity2));

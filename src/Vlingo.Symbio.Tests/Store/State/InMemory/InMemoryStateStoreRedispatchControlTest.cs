@@ -6,8 +6,10 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Vlingo.Actors;
+using Vlingo.Symbio.Store.Dispatch;
 using Vlingo.Symbio.Store.State;
 using Vlingo.Symbio.Store.State.InMemory;
 using Xunit;
@@ -73,7 +75,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
 
             StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity1).FullName, typeof(Entity1));
             
-            _store = _world.ActorFor<IStateStore<IEntry<string>>>(typeof(InMemoryStateStoreActor<TextState, IEntry<string>>), _dispatcher);
+            _store = _world.ActorFor<IStateStore<IEntry<string>>>(typeof(InMemoryStateStoreActor<TextState, IEntry<string>>), new List<IDispatcher<Dispatchable<IEntry<string>, TextState>>> {_dispatcher});
         }
 
         public void Dispose()
