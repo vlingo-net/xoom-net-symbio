@@ -14,7 +14,7 @@ namespace Vlingo.Symbio.Store.Journal
     /// The entries and possible snapshot of a full or partial stream of a given named stream.
     /// </summary>
     /// <typeparam name="T">The concrete type of the stream of <see cref="IEntry{T}"/>, which maybe be <code>string</code>, <code>byte[]</code>, or <code>object</code></typeparam>
-    public class Stream<T>
+    public class EntityStream<T>
     {
         /// <summary>
         /// Construct a new Stream.
@@ -24,7 +24,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="streamVersion">The <code>int</code> version of the stream</param>
         /// <param name="entries">The <code>IEnumerable{BaseEntry}</code> of all entries in the named stream or some sub-stream</param>
         /// <param name="snapshot">the <see cref="State{T}"/> of a persisted state, or an empty <see cref="State{T}"/> if none</param>
-        public Stream(string streamName, int streamVersion, IEnumerable<BaseEntry> entries, State<T>? snapshot)
+        public EntityStream(string streamName, int streamVersion, IEnumerable<BaseEntry> entries, State<T>? snapshot)
         {
             StreamName = streamName;
             StreamVersion = streamVersion;
@@ -65,6 +65,6 @@ namespace Vlingo.Symbio.Store.Journal
         /// </summary>
         public int Size => Entries.Count();
 
-        public override string ToString() => $"Stream[streamName={StreamName} streamVersion={StreamVersion} entries={string.Join(", ", Entries.Select(e => e.ToString()))} snapshot={Snapshot}]";
+        public override string ToString() => $"EntityStream[streamName={StreamName} streamVersion={StreamVersion} entries={string.Join(", ", Entries.Select(e => e.ToString()))} snapshot={Snapshot}]";
     }
 }

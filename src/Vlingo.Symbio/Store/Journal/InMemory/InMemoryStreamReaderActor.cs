@@ -22,9 +22,9 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             base.Start();
         }
 
-        public ICompletes<Stream<TEntry>> StreamFor(string streamName) => Completes().With(_reader.StreamFor(streamName).Outcome);
+        public ICompletes<EntityStream<TEntry>> StreamFor(string streamName) => Completes().With(_reader.StreamFor(streamName).Outcome);
 
-        public ICompletes<Stream<TEntry>> StreamFor(string streamName, int fromStreamVersion) => Completes().With(_reader.StreamFor(streamName, fromStreamVersion).Outcome);
+        public ICompletes<EntityStream<TEntry>> StreamFor(string streamName, int fromStreamVersion) => Completes().With(_reader.StreamFor(streamName, fromStreamVersion).Outcome);
 
         public string Name => _reader.Name;
     }

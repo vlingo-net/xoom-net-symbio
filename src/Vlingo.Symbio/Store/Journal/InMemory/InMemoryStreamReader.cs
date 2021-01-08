@@ -25,9 +25,9 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             _name = name;
         }
 
-        public ICompletes<Stream<TEntry>> StreamFor(string streamName) => StreamFor(streamName, 1);
+        public ICompletes<EntityStream<TEntry>> StreamFor(string streamName) => StreamFor(streamName, 1);
 
-        public ICompletes<Stream<TEntry>> StreamFor(string streamName, int fromStreamVersion)
+        public ICompletes<EntityStream<TEntry>> StreamFor(string streamName, int fromStreamVersion)
         {
             var version = fromStreamVersion;
             if (_snapshotsView.TryGetValue(streamName, out var snapshot))
@@ -51,7 +51,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
                     ++version;
                 }
             }
-            return Completes.WithSuccess(new Stream<TEntry>(streamName, version - 1, entries, snapshot));
+            return Completes.WithSuccess(new EntityStream<TEntry>(streamName, version - 1, entries, snapshot));
         }
 
         public string Name => _name;
