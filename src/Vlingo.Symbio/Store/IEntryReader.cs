@@ -183,6 +183,8 @@ namespace Vlingo.Symbio.Store
         
         public string QueryEntryBatchExpression { get; }
         
+        public string QueryEntryIdsExpression { get; }
+        
         public string QueryEntryExpression { get; }
         
         public string QueryUpdateCurrentOffset { get; }
@@ -195,6 +197,7 @@ namespace Vlingo.Symbio.Store
             string queryCount,
             string queryLatestOffset,
             string queryEntryBatchExpression,
+            string queryEntryIdsExpression,
             string queryEntryExpression,
             string queryUpdateCurrentOffset)
         {
@@ -203,6 +206,7 @@ namespace Vlingo.Symbio.Store
             QueryCount = queryCount;
             QueryLatestOffset = queryLatestOffset;
             QueryEntryBatchExpression = queryEntryBatchExpression;
+            QueryEntryIdsExpression = queryEntryIdsExpression;
             QueryEntryExpression = queryEntryExpression;
             QueryUpdateCurrentOffset = queryUpdateCurrentOffset;
         }
