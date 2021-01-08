@@ -100,13 +100,13 @@ namespace Vlingo.Symbio.Store.State.InMemory
         public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest) =>
             Write(id, state, stateVersion, sources, metadata, interest, null);
 
-        public void Write<TState>(string id, TState state, int stateVersion, IWriteResultInterest interest, object @object) =>
+        public void Write<TState>(string id, TState state, int stateVersion, IWriteResultInterest interest, object? @object) =>
             Write(id, state, stateVersion, Source<TState>.None(), Metadata.NullMetadata(), interest, @object);
 
-        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, IWriteResultInterest interest, object @object) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, IWriteResultInterest interest, object? @object) =>
             Write(id, state, stateVersion, sources, Metadata.NullMetadata(), interest, @object);
 
-        public void Write<TState>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest, object @object) =>
+        public void Write<TState>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest, object? @object) =>
             Write(id, state, stateVersion, Source<TState>.None(), metadata, interest, @object);
 
         public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest, object? @object) =>

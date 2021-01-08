@@ -297,8 +297,7 @@ namespace Vlingo.Symbio.Store.State
             }
         }
 
-        public void Write<TState>(string id, TState state, int stateVersion, Metadata metadata,
-            IWriteResultInterest interest, object @object)
+        public void Write<TState>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest, object? @object)
         {
             if (!_actor.IsStopped)
             {
@@ -323,7 +322,7 @@ namespace Vlingo.Symbio.Store.State
 
         public void Write<TState, TSource>(string id, TState state, int stateVersion,
             IEnumerable<Source<TSource>> sources, Metadata metadata,
-            IWriteResultInterest interest, object @object)
+            IWriteResultInterest interest, object? @object)
         {
             if (!_actor.IsStopped)
             {
