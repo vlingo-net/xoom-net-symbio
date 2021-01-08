@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Vlingo.Symbio.Store.Object
+namespace Vlingo.Symbio.Store
 {
     /// <summary>
     /// A query expression whose parameters are provided in a <code>IEnumerable</code>.

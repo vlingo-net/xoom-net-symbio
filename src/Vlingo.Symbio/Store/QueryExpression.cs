@@ -7,7 +7,7 @@
 
 using System;
 
-namespace Vlingo.Symbio.Store.Object
+namespace Vlingo.Symbio.Store
 {
     /// <summary>
     /// The base query expression.

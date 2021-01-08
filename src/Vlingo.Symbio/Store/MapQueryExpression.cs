@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Vlingo.Symbio.Store.Object
+namespace Vlingo.Symbio.Store
 {
     /// <summary>
     /// A query expression whose parameters are provided in a <code>Dictionary{TK, TV}</code> of name-value pairs.
@@ -69,9 +69,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="query">The string describing the query</param>
         /// <param name="parameters"><code>IDictionary{TK, TV></code> containing query parameters of name-value pairs</param>
         public MapQueryExpression(Type type, string query, IDictionary<string, object> parameters) : base(type, query)
-        {
-            _parameters = parameters;
-        }
+            => _parameters = parameters;
 
         /// <summary>
         /// Constructs my default state with <code>QueryMode.ReadOnly</code>.
@@ -81,9 +79,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="mode">The <see cref="QueryMode"/></param>
         /// <param name="parameters"><code>Dictionary{TK, TV></code> containing query parameters of name-value pairs</param>
         public MapQueryExpression(Type type, string query, QueryMode mode, Dictionary<string, object> parameters) : base(type, query, mode)
-        {
-            _parameters = parameters;
-        }
+            => _parameters = parameters;
 
         public IDictionary<string, object> Parameters => _parameters;
 
@@ -91,7 +87,7 @@ namespace Vlingo.Symbio.Store.Object
         
         public override string ToString() => $"MapQueryExpression[type={Type.FullName} query={Query} mode={Mode} parameters={string.Join(",",_parameters.Select(p => $"{p.Key} | {p.Value}"))}]";
     }
-
+    
     /// <summary>
     /// Support a <code>Dictionary{TK, TV}</code> with extension method <code>And(TK, TV)</code>.
     /// </summary>
