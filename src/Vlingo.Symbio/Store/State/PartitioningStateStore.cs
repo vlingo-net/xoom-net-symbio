@@ -16,38 +16,50 @@ namespace Vlingo.Symbio.Store.State
     /// <summary>
     ///     Provides a partitioning <see cref="IStateStore{TEntry}" />. All reads and writes are from/to the same storage and
     ///     tables.
-    ///     The partitioning based on id hashing, which is meant to read and write in parallel using more than one
-    ///     connection. For reader operations, such as queries and streaming, the partitioning is based on smallest mailbox.
+    ///     The partitioning is based on id hashing, which is meant to read and write in parallel using more than one
+    ///     connection. For reader operations not subject to id, such as queries and streaming, the partitioning is
+    ///     based on smallest mailbox.
     /// </summary>
     /// <remarks>
-    ///     WARNING: When utilizing the smallest mailbox (least busy reader) operations, it is important not request
-    ///     additional operations of the same type
+    ///     WARNING: (1) When utilizing the smallest mailbox (least busy reader) operations, it is important to not request
+    ///     additional operations of the same type if the earlier query must complete before the subsequent request.
+    ///     (2) The underlying <see cref="Actor"/> must use a <see cref="IMailbox"/> that supports <code>int PendingMessages</code>. Otherwise,
+    ///     the smallest mailbox (least busy reader) operations cannot be supported, and it does not make much sense to use
+    ///     this a partitioning <see cref="IStateStore{TEntry}"/>.
     /// </remarks>
     public class PartitioningStateStore<TEntry> : IStateStore<TEntry> where TEntry : IEntry
     {
-        private static readonly int MinimumReaders = 5;
-        private static readonly int MaximumReaders = 128;
+        public static readonly int MinimumReaders = 5;
+        public static readonly int MaximumReaders = 256;
 
-        private static readonly int MinimumWriters = 3;
-        private static readonly int MaxWriters = 128;
+        public static readonly int MinimumWriters = 3;
+        public static readonly int MaximumWriters = 256;
 
         private readonly Tuple<IStateStore<TEntry>, Actor>[] _readers;
         private readonly Tuple<IStateStore<TEntry>, Actor>[] _writers;
+
+        public int ReadersCount => _readers.Length;
+        public int WritersCount => _writers.Length;
+        
+        public static int PartitionOf(string identity, int totalPartitions) => identity.GetHashCode() % totalPartitions;
 
         private PartitioningStateStore(
             Stage stage,
             Type stateStoreActorType,
             int totalReaders,
-            int totalWriters)
+            int totalWriters,
+            object parameter)
         {
             _readers = CreateStateStores(stage, stateStoreActorType,
-                ActualTotal(totalReaders, MinimumReaders, MaximumReaders));
+                ActualTotal(totalReaders, MinimumReaders, MaximumReaders), parameter);
 
             _writers = CreateStateStores(stage, stateStoreActorType,
-                ActualTotal(totalWriters, MinimumWriters, MaxWriters));
+                ActualTotal(totalWriters, MinimumWriters, MaximumWriters), parameter);
         }
 
         public ICompletes<IStateStoreEntryReader<TEntry>> EntryReader(string name) => ReaderOf(name).EntryReader(name);
+
+        public Actor? Actor { get; } = null;
 
         public void Read<TState>(string id, IReadResultInterest interest) => Read<TState>(id, interest, null);
 
@@ -95,15 +107,17 @@ namespace Vlingo.Symbio.Store.State
         ///     The int total number of writers, which may be between <code>MinimumReaders</code> and
         ///     <code>MaximumReaders</code>
         /// </param>
+        /// <param name="parameter">Parameters for reader or writer actors</param>
         /// <returns>
         ///     <see cref="IStateStore{TEntry}" />
         /// </returns>
-        public static IStateStore<TEntry> StateStoreUsing(
+        public static IStateStore<TEntry> Using(
             Stage stage,
             Type stateStoreActorType,
             int totalReaders,
-            int totalWriters) =>
-            new PartitioningStateStore<TEntry>(stage, stateStoreActorType, totalReaders, totalWriters);
+            int totalWriters,
+            object parameter) =>
+            new PartitioningStateStore<TEntry>(stage, stateStoreActorType, totalReaders, totalWriters, parameter);
 
         private int ActualTotal(int total, int minimum, int maximum)
         {
@@ -121,7 +135,7 @@ namespace Vlingo.Symbio.Store.State
 
             for (var idx = 0; idx < _readers.Length; ++idx)
             {
-                var pending = Environment.Of(_readers[idx].Item2).PendingMessages;
+                var pending = Pending(_readers[idx].Item2);
 
                 if (pending < totalMessages)
                 {
@@ -133,21 +147,24 @@ namespace Vlingo.Symbio.Store.State
             return reader;
         }
 
-        private IStateStore<TEntry> ReaderOf(string identity) => _readers[identity.GetHashCode() / _readers.Length].Item1;
+        private IStateStore<TEntry> ReaderOf(string identity) => _readers[PartitionOf(identity, _readers.Length)].Item1;
 
-        private IStateStore<TEntry> WriterOf(string identity) => _writers[identity.GetHashCode() / _readers.Length].Item1;
+        private IStateStore<TEntry> WriterOf(string identity) => _writers[PartitionOf(identity, _writers.Length)].Item1;
+
+        private int Pending(Actor actor) => Environment.Of(actor).PendingMessages;
 
         private Tuple<IStateStore<TEntry>, Actor>[] CreateStateStores(
             Stage stage,
             Type stateStoreActorType,
-            int total)
+            int total,
+            object parameter)
         {
             var stateStores = new Tuple<IStateStore<TEntry>, Actor>[total];
             for (var idx = 0; idx < total; ++idx)
             {
-                var stateStore = stage.ActorFor<IStateStore<TEntry>>(stateStoreActorType);
-                var actor = (Actor) stateStore;
-                stateStores[idx] = new Tuple<IStateStore<TEntry>, Actor>(stateStore, actor);
+                var stateStore = stage.ActorFor<IStateStore<TEntry>>(stateStoreActorType, parameter, total);
+                Pending(stateStore.Actor!);
+                stateStores[idx] = new Tuple<IStateStore<TEntry>, Actor>(stateStore, stateStore.Actor!);
             }
 
             return stateStores;

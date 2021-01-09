@@ -85,6 +85,8 @@ namespace Vlingo.Symbio.Store.State
             return null!;
         }
 
+        public Actor Actor => _actor;
+
         public void Read<TState>(string id, IReadResultInterest interest)
         {
             if (!_actor.IsStopped)
