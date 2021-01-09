@@ -124,8 +124,6 @@ namespace Vlingo.Symbio.Store.State.InMemory
             return Completes().With(reader);
         }
 
-        public Actor Actor => this;
-
         public override void Stop()
         {
             if (_dispatcherControl != null)

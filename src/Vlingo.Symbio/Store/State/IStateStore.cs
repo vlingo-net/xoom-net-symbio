@@ -5,7 +5,6 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
-using Vlingo.Actors;
 using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.State
@@ -22,8 +21,5 @@ namespace Vlingo.Symbio.Store.State
         /// <typeparam name="TEntry">The specific type of <see cref="IEntry{TEntry}"/> that will be read</typeparam>
         /// <returns><see cref="ICompletes{T}"/></returns>
         ICompletes<IStateStoreEntryReader<TEntry>> EntryReader(string name);
-        
-        // TODO: needed by PartitioningStateStore but should be refactored
-        Actor? Actor { get; }
     }
 }

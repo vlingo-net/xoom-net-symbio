@@ -59,8 +59,6 @@ namespace Vlingo.Symbio.Store.State
 
         public ICompletes<IStateStoreEntryReader<TEntry>> EntryReader(string name) => ReaderOf(name).EntryReader(name);
 
-        public Actor? Actor { get; } = null;
-
         public void Read<TState>(string id, IReadResultInterest interest) => Read<TState>(id, interest, null);
 
         public void Read<TState>(string id, IReadResultInterest interest, object? @object) => ReaderOf(id).Read<TState>(id, interest, @object);
@@ -162,7 +160,7 @@ namespace Vlingo.Symbio.Store.State
             var stateStores = new Tuple<IStateStore<TEntry>, Actor>[total];
             for (var idx = 0; idx < total; ++idx)
             {
-                var stateStore = stage.ActorFor<IStateStore<TEntry>>(stateStoreActorType, parameter, total);
+                var stateStore = (StateStore__Proxy<TEntry>) stage.ActorFor<IStateStore<TEntry>>(stateStoreActorType, parameter, total);
                 Pending(stateStore.Actor!);
                 stateStores[idx] = new Tuple<IStateStore<TEntry>, Actor>(stateStore, stateStore.Actor!);
             }
