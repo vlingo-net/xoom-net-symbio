@@ -24,7 +24,7 @@ namespace Vlingo.Symbio.Store
             if (loadedType == null)
             {
                 loadedType = Type.GetType(typeName);
-                StoredTypesMap.TryAdd(typeName, loadedType);
+                StoredTypesMap.TryAdd(typeName, loadedType!);
             }
             
             if (loadedType == null)
