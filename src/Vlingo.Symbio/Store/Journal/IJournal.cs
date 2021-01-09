@@ -244,6 +244,11 @@ namespace Vlingo.Symbio.Store.Journal
             => additional.Length == 0 ?
                 stage.ActorFor<IJournal<T>>(typeof(TActor), dispatchers) :
                 stage.ActorFor<IJournal<T>>(typeof(TActor), dispatchers, additional);
+        
+        public static IJournal<T> Using<TActor>(Stage stage, params object[] additional)
+            where TActor : Actor => additional.Length == 0 ?
+                stage.ActorFor<IJournal<T>>(typeof(TActor)) :
+                stage.ActorFor<IJournal<T>>(typeof(TActor), additional);
 
         IJournal<T> IJournal<T>.Using<TActor, TEntry, TState>(Stage stage, IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional)
             => Using<TActor, TEntry, TState>(stage, dispatcher, additional);
