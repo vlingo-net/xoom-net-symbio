@@ -7,6 +7,7 @@
 
 using System;
 using Vlingo.Common.Serialization;
+using Vlingo.Symbio.Store;
 
 namespace Vlingo.Symbio
 {
@@ -18,8 +19,8 @@ namespace Vlingo.Symbio
         {
             try
             {
-                var stateType = Type.GetType(raw.Type);
-                return JsonSerialization.Deserialized(raw.Data, stateType!)!;
+                var stateType = StoredTypes.ForName(raw.Type);
+                return JsonSerialization.Deserialized(raw.Data, stateType)!;
             } 
             catch (Exception) 
             {

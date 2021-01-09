@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Vlingo.Symbio.Store;
 
 namespace Vlingo.Symbio
 {
@@ -109,16 +110,7 @@ namespace Vlingo.Symbio
         public static int DefaultVersion => -1;
         
         public static IEnumerable<IEntry<T>> None => Enumerable.Empty<IEntry<T>>();
-        
-        public static Type TypedFrom(string type)
-        {
-            var loadedType = Type.GetType(type);
-            if (loadedType == null)
-            {
-                throw new InvalidOperationException($"Cannot get type for type name: {type}");
-            }
 
-            return loadedType;
-        }
+        public static Type TypedFrom(string type) => StoredTypes.ForName(type)!;
     }
 }

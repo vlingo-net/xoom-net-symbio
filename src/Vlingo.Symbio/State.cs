@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using Vlingo.Symbio.Store;
 
 namespace Vlingo.Symbio
 {
@@ -61,19 +62,7 @@ namespace Vlingo.Symbio
 
         public virtual bool IsNull => false;
 
-        public Type Typed
-        {
-            get
-            {
-                var loadedType = System.Type.GetType(Type);
-                if (loadedType == null)
-                {
-                    throw new InvalidOperationException($"Cannot get type for type name: {Type}");
-                }
-
-                return loadedType;   
-            }
-        }
+        public Type Typed => StoredTypes.ForName(Type);
 
         public int CompareTo(State<T>? other)
         {
