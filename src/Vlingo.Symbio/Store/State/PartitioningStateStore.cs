@@ -41,7 +41,7 @@ namespace Vlingo.Symbio.Store.State
         public int ReadersCount => _readers.Length;
         public int WritersCount => _writers.Length;
         
-        public static int PartitionOf(string identity, int totalPartitions) => identity.GetHashCode() % totalPartitions;
+        public static int PartitionOf(string identity, int totalPartitions) => Math.Abs(identity.GetHashCode() % totalPartitions);
 
         private PartitioningStateStore(
             Stage stage,
