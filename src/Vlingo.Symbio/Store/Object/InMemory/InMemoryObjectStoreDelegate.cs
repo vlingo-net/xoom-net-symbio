@@ -132,14 +132,17 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         /// <inheritdoc />
         public QuerySingleResult QueryObject(QueryExpression expression)
         {
-            string? id;
+            string? id = null;
             if (expression.IsListQueryExpression)
             {
-                id = IdParameterAsString(expression.AsListQueryExpression().Parameters.First());
+                id = IdParameterAsString(expression.AsListQueryExpression().Parameters.FirstOrDefault());
             }
             else if (expression.IsMapQueryExpression)
             {
-                id = IdParameterAsString(expression.AsMapQueryExpression().Parameters["id"]);
+                if (expression.AsMapQueryExpression().Parameters.TryGetValue("id", out var objectId))
+                {
+                    id = IdParameterAsString(objectId);
+                }
             }
             else
             {
@@ -172,14 +175,18 @@ namespace Vlingo.Symbio.Store.Object.InMemory
             var raw = _stateAdapterProvider.AsRaw<StateObject, TState>(stateObject.PersistenceId.ToString(), stateObject, 1, metadata);
             var store = _stores.ComputeIfAbsent(stateObject.GetType(), type => new Dictionary<long, TState>());
             var persistenceId = stateObject.PersistenceId == -1L ? _nextId++ : stateObject.PersistenceId;
-            store.Add(persistenceId, raw);
+            if (store.ContainsKey(persistenceId))
+            {
+                store[persistenceId] = raw;
+            }
+            else
+            {
+                store.Add(persistenceId, raw);
+            }
             stateObject.SetPersistenceId(persistenceId);
             return raw;
         }
         
-        private static string? IdParameterAsString(object id)
-        {
-            return id?.ToString();
-        }
+        private static string? IdParameterAsString(object? id) => id?.ToString();
     }
 }
