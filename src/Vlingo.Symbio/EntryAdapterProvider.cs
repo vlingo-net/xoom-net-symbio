@@ -51,10 +51,11 @@ namespace Vlingo.Symbio
             _namedAdapters.Add(typeof(TSource).FullName!, adapter);
         }
 
-        public void RegisterAdapter<TSource, TEntry>(TSource sourceType, IEntryAdapter<TSource, TEntry> adapter, Action<TSource, IEntryAdapter<TSource, TEntry>> consumer) where TEntry : IEntry where TSource : Source
+        public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter, Action<Type, IEntryAdapter<TSource, TEntry>> consumer) where TEntry : IEntry where TSource : Source
         {
-            _adapters.Add(sourceType!.GetType(), adapter);
-            _namedAdapters.Add(sourceType.GetType().Name, adapter);
+            var sourceType = typeof(TSource);
+            _adapters.Add(sourceType, adapter);
+            _namedAdapters.Add(sourceType.Name, adapter);
             consumer(sourceType, adapter);
         }
         

@@ -45,10 +45,11 @@ namespace Vlingo.Symbio
             _namedAdapters.Add(typeof(TState).FullName!, adapter);
         }
         
-        public void RegisterAdapter<TState, TRawState>(TState stateType, IStateAdapter<TState, TRawState> adapter, Action<TState, IStateAdapter<TState, TRawState>> consumer) where TRawState : IState
+        public void RegisterAdapter<TState, TRawState>(IStateAdapter<TState, TRawState> adapter, Action<Type, IStateAdapter<TState, TRawState>> consumer) where TRawState : IState
         {
-            _adapters.Add(stateType!.GetType(), adapter);
-            _namedAdapters.Add(stateType.GetType().Name, adapter);
+            var stateType = typeof(TState);
+            _adapters.Add(stateType, adapter);
+            _namedAdapters.Add(stateType.Name, adapter);
             consumer(stateType, adapter);
         }
 
