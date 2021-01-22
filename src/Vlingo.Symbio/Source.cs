@@ -14,6 +14,10 @@ namespace Vlingo.Symbio
 {
     public abstract class Source
     {
+        /// <summary>
+        /// Gets my <c>Id</c> as a string. By default my id is empty. Override to provide an actual id.
+        /// </summary>
+        public virtual string Id => string.Empty;
     }
     
     /// <summary>
@@ -50,11 +54,6 @@ namespace Vlingo.Symbio
         /// </summary>
         /// <returns>Empty list.</returns>
         public static IEnumerable<Source<T>> None() => Enumerable.Empty<Source<T>>();
-
-        /// <summary>
-        /// Gets my <c>Id</c> as a string. By default my id is empty. Override to provide an actual id.
-        /// </summary>
-        public virtual string Id => string.Empty;
 
         /// <summary>
         /// Gets whether or not I am a Null Object, which is by default <c>false</c>.
