@@ -19,6 +19,10 @@ namespace Vlingo.Symbio.Store.State
 
         public Advice? EntryReaderAdvice => null;
 
+        public void Initialize()
+        {
+        }
+
         public string? OriginalId => null;
         
         public TState StateFrom<TState, TResult>(TResult result, string id) => default!;

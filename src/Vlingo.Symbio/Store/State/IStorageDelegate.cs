@@ -21,6 +21,8 @@ namespace Vlingo.Symbio.Store.State
         bool IsClosed { get; }
         
         Advice? EntryReaderAdvice { get; }
+
+        void Initialize();
         
         string? OriginalId { get; }
 
