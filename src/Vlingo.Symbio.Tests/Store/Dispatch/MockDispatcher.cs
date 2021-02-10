@@ -59,9 +59,6 @@ namespace Vlingo.Symbio.Tests.Store.Dispatch
             return dispatched.Count;
         }
 
-        public List<Dispatchable<TEntry, TState>> GetDispatched()
-        {
-            return _access.ReadFrom<List<Dispatchable<TEntry, TState>>>("dispatched");
-        }
+        public List<Dispatchable<TEntry, TState>> GetDispatched() => _access.ReadFrom<List<Dispatchable<TEntry, TState>>>("dispatched");
     }
 }
