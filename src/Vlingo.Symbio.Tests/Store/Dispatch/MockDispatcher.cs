@@ -41,7 +41,8 @@ namespace Vlingo.Symbio.Tests.Store.Dispatch
             }
         }
         
-        public AccessSafely AfterCompleting(int times) {
+        public AccessSafely AfterCompleting(int times)
+        {
             _access = AccessSafely.AfterCompleting(times)
                 .WritingWith<Dispatchable<TEntry, TState>>("dispatched", action => _dispatched.Add(action))
                 .ReadingWith("dispatched", () => _dispatched)
