@@ -22,9 +22,9 @@ namespace Vlingo.Symbio
                 var stateType = StoredTypes.ForName(raw.Type);
                 return JsonSerialization.Deserialized(raw.Data, stateType)!;
             } 
-            catch (Exception) 
+            catch (Exception e) 
             {
-                throw new InvalidOperationException($"Cannot convert to type: {raw.Type}");
+                throw new InvalidOperationException($"Cannot convert to type: {raw.Type}", e);
             }
         }
 
