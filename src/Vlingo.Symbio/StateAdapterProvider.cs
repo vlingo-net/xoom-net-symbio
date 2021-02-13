@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Vlingo.Actors;
 
 namespace Vlingo.Symbio
@@ -74,7 +75,7 @@ namespace Vlingo.Symbio
             {
                 return adapter.FromRawState(state);
             }
-            
+
             return (TState) _defaultTextStateAdapter.FromRawState((TextState)(object)state);
         }
         
@@ -90,11 +91,23 @@ namespace Vlingo.Symbio
 
         private IStateAdapter<TState, TRawState>? NamedAdapter<TState, TRawState>(TRawState state) where TRawState : IState
         {
-            if (!_namedAdapters.ContainsKey(state.Type))
+            var typeName = state.Type;
+            if (!_namedAdapters.ContainsKey(typeName))
             {
-                return null;
+                // case when serializer restores with full name
+                if (state.Type.Contains(','))
+                {
+                    var simplifiedName = state.Type.Split(',').First();
+                    if (!_namedAdapters.ContainsKey(simplifiedName))
+                    {
+                        return null;
+                    }
+
+                    typeName = simplifiedName;
+                }
             }
-            var adapter = (IStateAdapter<TState, TRawState>) _namedAdapters[state.Type];
+            
+            var adapter = (IStateAdapter<TState, TRawState>) _namedAdapters[typeName];
             return adapter;
         }
     }
