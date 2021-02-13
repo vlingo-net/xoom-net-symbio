@@ -153,9 +153,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
                     return;
                 }
 
-                var typeStore = _store[storeName];
-
-                if (typeStore == null)
+                if (!_store.TryGetValue(storeName, out var typeStore))
                 {
                     interest.ReadResultedIn<TState>(Failure.Of<StorageException, Result>(new StorageException(Result.NotFound,
                         $"Store not found: {storeName}")), id, default!, -1, null, @object);
