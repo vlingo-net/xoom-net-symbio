@@ -108,8 +108,8 @@ namespace Vlingo.Symbio
     public static class Entry<T>
     {
         public static int DefaultVersion => -1;
-        
-        public static IEnumerable<IEntry<T>> None => Enumerable.Empty<IEntry<T>>();
+
+        public static IEnumerable<IEntry<T>> None => new IEntry<T>[0]; // Enumerable.Empty<IEntry<T>>(); throws an exception on deserialization with Netwtonsoft 
 
         public static Type TypedFrom(string type) => StoredTypes.ForName(type)!;
     }
