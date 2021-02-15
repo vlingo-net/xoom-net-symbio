@@ -31,7 +31,7 @@ namespace Vlingo.Symbio.Store
     /// </para>
     /// </summary>
     /// <typeparam name="T">The concrete type of <see cref="IEntry{T}"/> stored and read, which maybe be string, byte[], or object</typeparam>
-    public interface IEntryReader<T> where T : IEntry
+    public interface IEntryReader<T>
     {
         /// <summary>
         /// A means to seek to the first id position of the storage. This constant

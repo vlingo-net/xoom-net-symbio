@@ -11,7 +11,7 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
-    public class InMemoryJournalReaderActor<TEntry> : Actor, IJournalReader<TEntry> where TEntry : IEntry
+    public class InMemoryJournalReaderActor<TEntry> : Actor, IJournalReader<TEntry>
     {
         private IJournalReader<TEntry> _reader;
 

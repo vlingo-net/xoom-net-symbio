@@ -12,7 +12,7 @@ namespace Vlingo.Symbio.Store.State
     /// <summary>
     /// The basic State Store interface, defining standard dispatching and control types.
     /// </summary>
-    public interface IStateStore<TEntry> : IStateStoreReader, IStateStoreWriter where TEntry : IEntry
+    public interface IStateStore<TEntry> : IStateStoreReader, IStateStoreWriter
     {
         /// <summary>
         /// Answer the <see cref="IStateStoreEntryReader{TEntry}"/> identified by the <paramref name="name"/>.
