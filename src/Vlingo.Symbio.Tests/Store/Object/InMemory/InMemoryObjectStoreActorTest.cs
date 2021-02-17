@@ -22,7 +22,7 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
         private readonly MockPersistResultInterest _persistInterest;
         private readonly MockQueryResultInterest _queryResultInterest;
         private readonly IObjectStore _objectStore;
-        private readonly MockDispatcher<Test1Source, ObjectEntry<Test1Source>, State<string>> _dispatcher;
+        private readonly MockDispatcher _dispatcher;
 
         [Fact]
         public void TestThatObjectPersistsQueries()
@@ -111,11 +111,11 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
             var entryAdapterProvider = new EntryAdapterProvider(world);
             entryAdapterProvider.RegisterAdapter(new Test1SourceAdapter());
     
-            _dispatcher = new MockDispatcher<Test1Source, ObjectEntry<Test1Source>, State<string>>(new MockConfirmDispatchedResultInterest());
-            _objectStore = world.ActorFor<IObjectStore>(typeof(Vlingo.Symbio.Store.Object.InMemory.InMemoryObjectStoreActor<Test1Source, ObjectEntry<Test1Source>, State<string>>), _dispatcher);
+            _dispatcher = new MockDispatcher(new MockConfirmDispatchedResultInterest());
+            _objectStore = world.ActorFor<IObjectStore>(typeof(Vlingo.Symbio.Store.Object.InMemory.InMemoryObjectStoreActor<Test1Source>), _dispatcher);
         }
         
-        private void ValidateDispatchedState(Person persistedObject, Dispatchable<ObjectEntry<Test1Source>, State<string>> dispatched)
+        private void ValidateDispatchedState(Person persistedObject, IDispatchable<IEntry, IState> dispatched)
         {
             Assert.NotNull(dispatched);
             Assert.NotNull(dispatched.Id);
@@ -138,20 +138,20 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
         }
     }
     
-    public class Test1SourceAdapter : EntryAdapter<Test1Source, ObjectEntry<Test1Source>>
+    public class Test1SourceAdapter : EntryAdapter<Test1Source, IEntry<Test1Source>>
     {
-        public override Test1Source FromEntry(ObjectEntry<Test1Source> entry) => entry.EntryData;
+        public override Test1Source FromEntry(IEntry<Test1Source> entry) => entry.EntryData;
 
-        public override ObjectEntry<Test1Source> ToEntry(Test1Source source, Metadata metadata) =>
+        public override IEntry<Test1Source> ToEntry(Test1Source source, Metadata metadata) =>
             new ObjectEntry<Test1Source>(typeof(Test1Source), 1, source, metadata);
 
-        public override ObjectEntry<Test1Source> ToEntry(Test1Source source, int version, Metadata metadata)
+        public override IEntry<Test1Source> ToEntry(Test1Source source, int version, Metadata metadata)
             => new ObjectEntry<Test1Source>(typeof(Test1Source), 1, source, version, metadata);
 
-        public override ObjectEntry<Test1Source> ToEntry(Test1Source source, int version, string id, Metadata metadata)
+        public override IEntry<Test1Source> ToEntry(Test1Source source, int version, string id, Metadata metadata)
             => new ObjectEntry<Test1Source>(id, typeof(Test1Source), 1, source, version, metadata);
 
-        public override ObjectEntry<Test1Source> ToEntry(Test1Source source, string id, Metadata metadata)=>
+        public override IEntry<Test1Source> ToEntry(Test1Source source, string id, Metadata metadata)=>
             new ObjectEntry<Test1Source>(id, typeof(Test1Source), 1, source, metadata);
     }
 }

@@ -11,13 +11,13 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
-    public class InMemoryJournalReader<TEntry> : IJournalReader<TEntry> where TEntry : IEntry
+    public class InMemoryJournalReader : IJournalReader<IEntry>
     {
         private int _currentIndex;
-        private readonly List<TEntry> _journalView;
+        private readonly IList<IEntry> _journalView;
         private readonly string _name;
 
-        public InMemoryJournalReader(List<TEntry> journalView, string name)
+        public InMemoryJournalReader(IList<IEntry> journalView, string name)
         {
             _journalView = journalView;
             _name = name;
@@ -26,7 +26,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 
         public void Close() => _journalView.Clear();
 
-        public ICompletes<TEntry> ReadNext()
+        public ICompletes<IEntry> ReadNext()
         {
             if (_currentIndex < _journalView.Count)
             {
@@ -35,15 +35,15 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             return null!;
         }
 
-        public ICompletes<TEntry> ReadNext(string fromId)
+        public ICompletes<IEntry> ReadNext(string fromId)
         {
             SeekTo(fromId);
             return ReadNext();
         }
 
-        public ICompletes<IEnumerable<TEntry>> ReadNext(int maximumEntries)
+        public ICompletes<IEnumerable<IEntry>> ReadNext(int maximumEntries)
         {
-            var entries = new List<TEntry>();
+            var entries = new List<IEntry>();
 
             for (int count = 0; count < maximumEntries; ++count)
             {
@@ -59,7 +59,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             return Completes.WithSuccess(entries.AsEnumerable());
         }
 
-        public ICompletes<IEnumerable<TEntry>> ReadNext(string fromId, int maximumEntries)
+        public ICompletes<IEnumerable<IEntry>> ReadNext(string fromId, int maximumEntries)
         {
             SeekTo(fromId);
             return ReadNext(maximumEntries);

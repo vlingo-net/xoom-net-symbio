@@ -12,6 +12,32 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Dispatch
 {
+    public interface IDispatchable<TEntry, TState> where TEntry : IEntry where TState : class, IState
+    {
+        /// <summary>
+        /// My String unique identity.
+        /// </summary>
+        string Id { get; }
+
+        /// <summary>
+        /// The moment when I was persistently created.
+        /// </summary>
+        DateTimeOffset CreatedOn { get; }
+
+        /// <summary>
+        /// My <typeparamref name="TState"/> concrete <see cref="State{T}"/> type.
+        /// </summary>
+        Optional<TState> State { get; }
+
+        /// <summary>
+        /// My <code>List{TEntry}</code> to dispatch
+        /// </summary>
+        List<TEntry> Entries { get; }
+
+        bool HasEntries { get; }
+        TNewState TypedState<TNewState>() where TNewState : IState;
+    }
+
     /// <summary>
     /// Defines the data holder for identity and state that has been
     /// successfully stored and is then dispatched to registered
@@ -19,7 +45,7 @@ namespace Vlingo.Symbio.Store.Dispatch
     /// </summary>
     /// <typeparam name="TEntry">The concrete <see cref="IEntry{T}"/> type of the entries</typeparam>
     /// <typeparam name="TState">The concrete <see cref="State{T}"/> type of the storage</typeparam>
-    public class Dispatchable<TEntry, TState> where TEntry : IEntry where TState : class, IState
+    public class Dispatchable<TEntry, TState> : IDispatchable<TEntry, TState> where TEntry : IEntry where TState : class, IState
     {
         public Dispatchable(string id, DateTimeOffset createdOn, TState? state, IEnumerable<TEntry> entries)
         {

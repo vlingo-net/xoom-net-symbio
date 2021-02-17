@@ -34,7 +34,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <typeparam name="TState">The raw snapshot state type</typeparam>
         /// <typeparam name="TEntry">The concrete type of journal entries</typeparam>
         /// <returns><code>IJournal{T}</code></returns>
-        IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional) where TActor : Actor  where TEntry : IEntry<T> where TState : class, IState;
+        IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IDispatcher<IDispatchable<TEntry, TState>> dispatcher, params object[] additional) where TActor : Actor  where TEntry : IEntry<T> where TState : class, IState;
         
         /// <summary>
         /// Answer a new <code>IJournal{T}</code>
@@ -46,7 +46,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <typeparam name="TState">The raw snapshot state type</typeparam>
         /// <typeparam name="TEntry">The concrete type of journal entries</typeparam>
         /// <returns><code>IJournal{T}</code></returns>
-        IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, params object[] additional) where TActor : Actor  where TEntry : IEntry<T> where TState : class, IState;
+        IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IEnumerable<IDispatcher<IDispatchable<TEntry, TState>>> dispatchers, params object[] additional) where TActor : Actor  where TEntry : IEntry<T> where TState : class, IState;
 
         /// <summary>
         /// Appends the single <see cref="Source{T}"/> as an <see cref="IEntry{T}"/> to the end of the journal
@@ -195,9 +195,8 @@ namespace Vlingo.Symbio.Store.Journal
         /// of new streams.
         /// </summary>
         /// <param name="name">The string name of the <see cref="IJournalReader{TEntry}"/> to answer</param>
-        /// <typeparam name="TNewEntry">The concrete type of <see cref="IEntry{T}"/> of the <see cref="IJournalReader{TEntry}"/></typeparam>
         /// <returns><see cref="ICompletes{T}"/> of <see cref="IJournalReader{TEntry}"/></returns>
-        ICompletes<IJournalReader<TNewEntry>?> JournalReader<TNewEntry>(string name) where TNewEntry : IEntry;
+        ICompletes<IJournalReader<IEntry>?> JournalReader(string name);
         
         /// <summary>
         /// Eventually answers the <see cref="IStreamReader{T}"/> named <paramref name="name"/> for this journal. If
@@ -231,13 +230,13 @@ namespace Vlingo.Symbio.Store.Journal
     public abstract class Journal<T> : IJournal<T>
     {
         public static IJournal<T> Using<TActor, TEntry, TState>(Stage stage,
-            IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional)
+            IDispatcher<IDispatchable<TEntry, TState>> dispatcher, params object[] additional)
             where TActor : Actor
             where TEntry : IEntry<T>
             where TState : class, IState
             => Using<TActor, TEntry, TState>(stage, new[] {dispatcher}, additional);
 
-        public static IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, params object[] additional)
+        public static IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IEnumerable<IDispatcher<IDispatchable<TEntry, TState>>> dispatchers, params object[] additional)
             where TActor : Actor
             where TEntry : IEntry<T>
             where TState : class, IState
@@ -250,10 +249,10 @@ namespace Vlingo.Symbio.Store.Journal
                 stage.ActorFor<IJournal<T>>(typeof(TActor)) :
                 stage.ActorFor<IJournal<T>>(typeof(TActor), additional);
 
-        IJournal<T> IJournal<T>.Using<TActor, TEntry, TState>(Stage stage, IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional)
+        IJournal<T> IJournal<T>.Using<TActor, TEntry, TState>(Stage stage, IDispatcher<IDispatchable<TEntry, TState>> dispatcher, params object[] additional)
             => Using<TActor, TEntry, TState>(stage, dispatcher, additional);
         
-        IJournal<T> IJournal<T>.Using<TActor, TEntry, TState>(Stage stage, IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, params object[] additional)
+        IJournal<T> IJournal<T>.Using<TActor, TEntry, TState>(Stage stage, IEnumerable<IDispatcher<IDispatchable<TEntry, TState>>> dispatchers, params object[] additional)
             => Using<TActor, TEntry, TState>(stage, dispatchers, additional);
 
         public virtual void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, IAppendResultInterest interest, object @object) where TSource : Source 
@@ -276,7 +275,7 @@ namespace Vlingo.Symbio.Store.Journal
 
         public abstract void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<TSource> sources, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : Source;
 
-        public abstract ICompletes<IJournalReader<TNewEntry>?> JournalReader<TNewEntry>(string name) where TNewEntry : IEntry;
+        public abstract ICompletes<IJournalReader<IEntry>?> JournalReader(string name);
 
         public abstract ICompletes<IStreamReader<T>?> StreamReader(string name);
     }

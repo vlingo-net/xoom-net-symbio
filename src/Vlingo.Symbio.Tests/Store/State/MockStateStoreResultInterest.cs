@@ -174,7 +174,8 @@ namespace Vlingo.Symbio.Tests.Store.State
         public TSource TypedState => (TSource) State;
         public int ResultedIn { get; }
 
-        public StoreData(int resultedIn, Result objectResult, object state, IEnumerable<Source<TSource>> sources, Metadata metadata, Exception errorCauses) {
+        public StoreData(int resultedIn, Result objectResult, object state, IEnumerable<Source<TSource>> sources, Metadata metadata, Exception errorCauses)
+        {
             ResultedIn = resultedIn;
             Result = objectResult;
             State = state;

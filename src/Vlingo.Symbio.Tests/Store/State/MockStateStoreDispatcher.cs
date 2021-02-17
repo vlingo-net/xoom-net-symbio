@@ -13,7 +13,7 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Tests.Store.State
 {
-    public class MockStateStoreDispatcher<TEntry, TState> : IDispatcher<Dispatchable<TEntry, TState>> where TEntry : IEntry where TState : class, IState
+    public class MockStateStoreDispatcher<TEntry, TState> : IDispatcher<IDispatchable<TEntry, TState>> where TEntry : IEntry where TState : class, IState
     {
         private AccessSafely _access = AccessSafely.AfterCompleting(0);
         
@@ -31,7 +31,7 @@ namespace Vlingo.Symbio.Tests.Store.State
 
         public void ControlWith(IDispatcherControl control) => _control = control;
 
-        public void Dispatch(Dispatchable<TEntry, TState> dispatchable)
+        public void Dispatch(IDispatchable<TEntry, TState> dispatchable)
         {
             _dispatchAttemptCount++;
             if (_processDispatch.Get())

@@ -50,7 +50,8 @@ namespace Vlingo.Symbio.Store.Object.InMemory
 
             for (var count = 0; count < maximumEntries; ++count)
             {
-                if (_currentIndex < _entriesView.Count) {
+                if (_currentIndex < _entriesView.Count)
+                {
                     entries.Add(_entriesView[_currentIndex++]);
                 }
                 else

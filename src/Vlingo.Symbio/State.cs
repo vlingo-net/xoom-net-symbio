@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using Vlingo.Common.Serialization;
 using Vlingo.Symbio.Store;
 
 namespace Vlingo.Symbio
@@ -21,7 +22,11 @@ namespace Vlingo.Symbio
         
         string Type { get; }
         
+        public Type Typed { get; }
+        
         int TypeVersion { get; }
+        
+        string RawData { get; }
     }
 
     public abstract class State<T> : IComparable<State<T>>, IState
@@ -42,6 +47,8 @@ namespace Vlingo.Symbio
         
         public T Data { get; }
         
+        public string RawData { get; }
+        
         public int DataVersion { get; }
         
         public Metadata Metadata { get; }
@@ -49,7 +56,7 @@ namespace Vlingo.Symbio
         public string Type { get; }
         
         public int TypeVersion { get; }
-        
+
         public bool HasMetadata => !Metadata.IsEmpty;
         
         public virtual bool IsBinary => false;
@@ -133,6 +140,7 @@ namespace Vlingo.Symbio
             Type = type.AssemblyQualifiedName;
             TypeVersion = typeVersion;
             Data = data;
+            RawData = JsonSerialization.Serialized(data);
             DataVersion = dataVersion;
             Metadata = metadata ?? Metadata.NullMetadata();
         }

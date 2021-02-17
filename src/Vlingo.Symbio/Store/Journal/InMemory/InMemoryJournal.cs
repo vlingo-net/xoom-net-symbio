@@ -16,42 +16,42 @@ using Vlingo.Symbio.Store.Dispatch.InMemory;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
-    public class InMemoryJournal<T, TEntry, TState> : Journal<T>, IStoppable where TEntry : IEntry<T> where TState : class, IState
+    public class InMemoryJournal<T> : Journal<T>, IStoppable
     {
         private readonly EntryAdapterProvider _entryAdapterProvider;
         private readonly StateAdapterProvider _stateAdapterProvider;
-        private readonly List<TEntry> _journal;
-        private readonly Dictionary<string, IJournalReader<TEntry>> _journalReaders;
+        private readonly List<IEntry> _journal;
+        private readonly Dictionary<string, IJournalReader<IEntry>> _journalReaders;
         private readonly Dictionary<string, IStreamReader<T>> _streamReaders;
         private readonly Dictionary<string, Dictionary<int, int>> _streamIndexes;
-        private readonly Dictionary<string, TState> _snapshots;
-        private readonly List<Dispatchable<TEntry, TState>> _dispatchables;
-        private readonly List<IDispatcher<Dispatchable<TEntry, TState>>> _dispatchers;
+        private readonly Dictionary<string, IState> _snapshots;
+        private readonly List<IDispatchable<IEntry, IState>> _dispatchables;
+        private readonly List<IDispatcher<IDispatchable<IEntry, IState>>> _dispatchers;
         private readonly IDispatcherControl _dispatcherControl;
 
-        public InMemoryJournal(IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, World world, long checkConfirmationExpirationInterval = 1000L, long confirmationExpiration = 1000L)
+        public InMemoryJournal(IEnumerable<IDispatcher<IDispatchable<IEntry, IState>>> dispatchers, World world, long checkConfirmationExpirationInterval = 1000L, long confirmationExpiration = 1000L)
         {
             _dispatchers = dispatchers.ToList();
             _entryAdapterProvider = EntryAdapterProvider.Instance(world);
             _stateAdapterProvider = StateAdapterProvider.Instance(world);
-            _journal = new List<TEntry>();
-            _journalReaders = new Dictionary<string, IJournalReader<TEntry>>(1);
+            _journal = new List<IEntry>();
+            _journalReaders = new Dictionary<string, IJournalReader<IEntry>>(1);
             _streamReaders = new Dictionary<string, IStreamReader<T>>(1);
             _streamIndexes = new Dictionary<string, Dictionary<int, int>>();
-            _snapshots = new Dictionary<string, TState>();
-            _dispatchables = new List<Dispatchable<TEntry, TState>>();
+            _snapshots = new Dictionary<string, IState>();
+            _dispatchables = new List<IDispatchable<IEntry, IState>>();
 
-            var dispatcherControlDelegate = new InMemoryDispatcherControlDelegate<TEntry, TState>(_dispatchables);
+            var dispatcherControlDelegate = new InMemoryDispatcherControlDelegate<IEntry, IState>(_dispatchables);
 
             _dispatcherControl = world.Stage.ActorFor<IDispatcherControl>(
-                () => new DispatcherControlActor<TEntry, TState>(
+                () => new DispatcherControlActor<IEntry, IState>(
                     _dispatchers,
                     dispatcherControlDelegate,
                     checkConfirmationExpirationInterval,
                     confirmationExpiration));
         }
 
-        public InMemoryJournal(IDispatcher<Dispatchable<TEntry, TState>> dispatcher, World world,
+        public InMemoryJournal(IDispatcher<IDispatchable<IEntry, IState>> dispatcher, World world,
             long checkConfirmationExpirationInterval = 1000L, long confirmationExpiration = 1000L)
         : this (new []{dispatcher}, world, checkConfirmationExpirationInterval, confirmationExpiration)
         {
@@ -59,21 +59,21 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 
         public override void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, IAppendResultInterest interest, object @object)
         {
-            var entry = _entryAdapterProvider.AsEntry<TSource, TEntry>(source, streamVersion, metadata);
+            var entry = _entryAdapterProvider.AsEntry<TSource, IEntry>(source, streamVersion, metadata);
             Insert(streamName, streamVersion, entry);
-            Dispatch(streamName, streamVersion, new List<TEntry> { entry }, null);
+            Dispatch(streamName, streamVersion, new List<IEntry> { entry }, null);
             interest.AppendResultedIn(Success.Of<StorageException, Result>(Result.Success), streamName, streamVersion, source, Optional.Empty<TSnapshotState>(), @object);
         }
 
         public override void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
         {
-            var entry = _entryAdapterProvider.AsEntry<TSource, TEntry>(source, streamVersion, metadata);
+            var entry = _entryAdapterProvider.AsEntry<TSource, IEntry>(source, streamVersion, metadata);
             Insert(streamName, streamVersion, entry);
-            TState? raw;
+            IState? raw;
             Optional<TSnapshotState> snapshotResult;
             if (snapshot != null)
             {
-                raw = _stateAdapterProvider.AsRaw<TSnapshotState, TState>(streamName, snapshot, streamVersion);
+                raw = _stateAdapterProvider.AsRaw<TSnapshotState, IState>(streamName, snapshot, streamVersion);
                 _snapshots.Add(streamName, raw);
                 snapshotResult = Optional.Of(snapshot);
             }
@@ -83,14 +83,14 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
                 snapshotResult = Optional.Empty<TSnapshotState>();
             }
 
-            Dispatch(streamName, streamVersion, new List<TEntry> { entry }, raw);
+            Dispatch(streamName, streamVersion, new List<IEntry> { entry }, raw);
             interest.AppendResultedIn(Success.Of<StorageException, Result>(Result.Success), streamName, streamVersion, source, snapshotResult, @object);
         }
 
         public override void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<TSource> sources, Metadata metadata, IAppendResultInterest interest, object @object)
         {
             var sourcesForEntries = sources.ToList();
-            var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(sourcesForEntries, fromStreamVersion, metadata);
+            var entries = _entryAdapterProvider.AsEntries<TSource, IEntry<T>>(sourcesForEntries, fromStreamVersion, metadata);
             var dispatchableEntries = entries.ToList();
             Insert(streamName, fromStreamVersion, dispatchableEntries);
 
@@ -102,14 +102,14 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
         {
             var sourcesForEntries = sources.ToList();
-            var entries = _entryAdapterProvider.AsEntries<TSource, TEntry>(sourcesForEntries, fromStreamVersion, metadata);
+            var entries = _entryAdapterProvider.AsEntries<TSource, IEntry<T>>(sourcesForEntries, fromStreamVersion, metadata);
             var dispatchableEntries = entries.ToList();
             Insert(streamName, fromStreamVersion, dispatchableEntries);
-            TState? raw;
+            IState? raw;
             Optional<TSnapshotState> snapshotResult;
             if (snapshot != null)
             {
-                raw = _stateAdapterProvider.AsRaw<TSnapshotState, TState>(streamName, snapshot, fromStreamVersion);
+                raw = _stateAdapterProvider.AsRaw<TSnapshotState, IState>(streamName, snapshot, fromStreamVersion);
                 _snapshots.Add(streamName, raw);
                 snapshotResult = Optional.Of(snapshot);
             }
@@ -123,14 +123,13 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             interest.AppendAllResultedIn(Success.Of<StorageException, Result>(Result.Success), streamName, fromStreamVersion, sourcesForEntries, snapshotResult, @object);
         }
 
-        public override ICompletes<IJournalReader<TNewEntry>?> JournalReader<TNewEntry>(string name)
+        public override ICompletes<IJournalReader<IEntry>?> JournalReader(string name)
         {
-            IJournalReader<TNewEntry>? reader = null;
+            IJournalReader<IEntry>? reader = null;
             if (!_journalReaders.ContainsKey(name))
             {
-                var entryReader = new InMemoryJournalReader<TEntry>(_journal, name);
-                reader = entryReader as IJournalReader<TNewEntry>;
-                _journalReaders.Add(name, entryReader);
+                reader = new InMemoryJournalReader(_journal, name);
+                _journalReaders.Add(name, reader);
             }
             
             return Completes.WithSuccess(reader);
@@ -144,7 +143,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
                 var castedDictionary = new Dictionary<string, State<T>>();
                 foreach (var snapshotPair in _snapshots)
                 {
-                    castedDictionary.Add(snapshotPair.Key, (State<T>)(object)snapshotPair.Value);
+                    castedDictionary.Add(snapshotPair.Key, (State<T>)snapshotPair.Value);
                 }
                 reader = new InMemoryStreamReader<T>(_journal.Cast<BaseEntry>().ToList(), _streamIndexes, castedDictionary, name);
                 _streamReaders.Add(name, reader);
@@ -160,7 +159,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
 
         public bool IsStopped { get; } = false;
         
-        private void Insert(string streamName, int streamVersion, TEntry entry)
+        private void Insert(string streamName, int streamVersion, IEntry entry)
         {
             var entryIndex = _journal.Count;
             var id = $"{entryIndex + 1}";
@@ -174,7 +173,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             versionIndexes.Add(streamVersion, entryIndex);
         }
 
-        private void Insert(string streamName, int fromStreamVersion, IEnumerable<TEntry> entries)
+        private void Insert(string streamName, int fromStreamVersion, IEnumerable<IEntry<T>> entries)
         {
             int index = 0;
             foreach (var entry in entries)
@@ -184,11 +183,11 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             }
         }
 
-        private void Dispatch(string streamName, int streamVersion, IEnumerable<TEntry> entries, TState? snapshot)
+        private void Dispatch(string streamName, int streamVersion, IEnumerable<IEntry> entries, IState? snapshot)
         {
-            var dispatchableEntries = entries as TEntry[] ?? entries.ToArray();
+            var dispatchableEntries = entries as IEntry[] ?? entries.ToArray();
             var id = GetDispatchId(streamName, streamVersion, dispatchableEntries);
-            var dispatchable = new Dispatchable<TEntry, TState>(id,  DateTimeOffset.Now, snapshot, dispatchableEntries);
+            var dispatchable = new Dispatchable<IEntry, IState>(id,  DateTimeOffset.Now, snapshot, dispatchableEntries);
             _dispatchables.Add(dispatchable);
             foreach (var dispatcher in _dispatchers)
             {
@@ -196,6 +195,6 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             }
         }
 
-        private static string GetDispatchId(string streamName, int streamVersion, IEnumerable<TEntry> entries) => $"{streamName}:{streamVersion}:{string.Join(":", entries.Select(e => e.Id))}";
+        private static string GetDispatchId(string streamName, int streamVersion, IEnumerable<IEntry> entries) => $"{streamName}:{streamVersion}:{string.Join(":", entries.Select(e => e.Id))}";
     }
 }

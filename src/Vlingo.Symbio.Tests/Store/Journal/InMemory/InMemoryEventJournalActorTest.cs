@@ -23,10 +23,10 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
 {
     public class InMemoryEventJournalActorTest : IDisposable
     {
-        private object _object = new object();
-        private IJournal<string> _journal;
+        private readonly object _object = new object();
+        private readonly IJournal<string> _journal;
         private readonly World _world;
-        private readonly MockDispatcher<string, TextEntry, TextState> _dispatcher;
+        private readonly MockDispatcher _dispatcher;
 
         [Fact]
         public void TestThatJournalAppendsOneEvent()
@@ -113,13 +113,13 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             _journal.Append<Test1Source, SnapshotState>(streamName, streamVersion, source,  interest, _object);
 
             var accessResults = new TestResults().AfterCompleting(1);
-            _journal.JournalReader<TextEntry>("test")
+            _journal.JournalReader("test")
                 .AndThenTo(reader => reader.ReadNext()
                     .AndThenConsume(@event => {
-                        accessResults.WriteUsing("addAll", new List<BaseEntry<string>> {@event});
+                        accessResults.WriteUsing("addAll", new List<IEntry> {@event});
             }));
 
-            Assert.NotNull(accessResults.ReadFrom<int, BaseEntry<string>>("entry", 0));
+            Assert.NotNull(accessResults.ReadFrom<int, IEntry>("entry", 0));
             Assert.Equal("1", accessResults.ReadFrom<int, string>("entryId", 0));
         }
         
@@ -134,10 +134,10 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             _journal.AppendAll<Source<string>, SnapshotState>("123", 1, three, interest, _object);
 
             var accessResults = new TestResults().AfterCompleting(1);
-            _journal.JournalReader<TextEntry>("test")
+            _journal.JournalReader("test")
                 .AndThenTo(reader => reader.ReadNext(5)
                     .AndThenConsume(entries => {
-                        accessResults.WriteUsing("addAll", entries.Select(entry => (BaseEntry<string>)entry).ToList());
+                        accessResults.WriteUsing("addAll", entries.Select(entry => (IEntry)entry).ToList());
             }));
 
             Assert.Equal(3, accessResults.ReadFrom<int>("size"));
@@ -163,7 +163,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             _journal.StreamReader("test")
                 .AndThenTo(reader => reader.StreamFor("123")
                     .AndThenConsume(eventStream => {
-                        accessResults.WriteUsing("addAll", eventStream.Entries.Select(entry => (BaseEntry<string>)entry).ToList());
+                        accessResults.WriteUsing("addAll", eventStream.Entries.Select(entry => (IEntry)entry).ToList());
                     }));
 
             Assert.Equal(3, accessResults.ReadFrom<int>("size"));
@@ -189,7 +189,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             _journal.StreamReader("test")
                 .AndThenTo(reader => reader.StreamFor("123", 4)
                     .AndThenConsume(eventStream => {
-                        accessResults.WriteUsing("addAll", eventStream.Entries.Select(entry => (BaseEntry<string>)entry).ToList());
+                        accessResults.WriteUsing("addAll", eventStream.Entries.Select(entry => (IEntry)entry).ToList());
                         Assert.Null(eventStream.Snapshot);
                     }));
 
@@ -204,9 +204,9 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             Console.SetOut(converter);
             
             _world = World.StartWithDefaults("test-journal");
-            _dispatcher = new MockDispatcher<string, TextEntry, TextState>(new MockConfirmDispatchedResultInterest());
+            _dispatcher = new MockDispatcher(new MockConfirmDispatchedResultInterest());
             
-            _journal = Journal<string>.Using<InMemoryJournalActor<string, TextEntry, TextState>, TextEntry, TextState>(_world.Stage, _dispatcher);
+            _journal = Journal<string>.Using<InMemoryJournalActor<string>>(_world.Stage, _dispatcher);
             EntryAdapterProvider.Instance(_world).RegisterAdapter(new Test1SourceAdapter());
             EntryAdapterProvider.Instance(_world).RegisterAdapter(new Test2SourceAdapter());
             StateAdapterProvider.Instance(_world).RegisterAdapter(new SnapshotStateAdapter());
@@ -229,29 +229,29 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
         public int Two => _two;
     }
     
-    internal class Test1SourceAdapter : EntryAdapter<Test1Source, TextEntry>
+    internal class Test1SourceAdapter : EntryAdapter<Test1Source, IEntry>
     {
-        public override Test1Source FromEntry(TextEntry entry) => JsonSerialization.Deserialized<Test1Source>(entry.EntryData);
+        public override Test1Source FromEntry(IEntry entry) => JsonSerialization.Deserialized<Test1Source>(entry.EntryRawData);
         
-        public override TextEntry ToEntry(Test1Source source, Metadata metadata)
+        public override IEntry ToEntry(Test1Source source, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(typeof(Test1Source), 1, serialization, metadata);
         }
 
-        public override TextEntry ToEntry(Test1Source source, int version, Metadata metadata)
+        public override IEntry ToEntry(Test1Source source, int version, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(typeof(Test1Source), 1, serialization, version, metadata);
         }
 
-        public override TextEntry ToEntry(Test1Source source, int version, string id, Metadata metadata)
+        public override IEntry ToEntry(Test1Source source, int version, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, typeof(Test1Source), 1, serialization, version, metadata);
         }
 
-        public override TextEntry ToEntry(Test1Source source, string id, Metadata metadata)
+        public override IEntry ToEntry(Test1Source source, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, typeof(Test1Source), 1, serialization, metadata);
@@ -291,13 +291,13 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
     {
         private AccessSafely _access;
         
-        internal List<BaseEntry<string>> Entries { get; } = new List<BaseEntry<string>>();
+        internal List<IEntry> Entries { get; } = new List<IEntry>();
         
         internal AccessSafely AfterCompleting(int times)
         {
             _access = AccessSafely.AfterCompleting(times)
-                .WritingWith<List<BaseEntry<string>>>("addAll", values => Entries.AddRange(values))
-                .ReadingWith<int, BaseEntry<string>>("entry", index => Entries[index])
+                .WritingWith<List<IEntry>>("addAll", values => Entries.AddRange(values))
+                .ReadingWith<int, IEntry>("entry", index => Entries[index])
                 .ReadingWith<int, string>("entryId", index => Entries[index].Id)
                 .ReadingWith("size", () => Entries.Count);
 

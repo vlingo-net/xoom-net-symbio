@@ -17,7 +17,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
     public class MockAppendResultInterest<TEntry, TState> : IAppendResultInterest
     {
         private AccessSafely _access;
-        private List<JournalData<TEntry, TState>> _entries = new List<JournalData<TEntry, TState>>();
+        private readonly List<JournalData<TEntry, TState>> _entries = new List<JournalData<TEntry, TState>>();
         
         public void AppendResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, TSource source, Optional<TSnapshotState> snapshot, object @object) where TSource : Source
         {

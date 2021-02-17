@@ -7,11 +7,12 @@
 
 using System;
 using System.Collections.Generic;
+using Vlingo.Common.Serialization;
 using Vlingo.Symbio.Store.Journal;
 
 namespace Vlingo.Symbio
 {
-    public abstract class BaseEntry
+    public abstract class BaseEntry: IEntry
     {
         public BaseEntry(string id) => InternalId = id ?? throw new ArgumentNullException(nameof(id), "Entry id must not be null.");
 
@@ -22,6 +23,19 @@ namespace Vlingo.Symbio
         protected string InternalId;
         
         internal void SetId(string id) => InternalId = id;
+        public abstract Type TypedFrom(string type);
+
+        public abstract string Id { get; }
+        public abstract Metadata Metadata { get; }
+        public abstract string TypeName { get; }
+        public abstract string Type { get; }
+        public abstract int TypeVersion { get; }
+        public abstract int EntryVersion { get; }
+        public abstract bool HasMetadata { get; }
+        public abstract bool IsEmpty { get; }
+        public abstract bool IsNull { get; }
+        public abstract Type Typed { get; }
+        public abstract string EntryRawData { get; }
     }
     
     /// <summary>
@@ -90,25 +104,25 @@ namespace Vlingo.Symbio
 
         public IEnumerable<IEntry<T>> None => Entry<T>.None;
 
-        public Type TypedFrom(string type) => Entry<T>.TypedFrom(type);
+        public override Type TypedFrom(string type) => Entry<T>.TypedFrom(type);
 
         /// <inheritdoc/>
-        public string Id => InternalId;
+        public override string Id => InternalId;
         
         /// <inheritdoc/>
         public T EntryData => _entryData;
         
         /// <inheritdoc/>
-        public Metadata Metadata => _metadata;
+        public override Metadata Metadata => _metadata;
         
         /// <inheritdoc/>
-        public string TypeName => _type;
+        public override string TypeName => _type;
         
         /// <inheritdoc/>
-        public int TypeVersion => _typeVersion;
+        public override int TypeVersion => _typeVersion;
         
         /// <inheritdoc/>
-        public int EntryVersion =>  _entryVersion;
+        public override int EntryVersion =>  _entryVersion;
 
         public BinaryEntry? AsBinaryEntry() => this as BinaryEntry;
         
@@ -117,7 +131,7 @@ namespace Vlingo.Symbio
         public TextEntry? AsTextEntry() => this as TextEntry;
 
         /// <inheritdoc/>
-        public bool HasMetadata => !_metadata.IsEmpty;
+        public override bool HasMetadata => !_metadata.IsEmpty;
 
         /// <summary>
         /// Returns <c>true</c> if I am an instance of <see cref="BinaryEntry"/>. The default is to answer false.
@@ -135,18 +149,20 @@ namespace Vlingo.Symbio
         public virtual bool IsText => false;
 
         /// <inheritdoc/>
-        public virtual bool IsEmpty => false;
+        public override bool IsEmpty => false;
 
         /// <inheritdoc/>
-        public virtual bool IsNull => false;
+        public override bool IsNull => false;
 
         /// <inheritdoc/>
-        public Type Typed => Entry<T>.TypedFrom(_type);
+        public override Type Typed => Entry<T>.TypedFrom(_type);
+
+        public override string EntryRawData => JsonSerialization.Serialized(EntryData);
 
         /// <summary>
         /// My string type that is the fully-qualified class name of the original entry type.
         /// </summary>
-        public string Type => _type;
+        public override string Type => _type;
 
         public abstract IEntry<T> WithId(string id);
 

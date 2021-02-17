@@ -62,7 +62,8 @@ namespace Vlingo.Symbio.Store.State.InMemory
         {
             var entries = new List<TEntry>(maximumEntries);
 
-            for (int count = 0; count < maximumEntries; ++count) {
+            for (int count = 0; count < maximumEntries; ++count)
+            {
                 if (_currentIndex < _entriesView.Count)
                 {
                     entries.Add(_entriesView[_currentIndex++]);

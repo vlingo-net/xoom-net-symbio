@@ -18,18 +18,18 @@ namespace Vlingo.Symbio.Store.Object.InMemory
     {
         private long _nextId;
 
-        private Dictionary<Type , Dictionary<long, TState>> _stores;
-        private List<TEntry> _entries;
-        private List<Dispatchable<TEntry, TState>> _dispatchables;
-        private StateAdapterProvider _stateAdapterProvider;
-        private IIdentityGenerator _identityGenerator;
+        private readonly Dictionary<Type , Dictionary<long, TState>> _stores;
+        private readonly List<TEntry> _entries;
+        private readonly List<IDispatchable<TEntry, TState>> _dispatchables;
+        private readonly StateAdapterProvider _stateAdapterProvider;
+        private readonly IIdentityGenerator _identityGenerator;
 
         public InMemoryObjectStoreDelegate(StateAdapterProvider stateAdapterProvider)
         {
             _stateAdapterProvider = stateAdapterProvider;
             _stores = new Dictionary<Type, Dictionary<long, TState>>();
             _entries = new List<TEntry>();
-            _dispatchables = new List<Dispatchable<TEntry, TState>>();
+            _dispatchables = new List<IDispatchable<TEntry, TState>>();
             _identityGenerator = IdentityGeneratorType.Random.Generator();
 
             _nextId = 1;
@@ -160,7 +160,7 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         }
 
         /// <inheritdoc />
-        public IEnumerable<Dispatchable<TEntry, TState>> AllUnconfirmedDispatchableStates => _dispatchables;
+        public IEnumerable<IDispatchable<TEntry, TState>> AllUnconfirmedDispatchableStates => _dispatchables;
         
         /// <inheritdoc />
         public IEnumerable<StateObjectMapper> RegisteredMappers { get; } = Enumerable.Empty<StateObjectMapper>();

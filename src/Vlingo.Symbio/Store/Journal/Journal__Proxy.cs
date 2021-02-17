@@ -16,10 +16,10 @@ namespace Vlingo.Symbio.Store.Journal
     public class Journal__Proxy<T> : IJournal<T>
     {
         private const string UsingRepresentation1 =
-            "Using<TActor, TEntry, TState>(Vlingo.Actors.Stage, IDispatcher<Dispatchable<TEntry, TState>>, System.Object[])";
+            "Using<TActor, TEntry, TState>(Vlingo.Actors.Stage, IDispatcher<IDispatchable<TEntry, TState>>, System.Object[])";
 
         private const string UsingRepresentation2 =
-            "Using<TActor, TEntry, TState>(Vlingo.Actors.Stage, IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>>, System.Object[])";
+            "Using<TActor, TEntry, TState>(Vlingo.Actors.Stage, IEnumerable<IDispatcher<IDispatchable<TEntry, TState>>>, System.Object[])";
 
         private const string AppendRepresentation3 =
             "Append<TSource, TSnapshotState>(string, int, TSource, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
@@ -206,12 +206,12 @@ namespace Vlingo.Symbio.Store.Journal
             }
         }
 
-        public ICompletes<IJournalReader<TNewEntry>?> JournalReader<TNewEntry>(string name) where TNewEntry : IEntry
+        public ICompletes<IJournalReader<IEntry>?> JournalReader(string name)
         {
             if (!actor.IsStopped)
             {
-                Action<IJournal<T>> cons1385350909 = __ => __.JournalReader<TNewEntry>(name);
-                var completes = new BasicCompletes<IJournalReader<TNewEntry>>(actor.Scheduler);
+                Action<IJournal<T>> cons1385350909 = __ => __.JournalReader(name);
+                var completes = new BasicCompletes<IJournalReader<IEntry>>(actor.Scheduler);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons1385350909, completes, JournalReaderRepresentation11);
                 else
@@ -243,7 +243,7 @@ namespace Vlingo.Symbio.Store.Journal
         }
 
         public IJournal<T> Using<TActor, TEntry, TState>(Stage stage,
-            IDispatcher<Dispatchable<TEntry, TState>> dispatcher, object[] additional)
+            IDispatcher<IDispatchable<TEntry, TState>> dispatcher, object[] additional)
             where TActor : Actor where TState : class, IState where TEntry : IEntry<T>
         {
             if (!actor.IsStopped)
@@ -264,7 +264,7 @@ namespace Vlingo.Symbio.Store.Journal
         }
 
         public IJournal<T> Using<TActor, TEntry, TState>(Stage stage,
-            IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, object[] additional)
+            IEnumerable<IDispatcher<IDispatchable<TEntry, TState>>> dispatchers, object[] additional)
             where TActor : Actor where TState : class, IState where TEntry : IEntry<T>
         {
             if (!actor.IsStopped)

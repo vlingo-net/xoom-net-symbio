@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Vlingo.Symbio.Store;
 
 namespace Vlingo.Symbio
@@ -71,6 +70,8 @@ namespace Vlingo.Symbio
         /// Gets the Type.
         /// </summary>
         Type Typed { get; }
+
+        string EntryRawData { get; }
     }
     
     /// <summary>

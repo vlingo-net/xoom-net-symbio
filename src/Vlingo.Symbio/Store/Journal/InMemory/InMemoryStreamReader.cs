@@ -45,7 +45,8 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             var entries = new List<BaseEntry>();
             if (_streamIndexesView.TryGetValue(streamName, out var versionIndexes))
             {
-                while (versionIndexes.TryGetValue(version, out var journalIndex)) {
+                while (versionIndexes.TryGetValue(version, out var journalIndex))
+                {
                     var entry = _journalView[journalIndex];
                     entries.Add(entry);
                     ++version;
