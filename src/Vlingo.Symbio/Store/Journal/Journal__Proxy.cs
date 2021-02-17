@@ -243,7 +243,7 @@ namespace Vlingo.Symbio.Store.Journal
         }
 
         public IJournal<T> Using<TActor, TEntry, TState>(Stage stage,
-            IDispatcher<IDispatchable<TEntry, TState>> dispatcher, object[] additional)
+            IDispatcher<Dispatchable<TEntry, TState>> dispatcher, object[] additional)
             where TActor : Actor where TState : class, IState where TEntry : IEntry<T>
         {
             if (!actor.IsStopped)
@@ -264,7 +264,7 @@ namespace Vlingo.Symbio.Store.Journal
         }
 
         public IJournal<T> Using<TActor, TEntry, TState>(Stage stage,
-            IEnumerable<IDispatcher<IDispatchable<TEntry, TState>>> dispatchers, object[] additional)
+            IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, object[] additional)
             where TActor : Actor where TState : class, IState where TEntry : IEntry<T>
         {
             if (!actor.IsStopped)

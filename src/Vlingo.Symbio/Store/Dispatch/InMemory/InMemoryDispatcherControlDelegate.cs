@@ -11,11 +11,11 @@ namespace Vlingo.Symbio.Store.Dispatch.InMemory
 {
     public class InMemoryDispatcherControlDelegate<TEntry, TState> : IDispatcherControlDelegate<TEntry, TState> where TEntry : IEntry where TState : class, IState
     {
-        private readonly List<IDispatchable<TEntry, TState>> _dispatchables;
+        private readonly List<Dispatchable<TEntry, TState>> _dispatchables;
 
-        public InMemoryDispatcherControlDelegate(List<IDispatchable<TEntry, TState>> dispatchables) => _dispatchables = dispatchables;
+        public InMemoryDispatcherControlDelegate(List<Dispatchable<TEntry, TState>> dispatchables) => _dispatchables = dispatchables;
 
-        public IEnumerable<IDispatchable<TEntry, TState>> AllUnconfirmedDispatchableStates => _dispatchables;
+        public IEnumerable<Dispatchable<TEntry, TState>> AllUnconfirmedDispatchableStates => _dispatchables;
 
         public void ConfirmDispatched(string dispatchId) => _dispatchables.RemoveAll(d => d.Id.Equals(dispatchId));
 

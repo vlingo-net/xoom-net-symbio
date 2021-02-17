@@ -300,7 +300,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
             // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = _world.ActorFor<IStateStore<TextEntry>>(typeof(InMemoryStateStoreActor<TextState, TextEntry>), new List<IDispatcher<IDispatchable<TextEntry, TextState>>> {_dispatcher});
+            _store = _world.ActorFor<IStateStore<TextEntry>>(typeof(InMemoryStateStoreActor<TextState, TextEntry>), new List<IDispatcher<Dispatchable<TextEntry, TextState>>> {_dispatcher});
 
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName1, typeof(Entity1));
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName2, typeof(Entity2));

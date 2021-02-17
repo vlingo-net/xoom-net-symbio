@@ -17,13 +17,13 @@ namespace Vlingo.Symbio.Store.Dispatch.Control
     {
         private static readonly long DefaultRedispatchDelay = 2000L;
 
-        private readonly IEnumerable<IDispatcher<IDispatchable<TEntry, TState>>> _dispatchers;
+        private readonly IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> _dispatchers;
         private readonly IDispatcherControlDelegate<TEntry, TState> _delegate;
         private readonly ICancellable _cancellable;
         private readonly long _confirmationExpiration;
 
         public DispatcherControlActor(
-            IEnumerable<IDispatcher<IDispatchable<TEntry, TState>>> dispatchers,
+            IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers,
             IDispatcherControlDelegate<TEntry, TState> @delegate,
             long checkConfirmationExpirationInterval,
             long confirmationExpiration)
@@ -40,7 +40,7 @@ namespace Vlingo.Symbio.Store.Dispatch.Control
         }
         
         public DispatcherControlActor(
-            IDispatcher<IDispatchable<TEntry, TState>> dispatcher,
+            IDispatcher<Dispatchable<TEntry, TState>> dispatcher,
             IDispatcherControlDelegate<TEntry, TState> @delegate,
             long checkConfirmationExpirationInterval,
             long confirmationExpiration)

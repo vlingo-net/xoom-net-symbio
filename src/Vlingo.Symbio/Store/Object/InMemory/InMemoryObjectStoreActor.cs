@@ -23,7 +23,7 @@ namespace Vlingo.Symbio.Store.Object.InMemory
     {
         private readonly EntryAdapterProvider _entryAdapterProvider;
 
-        private readonly IDispatcher<IDispatchable<IEntry, IState>> _dispatcher;
+        private readonly IDispatcher<Dispatchable<IEntry, IState>> _dispatcher;
         private readonly IDispatcherControl _dispatcherControl;
         private readonly IReadOnlyDictionary<string, IObjectStoreEntryReader<IEntry<T>>> _entryReaders;
         private readonly IObjectStoreDelegate<IEntry, IState> _storeDelegate;
@@ -32,11 +32,11 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         /// Construct my default state.
         /// </summary>
         /// <param name="dispatcher">The dispatcher to be used</param>
-        public InMemoryObjectStoreActor(IDispatcher<IDispatchable<IEntry, IState>> dispatcher) : this(dispatcher, 1000L, 1000L)
+        public InMemoryObjectStoreActor(IDispatcher<Dispatchable<IEntry, IState>> dispatcher) : this(dispatcher, 1000L, 1000L)
         {
         }
 
-        public InMemoryObjectStoreActor(IDispatcher<IDispatchable<IEntry, IState>> dispatcher, long checkConfirmationExpirationInterval, long confirmationExpiration)
+        public InMemoryObjectStoreActor(IDispatcher<Dispatchable<IEntry, IState>> dispatcher, long checkConfirmationExpirationInterval, long confirmationExpiration)
         {
             _entryAdapterProvider = EntryAdapterProvider.Instance(Stage.World);
             _dispatcher = dispatcher;

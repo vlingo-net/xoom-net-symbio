@@ -18,8 +18,8 @@ namespace Vlingo.Symbio.Store.State.InMemory
 {
     public class InMemoryStateStoreActor<TRawState, TEntry> : Actor, IStateStore<TEntry> where TEntry : IEntry where TRawState : class, IState
     {
-        private readonly List<IDispatchable<TEntry, TRawState>> _dispatchables;
-        private readonly List<IDispatcher<IDispatchable<TEntry, TRawState>>> _dispatchers;
+        private readonly List<Dispatchable<TEntry, TRawState>> _dispatchables;
+        private readonly List<IDispatcher<Dispatchable<TEntry, TRawState>>> _dispatchers;
         private readonly IDispatcherControl _dispatcherControl;
         // this is based on mock database design, it represents a database entries and it's shared (like database)
         // between this and InMemoryStateStoreEntryReaderActor
@@ -30,21 +30,21 @@ namespace Vlingo.Symbio.Store.State.InMemory
         private readonly ReadAllResultCollector _readAllResultCollector;
         private readonly Dictionary<string, Dictionary<string, TRawState>> _store;
 
-        public InMemoryStateStoreActor(IDispatcher<IDispatchable<TEntry, TRawState>> dispatcher) : this(new []{dispatcher}, 1000L, 1000L)
+        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher) : this(new []{dispatcher}, 1000L, 1000L)
         {
         }
 
-        public InMemoryStateStoreActor(IDispatcher<IDispatchable<TEntry, TRawState>> dispatcher, long checkConfirmationExpirationInterval, long confirmationExpiration)
+        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher, long checkConfirmationExpirationInterval, long confirmationExpiration)
         : this (new []{dispatcher}, checkConfirmationExpirationInterval, confirmationExpiration)
         {
         }
 
-        public InMemoryStateStoreActor(IEnumerable<IDispatcher<IDispatchable<TEntry, TRawState>>> dispatchers)
+        public InMemoryStateStoreActor(IEnumerable<IDispatcher<Dispatchable<TEntry, TRawState>>> dispatchers)
         : this (dispatchers, 1000L, 1000L)
         {
         }
 
-        public InMemoryStateStoreActor(IEnumerable<IDispatcher<IDispatchable<TEntry, TRawState>>> dispatchers, long checkConfirmationExpirationInterval, long confirmationExpiration)
+        public InMemoryStateStoreActor(IEnumerable<IDispatcher<Dispatchable<TEntry, TRawState>>> dispatchers, long checkConfirmationExpirationInterval, long confirmationExpiration)
         {
             if (dispatchers == null)
             {
@@ -57,7 +57,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
             _entries = new List<TEntry>();
             _entryReaders = new Dictionary<string, IStateStoreEntryReader<TEntry>>();
             _store = new Dictionary<string, Dictionary<string, TRawState>>();
-            _dispatchables = new List<IDispatchable<TEntry, TRawState>>();
+            _dispatchables = new List<Dispatchable<TEntry, TRawState>>();
             _readAllResultCollector = new ReadAllResultCollector();
 
             var dispatcherControlDelegate = new InMemoryDispatcherControlDelegate<TEntry, TRawState>(_dispatchables);
