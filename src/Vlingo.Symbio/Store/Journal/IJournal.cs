@@ -12,42 +12,8 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Store.Journal
 {
-    /// <summary>
-    /// The top-level journal used within a Bounded Context (microservice) to store all of
-    /// its <see cref="IEntry{T}"/> instances for <code>EventSourced</code> and <code>CommandSourced</code> components. Each use of
-    /// the journal appends some number of <see cref="IEntry{T}"/> instances and perhaps a single snapshot <see cref="State{T}"/>.
-    /// The journal may also be queried for a <see cref="IJournalReader{T}"/> and a <see cref="IStreamReader{T}"/>.
-    /// Assuming that all successfully appended <see cref="IEntry{T}"/> instances should be dispatched in some way
-    /// after each write transaction, you should register an <code>StreamJournalListener{T}</code> when first
-    /// creating your <see cref="IStreamReader{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The concrete type of <see cref="IEntry{T}"/> and <see cref="State{T}"/> stored, which maybe be string, byte[], or object</typeparam>
-    public interface IJournal<T>
+    public interface IJournal
     {
-        /// <summary>
-        /// Answer a new <code>IJournal{T}</code>
-        /// </summary>
-        /// <param name="stage">The Stage within which the <code>IJournal{T}</code> is created</param>
-        /// <param name="dispatcher">The <see cref="IDispatcher{TDispatchable}"/></param>
-        /// <param name="additional">The object[] of additional parameters</param>
-        /// <typeparam name="TActor">The concrete type of the Actor implementing the <code>IJournal{T}</code> protocol</typeparam>
-        /// <typeparam name="TState">The raw snapshot state type</typeparam>
-        /// <typeparam name="TEntry">The concrete type of journal entries</typeparam>
-        /// <returns><code>IJournal{T}</code></returns>
-        IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional) where TActor : Actor  where TEntry : IEntry<T> where TState : class, IState;
-        
-        /// <summary>
-        /// Answer a new <code>IJournal{T}</code>
-        /// </summary>
-        /// <param name="stage">The Stage within which the <code>IJournal{T}</code> is created</param>
-        /// <param name="dispatchers">The <see cref="T:IEnumerable{IDispatcher{TDispatchable}}"/></param>
-        /// <param name="additional">The object[] of additional parameters</param>
-        /// <typeparam name="TActor">The concrete type of the Actor implementing the <code>IJournal{T}</code> protocol</typeparam>
-        /// <typeparam name="TState">The raw snapshot state type</typeparam>
-        /// <typeparam name="TEntry">The concrete type of journal entries</typeparam>
-        /// <returns><code>IJournal{T}</code></returns>
-        IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, params object[] additional) where TActor : Actor  where TEntry : IEntry<T> where TState : class, IState;
-
         /// <summary>
         /// Appends the single <see cref="Source{T}"/> as an <see cref="IEntry{T}"/> to the end of the journal
         /// creating an association to <paramref name="streamName"/> with <paramref name="streamVersion"/>. The <see cref="Source{T}"/>
@@ -199,14 +165,51 @@ namespace Vlingo.Symbio.Store.Journal
         ICompletes<IJournalReader<IEntry>?> JournalReader(string name);
         
         /// <summary>
-        /// Eventually answers the <see cref="IStreamReader{T}"/> named <paramref name="name"/> for this journal. If
+        /// Eventually answers the <see cref="IStreamReader"/> named <paramref name="name"/> for this journal. If
         /// the reader named <paramref name="name"/> does not yet exist, it is first created. Readers
         /// with different names enables reading from different positions and for different
         /// reasons. For example, some streams may be very busy while others are not.
         /// </summary>
-        /// <param name="name">The string name of the <see cref="IStreamReader{T}"/> to answer</param>
-        /// <returns><see cref="ICompletes{T}"/> of <see cref="IStreamReader{T}"/></returns>
-        ICompletes<IStreamReader<T>?> StreamReader(string name);
+        /// <param name="name">The string name of the <see cref="IStreamReader"/> to answer</param>
+        /// <returns><see cref="ICompletes{T}"/> of <see cref="IStreamReader"/></returns>
+        ICompletes<IStreamReader?> StreamReader(string name);
+    }
+    
+    /// <summary>
+    /// The top-level journal used within a Bounded Context (microservice) to store all of
+    /// its <see cref="IEntry{T}"/> instances for <code>EventSourced</code> and <code>CommandSourced</code> components. Each use of
+    /// the journal appends some number of <see cref="IEntry{T}"/> instances and perhaps a single snapshot <see cref="State{T}"/>.
+    /// The journal may also be queried for a <see cref="IJournalReader{T}"/> and a <see cref="IStreamReader"/>.
+    /// Assuming that all successfully appended <see cref="IEntry{T}"/> instances should be dispatched in some way
+    /// after each write transaction, you should register an <code>StreamJournalListener{T}</code> when first
+    /// creating your <see cref="IStreamReader"/>.
+    /// </summary>
+    /// <typeparam name="T">The concrete type of <see cref="IEntry{T}"/> and <see cref="State{T}"/> stored, which maybe be string, byte[], or object</typeparam>
+    public interface IJournal<T> : IJournal
+    {
+        /// <summary>
+        /// Answer a new <code>IJournal{T}</code>
+        /// </summary>
+        /// <param name="stage">The Stage within which the <code>IJournal{T}</code> is created</param>
+        /// <param name="dispatcher">The <see cref="IDispatcher{TDispatchable}"/></param>
+        /// <param name="additional">The object[] of additional parameters</param>
+        /// <typeparam name="TActor">The concrete type of the Actor implementing the <code>IJournal{T}</code> protocol</typeparam>
+        /// <typeparam name="TState">The raw snapshot state type</typeparam>
+        /// <typeparam name="TEntry">The concrete type of journal entries</typeparam>
+        /// <returns><code>IJournal{T}</code></returns>
+        IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IDispatcher<Dispatchable<TEntry, TState>> dispatcher, params object[] additional) where TActor : Actor  where TEntry : IEntry<T> where TState : class, IState;
+        
+        /// <summary>
+        /// Answer a new <code>IJournal{T}</code>
+        /// </summary>
+        /// <param name="stage">The Stage within which the <code>IJournal{T}</code> is created</param>
+        /// <param name="dispatchers">The <see cref="T:IEnumerable{IDispatcher{TDispatchable}}"/></param>
+        /// <param name="additional">The object[] of additional parameters</param>
+        /// <typeparam name="TActor">The concrete type of the Actor implementing the <code>IJournal{T}</code> protocol</typeparam>
+        /// <typeparam name="TState">The raw snapshot state type</typeparam>
+        /// <typeparam name="TEntry">The concrete type of journal entries</typeparam>
+        /// <returns><code>IJournal{T}</code></returns>
+        IJournal<T> Using<TActor, TEntry, TState>(Stage stage, IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, params object[] additional) where TActor : Actor  where TEntry : IEntry<T> where TState : class, IState;
     }
     
     /// <summary>
@@ -277,6 +280,6 @@ namespace Vlingo.Symbio.Store.Journal
 
         public abstract ICompletes<IJournalReader<IEntry>?> JournalReader(string name);
 
-        public abstract ICompletes<IStreamReader<T>?> StreamReader(string name);
+        public abstract ICompletes<IStreamReader?> StreamReader(string name);
     }
 }
