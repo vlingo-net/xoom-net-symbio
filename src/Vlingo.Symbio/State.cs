@@ -27,16 +27,20 @@ namespace Vlingo.Symbio
         int TypeVersion { get; }
         
         string RawData { get; }
+        
+        bool IsEmpty { get; }
+        
+        bool IsNull { get; }
     }
 
     public abstract class State<T> : IComparable<State<T>>, IState
     {
-        public static string NoOp = string.Empty;
-        
         protected static readonly byte[] EmptyBytesData = new byte[0];
         protected static readonly T EmptyObjectData = default!;
         protected static readonly string EmptyTextData = string.Empty;
         
+        public static string NoOp = string.Empty;
+
         public BinaryState? AsBinaryState() => this as BinaryState;
 
         public ObjectState<T> AsObjectState() => (ObjectState<T>) this;
