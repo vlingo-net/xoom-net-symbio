@@ -224,12 +224,12 @@ namespace Vlingo.Symbio.Store.Journal
             return null!;
         }
 
-        public ICompletes<IStreamReader<T>?> StreamReader(string name)
+        public ICompletes<IStreamReader?> StreamReader(string name)
         {
             if (!actor.IsStopped)
             {
                 Action<IJournal<T>> cons165823724 = __ => __.StreamReader(name);
-                var completes = new BasicCompletes<IStreamReader<T>>(actor.Scheduler);
+                var completes = new BasicCompletes<IStreamReader>(actor.Scheduler);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons165823724, completes, StreamReaderRepresentation12);
                 else
