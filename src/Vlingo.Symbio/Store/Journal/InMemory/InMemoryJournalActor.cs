@@ -63,10 +63,10 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             return Completes().With(actor);
         }
 
-        public ICompletes<IStreamReader<T>?> StreamReader(string name)
+        public ICompletes<IStreamReader?> StreamReader(string name)
         {
             var inmemory = _journal.StreamReader(name).Outcome!;
-            var actor = ChildActorFor<IStreamReader<T>?>(() => new InMemoryStreamReaderActor<T>(inmemory));
+            var actor = ChildActorFor<IStreamReader?>(() => new InMemoryStreamReaderActor(inmemory));
             return Completes().With(actor);
         }
     }

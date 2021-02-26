@@ -10,11 +10,11 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
-    public class InMemoryStreamReaderActor<TEntry> : Actor, IStreamReader<TEntry>
+    public class InMemoryStreamReaderActor : Actor, IStreamReader
     {
-        private readonly IStreamReader<TEntry> _reader;
+        private readonly IStreamReader _reader;
 
-        public InMemoryStreamReaderActor(IStreamReader<TEntry> reader) => _reader = reader;
+        public InMemoryStreamReaderActor(IStreamReader reader) => _reader = reader;
 
         public override void Start()
         {
@@ -22,9 +22,9 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             base.Start();
         }
 
-        public ICompletes<EntityStream<TEntry>> StreamFor(string streamName) => Completes().With(_reader.StreamFor(streamName).Outcome);
+        public ICompletes<EntityStream> StreamFor(string streamName) => Completes().With(_reader.StreamFor(streamName).Outcome);
 
-        public ICompletes<EntityStream<TEntry>> StreamFor(string streamName, int fromStreamVersion) => Completes().With(_reader.StreamFor(streamName, fromStreamVersion).Outcome);
+        public ICompletes<EntityStream> StreamFor(string streamName, int fromStreamVersion) => Completes().With(_reader.StreamFor(streamName, fromStreamVersion).Outcome);
 
         public string Name => _reader.Name;
     }

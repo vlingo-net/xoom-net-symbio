@@ -22,7 +22,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
         private readonly StateAdapterProvider _stateAdapterProvider;
         private readonly List<IEntry> _journal;
         private readonly Dictionary<string, IJournalReader<IEntry>> _journalReaders;
-        private readonly Dictionary<string, IStreamReader<T>> _streamReaders;
+        private readonly Dictionary<string, IStreamReader> _streamReaders;
         private readonly Dictionary<string, Dictionary<int, int>> _streamIndexes;
         private readonly Dictionary<string, IState> _snapshots;
         private readonly List<Dispatchable<IEntry, IState>> _dispatchables;
@@ -36,7 +36,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             _stateAdapterProvider = StateAdapterProvider.Instance(world);
             _journal = new List<IEntry>();
             _journalReaders = new Dictionary<string, IJournalReader<IEntry>>(1);
-            _streamReaders = new Dictionary<string, IStreamReader<T>>(1);
+            _streamReaders = new Dictionary<string, IStreamReader>(1);
             _streamIndexes = new Dictionary<string, Dictionary<int, int>>();
             _snapshots = new Dictionary<string, IState>();
             _dispatchables = new List<Dispatchable<IEntry, IState>>();
@@ -135,9 +135,9 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             return Completes.WithSuccess(reader);
         }
 
-        public override ICompletes<IStreamReader<T>?> StreamReader(string name)
+        public override ICompletes<IStreamReader?> StreamReader(string name)
         {
-            IStreamReader<T>? reader = null;
+            IStreamReader? reader = null;
             if (!_journalReaders.ContainsKey(name))
             {
                 var castedDictionary = new Dictionary<string, State<T>>();

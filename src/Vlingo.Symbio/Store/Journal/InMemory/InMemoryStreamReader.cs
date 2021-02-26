@@ -10,7 +10,7 @@ using Vlingo.Common;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
-    public class InMemoryStreamReader<TEntry> : IStreamReader<TEntry>
+    public class InMemoryStreamReader<TEntry> : IStreamReader
     {
         private readonly List<BaseEntry> _journalView;
         private readonly Dictionary<string, State<TEntry>> _snapshotsView;
@@ -25,9 +25,9 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             _name = name;
         }
 
-        public ICompletes<EntityStream<TEntry>> StreamFor(string streamName) => StreamFor(streamName, 1);
+        public ICompletes<EntityStream> StreamFor(string streamName) => StreamFor(streamName, 1);
 
-        public ICompletes<EntityStream<TEntry>> StreamFor(string streamName, int fromStreamVersion)
+        public ICompletes<EntityStream> StreamFor(string streamName, int fromStreamVersion)
         {
             var version = fromStreamVersion;
             if (_snapshotsView.TryGetValue(streamName, out var snapshot))
@@ -52,7 +52,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
                     ++version;
                 }
             }
-            return Completes.WithSuccess(new EntityStream<TEntry>(streamName, version - 1, entries, snapshot));
+            return Completes.WithSuccess(new EntityStream(streamName, version - 1, entries, snapshot));
         }
 
         public string Name => _name;
