@@ -47,16 +47,22 @@ namespace Vlingo.Symbio
         
         public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter) where TEntry : IEntry where TSource : Source
         {
-            _adapters.Add(typeof(TSource), adapter);
-            _namedAdapters.Add(typeof(TSource).FullName!, adapter);
+            if (!_adapters.ContainsKey(typeof(TSource)))
+            {
+                _adapters.Add(typeof(TSource), adapter);
+                _namedAdapters.Add(typeof(TSource).FullName!, adapter);   
+            }
         }
 
-        public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter, Action<Type, IEntryAdapter<TSource, TEntry>> consumer) where TEntry : IEntry where TSource : Source
+        public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter, Action<IEntryAdapter<TSource, TEntry>> consumer) where TEntry : IEntry where TSource : Source
         {
             var sourceType = typeof(TSource);
-            _adapters.Add(sourceType, adapter);
-            _namedAdapters.Add(sourceType.Name, adapter);
-            consumer(sourceType, adapter);
+            if (_adapters.ContainsKey(sourceType))
+            {
+                _adapters.Add(sourceType, adapter);
+                _namedAdapters.Add(sourceType.Name, adapter);
+                consumer(adapter);   
+            }
         }
         
         public IEnumerable<TEntry> AsEntries<TSource, TEntry>(IEnumerable<TSource> sources, int version, Metadata? metadata) where TEntry : IEntry where TSource : Source
