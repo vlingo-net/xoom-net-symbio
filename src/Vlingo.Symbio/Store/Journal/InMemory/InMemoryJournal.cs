@@ -87,7 +87,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             interest.AppendResultedIn(Success.Of<StorageException, Result>(Result.Success), streamName, streamVersion, source, snapshotResult, @object);
         }
 
-        public override void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<TSource> sources, Metadata metadata, IAppendResultInterest interest, object @object)
+        public override void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, Metadata metadata, IAppendResultInterest interest, object @object)
         {
             var sourcesForEntries = sources.ToList();
             var entries = _entryAdapterProvider.AsEntries<TSource, IEntry<T>>(sourcesForEntries, fromStreamVersion, metadata);
@@ -98,7 +98,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             interest.AppendAllResultedIn(Success.Of<StorageException, Result>(Result.Success), streamName, fromStreamVersion, sourcesForEntries, Optional.Empty<TSnapshotState>(), @object);
         }
 
-        public override void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<TSource> sources,
+        public override void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources,
             Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
         {
             var sourcesForEntries = sources.ToList();
