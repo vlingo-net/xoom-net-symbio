@@ -58,7 +58,7 @@ namespace Vlingo.Symbio.Store.Journal
         }
 
         public void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source,
-            IAppendResultInterest interest, object @object) where TSource : Source
+            IAppendResultInterest interest, object @object) where TSource : ISource
         {
             if (!actor.IsStopped)
             {
@@ -76,7 +76,7 @@ namespace Vlingo.Symbio.Store.Journal
         }
 
         public void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source,
-            Metadata metadata, IAppendResultInterest interest, object @object) where TSource : Source
+            Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource
         {
             if (!actor.IsStopped)
             {
@@ -94,7 +94,7 @@ namespace Vlingo.Symbio.Store.Journal
         }
 
         public void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source,
-            TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : Source
+            TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : ISource
         {
             if (!actor.IsStopped)
             {
@@ -113,7 +113,7 @@ namespace Vlingo.Symbio.Store.Journal
 
         public void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source,
             Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
-            where TSource : Source
+            where TSource : ISource
         {
             if (!actor.IsStopped)
             {
@@ -131,7 +131,7 @@ namespace Vlingo.Symbio.Store.Journal
         }
 
         public void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion,
-            IEnumerable<TSource> sources, IAppendResultInterest interest, object @object) where TSource : Source
+            IEnumerable<ISource> sources, IAppendResultInterest interest, object @object) where TSource : ISource
         {
             if (!actor.IsStopped)
             {
@@ -149,8 +149,8 @@ namespace Vlingo.Symbio.Store.Journal
         }
 
         public void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion,
-            IEnumerable<TSource> sources, Metadata metadata, IAppendResultInterest interest, object @object)
-            where TSource : Source
+            IEnumerable<ISource> sources, Metadata metadata, IAppendResultInterest interest, object @object)
+            where TSource : ISource
         {
             if (!actor.IsStopped)
             {
@@ -169,13 +169,13 @@ namespace Vlingo.Symbio.Store.Journal
         }
 
         public void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion,
-            IEnumerable<TSource> sources, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
-            where TSource : Source
+            IEnumerable<ISource> sources, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
+            where TSource : ISource
         {
             if (!actor.IsStopped)
             {
                 Action<IJournal<T>> cons329572136 = __ =>
-                    __.AppendAllWith(streamName, fromStreamVersion, sources, snapshot, interest, @object);
+                    __.AppendAllWith<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, snapshot, interest, @object);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons329572136, null, AppendAllWithRepresentation9);
                 else
@@ -188,13 +188,13 @@ namespace Vlingo.Symbio.Store.Journal
         }
 
         public void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion,
-            IEnumerable<TSource> sources, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest,
-            object @object) where TSource : Source
+            IEnumerable<ISource> sources, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest,
+            object @object) where TSource : ISource
         {
             if (!actor.IsStopped)
             {
                 Action<IJournal<T>> cons2042766341 = __ =>
-                    __.AppendAllWith(streamName, fromStreamVersion, sources, metadata, snapshot, interest, @object);
+                    __.AppendAllWith<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, metadata, snapshot, interest, @object);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons2042766341, null, AppendAllWithRepresentation10);
                 else
