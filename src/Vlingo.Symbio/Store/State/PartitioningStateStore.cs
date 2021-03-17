@@ -14,7 +14,7 @@ using Environment = Vlingo.Actors.Environment;
 namespace Vlingo.Symbio.Store.State
 {
     /// <summary>
-    ///     Provides a partitioning <see cref="IStateStore{TEntry}" />. All reads and writes are from/to the same storage and
+    ///     Provides a partitioning <see cref="IStateStore" />. All reads and writes are from/to the same storage and
     ///     tables.
     ///     The partitioning is based on id hashing, which is meant to read and write in parallel using more than one
     ///     connection. For reader operations not subject to id, such as queries and streaming, the partitioning is
@@ -25,9 +25,9 @@ namespace Vlingo.Symbio.Store.State
     ///     additional operations of the same type if the earlier query must complete before the subsequent request.
     ///     (2) The underlying <see cref="Actor"/> must use a <see cref="IMailbox"/> that supports <code>int PendingMessages</code>. Otherwise,
     ///     the smallest mailbox (least busy reader) operations cannot be supported, and it does not make much sense to use
-    ///     this a partitioning <see cref="IStateStore{TEntry}"/>.
+    ///     this a partitioning <see cref="IStateStore"/>.
     /// </remarks>
-    public class PartitioningStateStore<TEntry> : IStateStore<TEntry> where TEntry : IEntry
+    public class PartitioningStateStore : IStateStore
     {
         public static readonly int MinimumReaders = 5;
         public static readonly int MaximumReaders = 256;
@@ -35,8 +35,8 @@ namespace Vlingo.Symbio.Store.State
         public static readonly int MinimumWriters = 3;
         public static readonly int MaximumWriters = 256;
 
-        private readonly Tuple<IStateStore<TEntry>, Actor>[] _readers;
-        private readonly Tuple<IStateStore<TEntry>, Actor>[] _writers;
+        private readonly Tuple<IStateStore, Actor>[] _readers;
+        private readonly Tuple<IStateStore, Actor>[] _writers;
 
         public int ReadersCount => _readers.Length;
         public int WritersCount => _writers.Length;
@@ -57,7 +57,7 @@ namespace Vlingo.Symbio.Store.State
                 ActualTotal(totalWriters, MinimumWriters, MaximumWriters), parameter);
         }
 
-        public ICompletes<IStateStoreEntryReader<TEntry>> EntryReader(string name) => ReaderOf(name).EntryReader(name);
+        public ICompletes<IStateStoreEntryReader<TEntry>> EntryReader<TEntry>(string name) where TEntry : IEntry => ReaderOf(name).EntryReader<TEntry>(name);
 
         public void Read<TState>(string id, IReadResultInterest interest) => Read<TState>(id, interest, null);
 
@@ -69,34 +69,33 @@ namespace Vlingo.Symbio.Store.State
         public void Write<TState>(string id, TState state, int stateVersion, IWriteResultInterest interest)
             => Write(id, state, stateVersion, Source<TState>.None(), Metadata.NullMetadata(), interest, null);
 
-        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, IWriteResultInterest interest)
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<TSource> sources, IWriteResultInterest interest)
             => Write(id, state, stateVersion, sources, Metadata.NullMetadata(), interest, null);
 
         public void Write<TState>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest)
             => Write(id, state, stateVersion, Source<TState>.None(), metadata, interest, null);
-
-
-        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest)
+        
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<TSource> sources, Metadata metadata, IWriteResultInterest interest)
             => Write(id, state, stateVersion, sources, metadata, interest, null);
 
         public void Write<TState>(string id, TState state, int stateVersion, IWriteResultInterest interest, object @object)
             => Write(id, state, stateVersion, Source<TState>.None(), Metadata.NullMetadata(), interest, @object);
 
-        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, IWriteResultInterest interest, object @object)
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<TSource> sources, IWriteResultInterest interest, object @object)
             => Write(id, state, stateVersion, sources, Metadata.NullMetadata(), interest, @object);
 
         public void Write<TState>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest, object? @object)
             => Write(id, state, stateVersion, Source<TState>.None(), metadata, interest, @object);
 
-        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest, object? @object) =>
-            WriterOf(id).Write(id, state, stateVersion, sources, metadata, interest, @object);
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<TSource> sources, Metadata metadata, IWriteResultInterest interest, object? @object)
+            => WriterOf(id).Write(id, state, stateVersion, sources, metadata, interest, @object);
 
         /// <summary>
-        ///     Gets a new <see cref="PartitioningStateStore{TEntry}" /> as a <see cref="IStateStore{TEntry}" /> with
+        ///     Gets a new <see cref="PartitioningStateStore" /> as a <see cref="IStateStore" /> with
         ///     <paramref name="totalReaders" /> and <paramref name="totalWriters" />.
         /// </summary>
         /// <param name="stage">the Stage within which the StateStore actors are created</param>
-        /// <param name="stateStoreActorType">The type of the Actor that implements <see cref="IStateStore{TEntry}" /></param>
+        /// <param name="stateStoreActorType">The type of the Actor that implements <see cref="IStateStore" /></param>
         /// <param name="totalReaders">
         ///     The int total number of readers, which may be between <code>MinimumReaders</code> and
         ///     <code>MaximumReaders</code>
@@ -107,15 +106,15 @@ namespace Vlingo.Symbio.Store.State
         /// </param>
         /// <param name="parameter">Parameters for reader or writer actors</param>
         /// <returns>
-        ///     <see cref="IStateStore{TEntry}" />
+        ///     <see cref="IStateStore" />
         /// </returns>
-        public static IStateStore<TEntry> Using(
+        public static IStateStore Using(
             Stage stage,
             Type stateStoreActorType,
             int totalReaders,
             int totalWriters,
             object parameter) =>
-            new PartitioningStateStore<TEntry>(stage, stateStoreActorType, totalReaders, totalWriters, parameter);
+            new PartitioningStateStore(stage, stateStoreActorType, totalReaders, totalWriters, parameter);
 
         private int ActualTotal(int total, int minimum, int maximum)
         {
@@ -126,10 +125,10 @@ namespace Vlingo.Symbio.Store.State
             return total;
         }
 
-        private IStateStore<TEntry>? LeastBusyReader()
+        private IStateStore? LeastBusyReader()
         {
             var totalMessages = int.MaxValue;
-            IStateStore<TEntry>? reader = null;
+            IStateStore? reader = null;
 
             for (var idx = 0; idx < _readers.Length; ++idx)
             {
@@ -145,24 +144,24 @@ namespace Vlingo.Symbio.Store.State
             return reader;
         }
 
-        private IStateStore<TEntry> ReaderOf(string identity) => _readers[PartitionOf(identity, _readers.Length)].Item1;
+        private IStateStore ReaderOf(string identity) => _readers[PartitionOf(identity, _readers.Length)].Item1;
 
-        private IStateStore<TEntry> WriterOf(string identity) => _writers[PartitionOf(identity, _writers.Length)].Item1;
+        private IStateStore WriterOf(string identity) => _writers[PartitionOf(identity, _writers.Length)].Item1;
 
         private int Pending(Actor actor) => Environment.Of(actor).PendingMessages;
 
-        private Tuple<IStateStore<TEntry>, Actor>[] CreateStateStores(
+        private Tuple<IStateStore, Actor>[] CreateStateStores(
             Stage stage,
             Type stateStoreActorType,
             int total,
             object parameter)
         {
-            var stateStores = new Tuple<IStateStore<TEntry>, Actor>[total];
+            var stateStores = new Tuple<IStateStore, Actor>[total];
             for (var idx = 0; idx < total; ++idx)
             {
-                var stateStore = (StateStore__Proxy<TEntry>) stage.ActorFor<IStateStore<TEntry>>(stateStoreActorType, parameter, total);
+                var stateStore = (StateStore__Proxy) stage.ActorFor<IStateStore>(stateStoreActorType, parameter, total);
                 Pending(stateStore.Actor!);
-                stateStores[idx] = new Tuple<IStateStore<TEntry>, Actor>(stateStore, stateStore.Actor!);
+                stateStores[idx] = new Tuple<IStateStore, Actor>(stateStore, stateStore.Actor!);
             }
 
             return stateStores;
