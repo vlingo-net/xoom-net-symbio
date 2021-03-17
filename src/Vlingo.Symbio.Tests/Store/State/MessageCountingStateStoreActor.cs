@@ -14,22 +14,22 @@ using Vlingo.Symbio.Store.State;
 
 namespace Vlingo.Symbio.Tests.Store.State
 {
-    public class MessageCountingStateStoreActor<TState> : Actor, IStateStore<TState> where TState : IEntry
+    public class MessageCountingStateStoreActor : Actor, IStateStore
     {
-        private readonly MessageCountingResults<TState> _results;
+        private readonly MessageCountingResults _results;
         private readonly int _totalPartitions;
 
-        public MessageCountingStateStoreActor(MessageCountingResults<TState> results, int totalPartitions)
+        public MessageCountingStateStoreActor(MessageCountingResults results, int totalPartitions)
         {
             _results = results;
             _totalPartitions = totalPartitions;
         }
 
-        public ICompletes<IStateStoreEntryReader<TState>> EntryReader(string name)
+        public ICompletes<IStateStoreEntryReader<TEntry>> EntryReader<TEntry>(string name) where TEntry : IEntry
         {
             _results.PutIncrementEntryReader();
 
-            return Completes().With<IStateStoreEntryReader<TState>>(null);
+            return Completes().With<IStateStoreEntryReader<TEntry>>(null);
         }
 
         public Actor Actor { get; } = null;
@@ -47,27 +47,24 @@ namespace Vlingo.Symbio.Tests.Store.State
             => _results.PutIncrementWrite(id, _totalPartitions);
 
         public void Write<TState1, TSource>(string id, TState1 state, int stateVersion,
-            IEnumerable<Source<TSource>> sources,
-            IWriteResultInterest interest)
-            => _results.PutIncrementWrite(id, _totalPartitions);
+            IEnumerable<TSource> sources,
+            IWriteResultInterest interest) => _results.PutIncrementWrite(id, _totalPartitions);
 
         public void Write<TState1>(string id, TState1 state, int stateVersion, Metadata metadata,
             IWriteResultInterest interest)
             => _results.PutIncrementWrite(id, _totalPartitions);
 
         public void Write<TState1, TSource>(string id, TState1 state, int stateVersion,
-            IEnumerable<Source<TSource>> sources, Metadata metadata,
-            IWriteResultInterest interest)
-            => _results.PutIncrementWrite(id, _totalPartitions);
+            IEnumerable<TSource> sources, Metadata metadata,
+            IWriteResultInterest interest) => _results.PutIncrementWrite(id, _totalPartitions);
 
         public void Write<TState1>(string id, TState1 state, int stateVersion, IWriteResultInterest interest,
             object @object)
             => _results.PutIncrementWrite(id, _totalPartitions);
 
         public void Write<TState1, TSource>(string id, TState1 state, int stateVersion,
-            IEnumerable<Source<TSource>> sources,
-            IWriteResultInterest interest, object @object)
-            => _results.PutIncrementWrite(id, _totalPartitions);
+            IEnumerable<TSource> sources,
+            IWriteResultInterest interest, object @object) => _results.PutIncrementWrite(id, _totalPartitions);
 
         public void Write<TState1>(string id, TState1 state, int stateVersion, Metadata metadata,
             IWriteResultInterest interest,
@@ -75,12 +72,11 @@ namespace Vlingo.Symbio.Tests.Store.State
             => _results.PutIncrementWrite(id, _totalPartitions);
         
         public void Write<TState1, TSource>(string id, TState1 state, int stateVersion,
-            IEnumerable<Source<TSource>> sources, Metadata metadata,
-            IWriteResultInterest interest, object @object)
-            => _results.PutIncrementWrite(id, _totalPartitions);
+            IEnumerable<TSource> sources, Metadata metadata,
+            IWriteResultInterest interest, object @object) => _results.PutIncrementWrite(id, _totalPartitions);
     }
 
-    public class MessageCountingResults<TState> where TState : IEntry
+    public class MessageCountingResults
     {
         private readonly AccessSafely _access;
 
@@ -114,7 +110,7 @@ namespace Vlingo.Symbio.Tests.Store.State
             _access.WritingWith("read", (string id, int totalPartitions) =>
             {
                 _read.IncrementAndGet();
-                var partition = PartitioningStateStore<TState>.PartitionOf(id, totalPartitions);
+                var partition = PartitioningStateStore.PartitionOf(id, totalPartitions);
                 _readPartitions.TryGetValue(partition, out var count);
                 _readPartitions.AddOrUpdate(partition, i =>  1, (x, y) => count + 1);
             });
@@ -132,7 +128,7 @@ namespace Vlingo.Symbio.Tests.Store.State
             _access.WritingWith("write", (string id, int totalPartitions) =>
             {
                 _write.IncrementAndGet();
-                var partition = PartitioningStateStore<TState>.PartitionOf(id, totalPartitions);
+                var partition = PartitioningStateStore.PartitionOf(id, totalPartitions);
                 _writePartitions.TryGetValue(partition, out var count);
                 _writePartitions.AddOrUpdate(partition, i =>  1, (x, y) => count + 1);
             });

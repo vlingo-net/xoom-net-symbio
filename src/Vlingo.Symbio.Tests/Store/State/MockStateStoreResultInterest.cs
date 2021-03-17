@@ -40,11 +40,11 @@ namespace Vlingo.Symbio.Tests.Store.State
         {
             outcome
                 .AndThen(result => {
-                    _access.WriteUsing("readStoreData", new StoreData<TState>(1, result, state, new List<Source<TState>>(), metadata, null));
+                    _access.WriteUsing("readStoreData", new StoreData<TState>(1, result, state, new List<TState>(), metadata, null));
                     return result; 
                 })
                 .Otherwise(cause => {
-                    _access.WriteUsing("readStoreData", new StoreData<TState>(1, cause.Result, state, new List<Source<TState>>(), metadata, cause));
+                    _access.WriteUsing("readStoreData", new StoreData<TState>(1, cause.Result, state, new List<TState>(), metadata, cause));
                     return cause.Result;
                 });
         }
@@ -55,7 +55,7 @@ namespace Vlingo.Symbio.Tests.Store.State
                 .AndThen(result => {
                     foreach (var bundle in bundles)
                     {
-                        _access.WriteUsing("readAllStates", new StoreData<TState>(1, result, bundle.State, new List<Source<TState>>(), bundle.Metadata, null));
+                        _access.WriteUsing("readAllStates", new StoreData<TState>(1, result, bundle.State, new List<TState>(), bundle.Metadata, null));
 
                     }
                     return result; 
@@ -63,14 +63,14 @@ namespace Vlingo.Symbio.Tests.Store.State
                 .Otherwise(cause => {
                     foreach (var bundle in bundles)
                     {
-                        _access.WriteUsing("readAllStates", new StoreData<TState>(1, cause.Result, bundle.State, new List<Source<TState>>(), bundle.Metadata, cause));
+                        _access.WriteUsing("readAllStates", new StoreData<TState>(1, cause.Result, bundle.State, new List<TState>(), bundle.Metadata, cause));
 
                     }
                     return cause.Result;
                 });
         }
 
-        public void WriteResultedIn<TState, TSource>(IOutcome<StorageException, Result> outcome, string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, object @object)
+        public void WriteResultedIn<TState, TSource>(IOutcome<StorageException, Result> outcome, string id, TState state, int stateVersion, IEnumerable<TSource> sources, object @object)
         {
             outcome
                 .AndThen(result => {
@@ -165,21 +165,22 @@ namespace Vlingo.Symbio.Tests.Store.State
         }
     }
     
-    public class StoreData<TSource> {
+    public class StoreData<TSource>
+    {
         public Exception ErrorCauses { get; }
         public Metadata Metadata { get; }
         public Result Result { get; }
-        public List<Source<TSource>> Sources { get; }
+        public List<TSource> Sources { get; }
         public object State { get; }
         public TSource TypedState => (TSource) State;
         public int ResultedIn { get; }
 
-        public StoreData(int resultedIn, Result objectResult, object state, IEnumerable<Source<TSource>> sources, Metadata metadata, Exception errorCauses)
+        public StoreData(int resultedIn, Result objectResult, object state, IEnumerable<TSource> sources, Metadata metadata, Exception errorCauses)
         {
             ResultedIn = resultedIn;
             Result = objectResult;
             State = state;
-            Sources = sources != null ? new List<Source<TSource>>(sources) : new List<Source<TSource>>();
+            Sources = sources != null ? new List<TSource>(sources) : new List<TSource>();
             Metadata = metadata;
             ErrorCauses = errorCauses;
         }

@@ -30,12 +30,12 @@ namespace Vlingo.Symbio.Tests.Store.State
         {
             var readers = 3;
             var writers = 2;
-            var times = PartitioningStateStore<TextEntry>.MinimumReaders + PartitioningStateStore<TextEntry>.MinimumWriters;
+            var times = PartitioningStateStore.MinimumReaders + PartitioningStateStore.MinimumWriters;
 
-            var results = new MessageCountingResults<TextEntry>(times);
+            var results = new MessageCountingResults(times);
 
             // 3, 2 must be minimum MinimumReaders, MinimumWriters and must default to that if below minimum is given
-            var store = (PartitioningStateStore<TextEntry>) PartitioningStateStore<TextEntry>.Using(_world.Stage, typeof(MessageCountingStateStoreActor<TextEntry>), readers, writers, results);
+            var store = (PartitioningStateStore) PartitioningStateStore.Using(_world.Stage, typeof(MessageCountingStateStoreActor), readers, writers, results);
             for (var i = 0; i < store.ReadersCount; i++)
             {
                 results.IncrementCtor(InstantiationType.Reader);
@@ -48,9 +48,9 @@ namespace Vlingo.Symbio.Tests.Store.State
             Assert.NotNull(store);
             Assert.Equal(times, results.GetCtor());
             Assert.NotEqual(readers, results.GetReaderCtor());
-            Assert.Equal(PartitioningStateStore<TextEntry>.MinimumReaders, results.GetReaderCtor());
+            Assert.Equal(PartitioningStateStore.MinimumReaders, results.GetReaderCtor());
             Assert.NotEqual(writers, results.GetWriterCtor());
-            Assert.Equal(PartitioningStateStore<TextEntry>.MinimumWriters, results.GetWriterCtor());
+            Assert.Equal(PartitioningStateStore.MinimumWriters, results.GetWriterCtor());
         }
 
         [Fact]
@@ -58,12 +58,12 @@ namespace Vlingo.Symbio.Tests.Store.State
         {
             var readers = int.MaxValue / 2;
             var writers = int.MaxValue / 10;
-            var times = PartitioningStateStore<TextEntry>.MaximumReaders + PartitioningStateStore<TextEntry>.MaximumWriters;
+            var times = PartitioningStateStore.MaximumReaders + PartitioningStateStore.MaximumWriters;
 
-            var results = new MessageCountingResults<TextEntry>(times);
+            var results = new MessageCountingResults(times);
 
             // 3, 2 must be minimum 5, 3 and must default to that below minimum given
-            var store = (PartitioningStateStore<TextEntry>) PartitioningStateStore<TextEntry>.Using(_world.Stage, typeof(MessageCountingStateStoreActor<TextEntry>), readers, writers, results);
+            var store = (PartitioningStateStore) PartitioningStateStore.Using(_world.Stage, typeof(MessageCountingStateStoreActor), readers, writers, results);
             for (var i = 0; i < store.ReadersCount; i++)
             {
                 results.IncrementCtor(InstantiationType.Reader);
@@ -75,9 +75,9 @@ namespace Vlingo.Symbio.Tests.Store.State
             Assert.NotNull(store);
             Assert.Equal(times, results.GetCtor());
             Assert.NotEqual(readers, results.GetReaderCtor());
-            Assert.Equal(PartitioningStateStore<TextEntry>.MaximumReaders, results.GetReaderCtor());
+            Assert.Equal(PartitioningStateStore.MaximumReaders, results.GetReaderCtor());
             Assert.NotEqual(writers, results.GetWriterCtor());
-            Assert.Equal(PartitioningStateStore<TextEntry>.MaximumWriters, results.GetWriterCtor());
+            Assert.Equal(PartitioningStateStore.MaximumWriters, results.GetWriterCtor());
         }
 
         [Fact]
@@ -87,10 +87,10 @@ namespace Vlingo.Symbio.Tests.Store.State
             var writers = 7;
             var times = readers + writers;
 
-            var results = new MessageCountingResults<TextEntry>(times);
+            var results = new MessageCountingResults(times);
 
             // must be exact
-            var store = (PartitioningStateStore<TextEntry>) PartitioningStateStore<TextEntry>.Using(_world.Stage, typeof(MessageCountingStateStoreActor<TextEntry>), readers, writers, results);
+            var store = (PartitioningStateStore) PartitioningStateStore.Using(_world.Stage, typeof(MessageCountingStateStoreActor), readers, writers, results);
             for (var i = 0; i < store.ReadersCount; i++)
             {
                 results.IncrementCtor(InstantiationType.Reader);
@@ -109,7 +109,7 @@ namespace Vlingo.Symbio.Tests.Store.State
         [Fact]
         public void TestThatReadersReceive()
         {
-            var ctors = PartitioningStateStore<TextEntry>.MinimumReaders + PartitioningStateStore<TextEntry>.MinimumWriters;
+            var ctors = PartitioningStateStore.MinimumReaders + PartitioningStateStore.MinimumWriters;
             var interations = 5;
             var partitionReads = 2;
             var reads = interations * partitionReads;
@@ -117,9 +117,9 @@ namespace Vlingo.Symbio.Tests.Store.State
 
             var times = ctors + reads + readAlls;
 
-            var results = new MessageCountingResults<TextEntry>(times);
+            var results = new MessageCountingResults(times);
 
-            var store = (PartitioningStateStore<TextEntry>) PartitioningStateStore<TextEntry>.Using(_world.Stage, typeof(MessageCountingStateStoreActor<TextEntry>), 0, 0, results);
+            var store = (PartitioningStateStore) PartitioningStateStore.Using(_world.Stage, typeof(MessageCountingStateStoreActor), 0, 0, results);
             for (var i = 0; i < store.ReadersCount; i++)
             {
                 results.IncrementCtor(InstantiationType.Reader);
@@ -133,15 +133,15 @@ namespace Vlingo.Symbio.Tests.Store.State
 
             for (var read = 0; read < interations; ++read)
             {
-                store.Read<TextEntry>(IdFor(read, PartitioningStateStore<TextEntry>.MinimumReaders), null!, null);
-                store.Read<TextEntry>(IdFor(read, PartitioningStateStore<TextEntry>.MinimumReaders), null!, null);
+                store.Read<TextEntry>(IdFor(read, PartitioningStateStore.MinimumReaders), null!, null);
+                store.Read<TextEntry>(IdFor(read, PartitioningStateStore.MinimumReaders), null!, null);
             }
 
             store.ReadAll<TextEntry>(new []{new TypedStateBundle("3", typeof(TextEntry)), new TypedStateBundle("4", typeof(TextEntry))}, null!, null);
 
             Assert.Equal(ctors, results.GetCtor());
-            Assert.Equal(PartitioningStateStore<TextEntry>.MinimumReaders, results.GetReaderCtor());
-            Assert.Equal(PartitioningStateStore<TextEntry>.MinimumWriters, results.GetWriterCtor());
+            Assert.Equal(PartitioningStateStore.MinimumReaders, results.GetReaderCtor());
+            Assert.Equal(PartitioningStateStore.MinimumWriters, results.GetWriterCtor());
 
             Assert.Equal(reads, results.GetRead());
             Assert.Equal(readAlls, results.GetReadAll());
@@ -158,14 +158,14 @@ namespace Vlingo.Symbio.Tests.Store.State
         {
             var iterations = 3;
 
-            var ctors = PartitioningStateStore<TextEntry>.MinimumReaders + PartitioningStateStore<TextEntry>.MinimumWriters;
+            var ctors = PartitioningStateStore.MinimumReaders + PartitioningStateStore.MinimumWriters;
             var writes = 3;
 
             var times = ctors + writes * iterations;
 
-            var results = new MessageCountingResults<TextEntry>(times);
+            var results = new MessageCountingResults(times);
 
-            var store = (PartitioningStateStore<TextEntry>) PartitioningStateStore<TextEntry>.Using(_world.Stage, typeof(MessageCountingStateStoreActor<TextEntry>), 0, 0, results);
+            var store = (PartitioningStateStore) PartitioningStateStore.Using(_world.Stage, typeof(MessageCountingStateStoreActor), 0, 0, results);
             for (var i = 0; i < store.ReadersCount; i++)
             {
                 results.IncrementCtor(InstantiationType.Reader);
@@ -179,11 +179,11 @@ namespace Vlingo.Symbio.Tests.Store.State
 
             for (var outer = 0; outer < iterations; ++outer)
             for (var inner = 0; inner < writes; ++inner)
-                store.Write(IdFor(inner, PartitioningStateStore<TextEntry>.MinimumWriters), this, 1, null!);
+                store.Write(IdFor(inner, PartitioningStateStore.MinimumWriters), this, 1, null!);
 
             Assert.Equal(ctors, results.GetCtor());
-            Assert.Equal(PartitioningStateStore<TextEntry>.MinimumReaders, results.GetReaderCtor());
-            Assert.Equal(PartitioningStateStore<TextEntry>.MinimumWriters, results.GetWriterCtor());
+            Assert.Equal(PartitioningStateStore.MinimumReaders, results.GetReaderCtor());
+            Assert.Equal(PartitioningStateStore.MinimumWriters, results.GetWriterCtor());
 
             Assert.Equal(iterations * writes, results.GetWrite());
 
