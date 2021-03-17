@@ -23,7 +23,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
 
         private readonly MockStateStoreDispatcher<IEntry<string>, TextState> _dispatcher;
         private readonly MockStateStoreResultInterest _interest;
-        private readonly IStateStore<IEntry<string>> _store;
+        private readonly IStateStore _store;
         private readonly World _world;
 
         [Fact]
@@ -75,7 +75,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
 
             StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity1).FullName, typeof(Entity1));
             
-            _store = _world.ActorFor<IStateStore<IEntry<string>>>(typeof(InMemoryStateStoreActor<TextState, IEntry<string>>), new List<IDispatcher<Dispatchable<IEntry<string>, TextState>>> {_dispatcher});
+            _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState, IEntry<string>>), new List<IDispatcher<Dispatchable<IEntry<string>, TextState>>> {_dispatcher});
         }
 
         public void Dispose()

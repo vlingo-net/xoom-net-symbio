@@ -26,7 +26,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         
         private readonly MockStateStoreDispatcher<TextEntry, TextState> _dispatcher;
         private readonly MockStateStoreResultInterest _interest;
-        private readonly IStateStore<TextEntry> _store;
+        private readonly IStateStore _store;
         private readonly World _world;
 
         [Fact]
@@ -300,7 +300,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
             // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = _world.ActorFor<IStateStore<TextEntry>>(typeof(InMemoryStateStoreActor<TextState, TextEntry>), new List<IDispatcher<Dispatchable<TextEntry, TextState>>> {_dispatcher});
+            _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState, TextEntry>), new List<IDispatcher<Dispatchable<TextEntry, TextState>>> {_dispatcher});
 
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName1, typeof(Entity1));
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName2, typeof(Entity2));
