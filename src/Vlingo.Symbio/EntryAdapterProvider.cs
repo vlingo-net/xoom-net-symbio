@@ -45,7 +45,7 @@ namespace Vlingo.Symbio
             _namedAdapters = new Dictionary<string, object>();
         }
         
-        public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter) where TEntry : IEntry where TSource : Source
+        public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter) where TEntry : IEntry where TSource : ISource
         {
             if (!_adapters.ContainsKey(typeof(TSource)))
             {
@@ -54,7 +54,7 @@ namespace Vlingo.Symbio
             }
         }
 
-        public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter, Action<IEntryAdapter<TSource, TEntry>> consumer) where TEntry : IEntry where TSource : Source
+        public void RegisterAdapter<TSource, TEntry>(IEntryAdapter<TSource, TEntry> adapter, Action<IEntryAdapter<TSource, TEntry>> consumer) where TEntry : IEntry where TSource : ISource
         {
             var sourceType = typeof(TSource);
             _adapters.Add(sourceType, adapter);
@@ -62,30 +62,31 @@ namespace Vlingo.Symbio
             consumer(adapter);   
         }
         
-        public IEnumerable<TEntry> AsEntries<TSource, TEntry>(IEnumerable<TSource> sources, int version, Metadata? metadata) where TEntry : IEntry where TSource : Source
-            => sources.Select(source => AsEntry<TSource, TEntry>(source, version, metadata)).ToList();
+        public IEnumerable<TEntry> AsEntries<TSource, TEntry>(IEnumerable<ISource> sources, int version, Metadata? metadata) where TEntry : IEntry => 
+            sources.Select(source => AsEntry<TSource, TEntry>(source, version, metadata)).ToList();
 
-        public IEnumerable<TEntry> AsEntries<TSource, TEntry>(IEnumerable<TSource> sources, Metadata? metadata) where TEntry : IEntry where TSource : Source
-            => AsEntries<TSource, TEntry>(sources, Entry<TEntry>.DefaultVersion, metadata);
+        public IEnumerable<TEntry> AsEntries<TSource, TEntry>(IEnumerable<ISource> sources, Metadata? metadata) where TEntry : IEntry where TSource : ISource => 
+            AsEntries<TSource, TEntry>(sources, Entry<TEntry>.DefaultVersion, metadata);
 
-        public TEntry AsEntry<TSource, TEntry>(TSource source, int startingVersion, Metadata? metadata) where TEntry : IEntry where TSource : Source
+        public TEntry AsEntry<TSource, TEntry>(ISource source, int startingVersion, Metadata? metadata) where TEntry : IEntry
         {
-            var adapter = Adapter<TSource, TEntry>();
+            var adapter = Adapter<TSource, TEntry>(source.GetType());
+
             if (adapter != null)
             {
-                return metadata == null ? adapter.ToEntry(source) : adapter.ToEntry(source, startingVersion, metadata);
+                return metadata == null ? adapter.ToEntry((TSource)source) : adapter.ToEntry((TSource) source, startingVersion, metadata);
             }
             // TODO: if called by AsSources we will create each new instance in the loop
-            return (TEntry)(object) new DefaultTextEntryAdapter<TSource>().ToEntry(source, startingVersion, metadata!);
+            return (TEntry)(object) new DefaultTextEntryAdapter<ISource>().ToEntry(source, startingVersion, metadata!);
         }
         
-        public TEntry AsEntry<TSource, TEntry>(TSource source, Metadata? metadata) where TEntry : IEntry where TSource : Source
-            => AsEntry<TSource, TEntry>(source, Entry<TEntry>.DefaultVersion, metadata);
+        public TEntry AsEntry<TSource, TEntry>(ISource source, Metadata? metadata) where TEntry : IEntry where TSource : ISource => 
+            AsEntry<TSource, TEntry>(source, Entry<TEntry>.DefaultVersion, metadata);
 
-        public IEnumerable<TSource> AsSources<TSource, TEntry>(IEnumerable<TEntry> entries) where TEntry : IEntry where TSource : Source
+        public IEnumerable<TSource> AsSources<TSource, TEntry>(IEnumerable<TEntry> entries) where TEntry : IEntry where TSource : ISource
             => entries.Select(AsSource<TSource, TEntry>).ToList();
 
-        public TSource AsSource<TSource, TEntry>(TEntry entry) where TEntry : IEntry where TSource : Source
+        public TSource AsSource<TSource, TEntry>(TEntry entry) where TEntry : IEntry where TSource : ISource
         {
             var adapter = NamedAdapter<TSource, TEntry>(entry);
             if (adapter != null)
@@ -95,24 +96,25 @@ namespace Vlingo.Symbio
             // TODO: if called by AsSources we will create each new instance in the loop
             return new DefaultTextEntryAdapter<TSource>().FromEntry((TextEntry)(object)entry);
         }
-        
-        private IEntryAdapter<TSource, TEntry>? Adapter<TSource, TEntry>() where TEntry : IEntry where TSource : Source
+
+        private IEntryAdapter<TSource, TEntry>? Adapter<TSource, TEntry>(Type source) where TEntry : IEntry
         {
-            if (!_adapters.ContainsKey(typeof(TSource)))
+            if (!_adapters.ContainsKey(source))
             {
                 return null;
             }
-            var adapter = (IEntryAdapter<TSource, TEntry>) _adapters[typeof(TSource)];
+            
+            var adapter = _adapters[source] as IEntryAdapter<TSource, TEntry>;
             return adapter;
         }
-        
-        private IEntryAdapter<TSource, TEntry>? NamedAdapter<TSource, TEntry>(TEntry entry) where TEntry : IEntry where TSource : Source
+
+        private IEntryAdapter<TSource, TEntry>? NamedAdapter<TSource, TEntry>(TEntry entry) where TEntry : IEntry where TSource : ISource
         {
             if (!_namedAdapters.ContainsKey(entry.TypeName))
             {
                 return null;
             }
-            var adapter = (IEntryAdapter<TSource, TEntry>) _namedAdapters[entry.TypeName];
+            var adapter = _namedAdapters[entry.TypeName] as IEntryAdapter<TSource, TEntry>;
             return adapter;
         }
     }
