@@ -11,7 +11,7 @@ using Vlingo.Symbio.Store;
 
 namespace Vlingo.Symbio
 {
-    public sealed class DefaultTextEntryAdapter<TState> : EntryAdapter<TState, TextEntry> where TState : Source
+    public sealed class DefaultTextEntryAdapter<TState> : EntryAdapter<TState, TextEntry> where TState : ISource
     {
         public override TState FromEntry(TextEntry entry)
         {
