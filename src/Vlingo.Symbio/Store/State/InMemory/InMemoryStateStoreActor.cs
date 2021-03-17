@@ -16,7 +16,7 @@ using Vlingo.Symbio.Store.Dispatch.InMemory;
 
 namespace Vlingo.Symbio.Store.State.InMemory
 {
-    public class InMemoryStateStoreActor<TRawState, TEntry> : Actor, IStateStore<TEntry> where TEntry : IEntry where TRawState : class, IState
+    public class InMemoryStateStoreActor<TRawState, TEntry> : Actor, IStateStore where TEntry : IEntry where TRawState : class, IState
     {
         private readonly List<Dispatchable<TEntry, TRawState>> _dispatchables;
         private readonly List<IDispatcher<Dispatchable<TEntry, TRawState>>> _dispatchers;
@@ -91,28 +91,28 @@ namespace Vlingo.Symbio.Store.State.InMemory
         public void Write<TState>(string id, TState state, int stateVersion, IWriteResultInterest interest) =>
             Write(id, state, stateVersion, Source<TState>.None(), Metadata.NullMetadata(), interest, null);
 
-        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, IWriteResultInterest interest) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<TSource> sources, IWriteResultInterest interest) =>
             Write(id, state, stateVersion, sources, Metadata.NullMetadata(), interest, null);
 
         public void Write<TState>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest) => 
             Write(id, state, stateVersion, Source<TState>.None(), metadata, interest, null);
 
-        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<TSource> sources, Metadata metadata, IWriteResultInterest interest) =>
             Write(id, state, stateVersion, sources, metadata, interest, null);
 
         public void Write<TState>(string id, TState state, int stateVersion, IWriteResultInterest interest, object? @object) =>
             Write(id, state, stateVersion, Source<TState>.None(), Metadata.NullMetadata(), interest, @object);
 
-        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, IWriteResultInterest interest, object? @object) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<TSource> sources, IWriteResultInterest interest, object? @object) =>
             Write(id, state, stateVersion, sources, Metadata.NullMetadata(), interest, @object);
 
         public void Write<TState>(string id, TState state, int stateVersion, Metadata metadata, IWriteResultInterest interest, object? @object) =>
             Write(id, state, stateVersion, Source<TState>.None(), metadata, interest, @object);
 
-        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest, object? @object) =>
+        public void Write<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<TSource> sources, Metadata metadata, IWriteResultInterest interest, object? @object) =>
             WriteWith(id, state, stateVersion, sources, metadata, interest, @object);
 
-        public ICompletes<IStateStoreEntryReader<TEntry>> EntryReader(string name)
+        public ICompletes<IStateStoreEntryReader<TEntryReader>> EntryReader<TEntryReader>(string name) where TEntryReader : IEntry
         {
             if (!_entryReaders.TryGetValue(name, out var reader))
             {
@@ -121,7 +121,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
                 _entryReaders.Add(name, reader);
             }
             
-            return Completes().With(reader);
+            return Completes().With((IStateStoreEntryReader<TEntryReader>) reader);
         }
 
         public override void Stop()
@@ -184,7 +184,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
             }
         }
 
-        private void WriteWith<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<Source<TSource>> sources, Metadata metadata, IWriteResultInterest interest, object? @object)
+        private void WriteWith<TState, TSource>(string id, TState state, int stateVersion, IEnumerable<TSource> sources, Metadata metadata, IWriteResultInterest interest, object? @object)
         {
             if (interest != null)
             {
@@ -230,7 +230,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
                         }
 
                         typeStore[id] = raw; // maybe useless as it was added by the line above var persistedState = typeStore.AddIfAbsent(raw.Id, raw);
-                        var entries = AppendEntries(sources, stateVersion, metadata);
+                        var entries = AppendEntries<TSource>(sources.Cast<ISource>(), stateVersion, metadata);
                         Dispatch(id, storeName, raw, entries);
 
                         interest.WriteResultedIn(Success.Of<StorageException, Result>(Result.Success), id, state, stateVersion, sources, @object);
@@ -248,9 +248,9 @@ namespace Vlingo.Symbio.Store.State.InMemory
             }
         }
 
-        private IEnumerable<TEntry> AppendEntries<TSource>(IEnumerable<Source<TSource>> sources, int stateVersion, Metadata? metadata)
+        private IEnumerable<TEntry> AppendEntries<TSource>(IEnumerable<ISource> sources, int stateVersion, Metadata? metadata)
         {
-            var adapted = _entryAdapterProvider.AsEntries<Source<TSource>, TEntry>(sources, stateVersion, metadata);
+            var adapted = _entryAdapterProvider.AsEntries<TSource, TEntry>(sources, stateVersion, metadata);
             var appendEntries = adapted.ToList();
             foreach (var entry in appendEntries)
             {
