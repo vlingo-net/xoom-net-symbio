@@ -12,12 +12,12 @@ using Vlingo.Common.Version;
 
 namespace Vlingo.Symbio
 {
-    public abstract class Source
+    public interface ISource
     {
         /// <summary>
         /// Gets my <c>Id</c> as a string. By default my id is empty. Override to provide an actual id.
         /// </summary>
-        public virtual string Id => string.Empty;
+        string Id { get; }
     }
     
     /// <summary>
@@ -25,7 +25,7 @@ namespace Vlingo.Symbio
     /// type is represented by the <paramref name="{T}"/> parameter and is also extends me.
     /// </summary>
     /// <typeparam name="T">The type of source of truth</typeparam>
-    public abstract class Source<T> : Source
+    public abstract class Source<T> : ISource
     {
         private readonly long _dateTimeSourced;
         private readonly int _sourceTypeVersion;
@@ -53,7 +53,7 @@ namespace Vlingo.Symbio
         /// Gets empty sources
         /// </summary>
         /// <returns>Empty list.</returns>
-        public static IEnumerable<Source<T>> None() => Enumerable.Empty<Source<T>>();
+        public static IEnumerable<T> None() => Enumerable.Empty<T>();
 
         /// <summary>
         /// Gets whether or not I am a Null Object, which is by default <c>false</c>.
@@ -123,5 +123,7 @@ namespace Vlingo.Symbio
             /// </summary>
             public override bool IsNull => true;
         }
+
+        public virtual string Id => string.Empty;
     }
 }
