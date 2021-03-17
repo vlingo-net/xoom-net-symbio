@@ -17,27 +17,27 @@ namespace Vlingo.Symbio.Store.Object
     /// </summary>
     /// <typeparam name="T">The type of the state.</typeparam>
     /// <typeparam name="TSource">The type of the underlying source</typeparam>
-    public class StateSources<T, TSource> where T : StateObject where TSource : Source
+    public class StateSources<T, TSource> where T : StateObject where TSource : ISource
     {
-        public StateSources(T stateObject): this(stateObject, Enumerable.Empty<TSource>())
+        public StateSources(T stateObject): this(stateObject, Enumerable.Empty<ISource>())
         {
         }
         
-        public StateSources(T stateObject, IEnumerable<TSource> sources)
+        public StateSources(T stateObject, IEnumerable<ISource> sources)
         {
             StateObject = stateObject ?? throw new ArgumentNullException(nameof(stateObject),"stateObject is required");
             Sources = sources.ToList() ?? throw new ArgumentNullException(nameof(sources),"sources is required");
         }
         
-        public static StateSources<T, TSource> Of(T stateObject) => new StateSources<T, TSource>(stateObject, Enumerable.Empty<TSource>());
+        public static StateSources<T, TSource> Of(T stateObject) => new StateSources<T, TSource>(stateObject, Enumerable.Empty<ISource>());
         
-        public static StateSources<T, TSource> Of(T stateObject, TSource source) => new StateSources<T, TSource>(stateObject, new []{source});
+        public static StateSources<T, TSource> Of(T stateObject, ISource source) => new StateSources<T, TSource>(stateObject, new []{source});
         
-        public static StateSources<T, TSource> Of(T stateObject, IEnumerable<TSource> sources) => new StateSources<T, TSource>(stateObject, sources);
+        public static StateSources<T, TSource> Of(T stateObject, IEnumerable<ISource> sources) => new StateSources<T, TSource>(stateObject, sources);
         
         public T StateObject { get; }
         
-        public IEnumerable<TSource> Sources { get; }
+        public IEnumerable<ISource> Sources { get; }
 
         public override bool Equals(object? obj)
         {
@@ -61,7 +61,7 @@ namespace Vlingo.Symbio.Store.Object
             var otherSources = that.Sources.ToList();
             for (var i = 0; i < sources.Count; i++)
             {
-                if (sources[i] != otherSources[i])
+                if (!sources[i].Equals(otherSources[i]))
                 {
                     return false;
                 }
