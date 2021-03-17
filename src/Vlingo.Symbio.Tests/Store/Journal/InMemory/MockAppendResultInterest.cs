@@ -19,7 +19,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
         private AccessSafely _access;
         private readonly List<JournalData<TEntry, TState>> _entries = new List<JournalData<TEntry, TState>>();
         
-        public void AppendResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, TSource source, Optional<TSnapshotState> snapshot, object @object) where TSource : Source
+        public void AppendResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, TSource source, Optional<TSnapshotState> snapshot, object @object) where TSource : ISource
         {
             outcome.AndThen(result => {
                 _access.WriteUsing("appendResultedIn",
@@ -32,7 +32,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             });
         }
 
-        public void AppendResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, TSource source, Metadata metadata, Optional<TSnapshotState> snapshot, object @object) where TSource : Source
+        public void AppendResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, TSource source, Metadata metadata, Optional<TSnapshotState> snapshot, object @object) where TSource : ISource
         {
             outcome.AndThen(result => {
                 _access.WriteUsing("appendResultedIn",
@@ -45,7 +45,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             });
         }
 
-        public void AppendAllResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, IEnumerable<TSource> sources, Optional<TSnapshotState> snapshot, object @object) where TSource : Source
+        public void AppendAllResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, IEnumerable<TSource> sources, Optional<TSnapshotState> snapshot, object @object) where TSource : ISource
         {
             outcome.AndThen(result => {
                 _access.WriteUsing("appendResultedIn",
@@ -58,7 +58,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             });
         }
 
-        public void AppendAllResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, IEnumerable<TSource> sources, Metadata metadata, Optional<TSnapshotState> snapshot, object @object) where TSource : Source
+        public void AppendAllResultedIn<TSource, TSnapshotState>(IOutcome<StorageException, Result> outcome, string streamName, int streamVersion, IEnumerable<TSource> sources, Metadata metadata, Optional<TSnapshotState> snapshot, object @object) where TSource : ISource
         {
             outcome.AndThen(result => {
                 _access.WriteUsing("appendResultedIn",
