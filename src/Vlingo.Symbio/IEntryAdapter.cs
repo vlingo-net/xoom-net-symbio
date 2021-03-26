@@ -7,6 +7,11 @@
 
 namespace Vlingo.Symbio
 {
+    public interface IEntryAdapter
+    {
+        ISource AnyTypeFromEntry(IEntry entry);
+    }
+    
     /// <summary>
     /// Adapts the native <see cref="Source{T}"/> state to the raw <see cref="IEntry{T}"/>,
     /// and the raw <see cref="IEntry{T}"/> to the native <see cref="Source{T}"/>.
@@ -18,7 +23,7 @@ namespace Vlingo.Symbio
     /// </summary>
     /// <typeparam name="TSource">The native <see cref="Source{T}"/> type.</typeparam>
     /// <typeparam name="TEntry">The raw <see cref="IEntry{T}"/></typeparam>
-    public interface IEntryAdapter<TSource, TEntry>
+    public interface IEntryAdapter<TSource, TEntry> : IEntryAdapter
     {
         /// <summary>
         /// Gets the <see cref="Source{T}"/> native state from the <see cref="IEntry{T}"/> state.
@@ -81,6 +86,12 @@ namespace Vlingo.Symbio
 
     public abstract class EntryAdapter<TSource, TEntry> : IEntryAdapter<TSource, TEntry> where TEntry : IEntry where TSource : ISource
     {
+        public ISource AnyTypeFromEntry(IEntry entry)
+        {
+            var source = FromEntry((TEntry) entry);
+            return source;
+        }
+        
         public abstract TSource FromEntry(TEntry entry);
 
         public abstract TEntry ToEntry(TSource source, Metadata metadata);
