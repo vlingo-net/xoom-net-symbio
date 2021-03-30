@@ -25,18 +25,27 @@ namespace Vlingo.Symbio.Store.Dispatch.Control
         public DispatcherControlActor(
             IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers,
             IDispatcherControlDelegate<TEntry, TState> @delegate,
+            long redispatchDelay,
             long checkConfirmationExpirationInterval,
             long confirmationExpiration)
         {
             _dispatchers = dispatchers;
             _delegate = @delegate;
             _confirmationExpiration = confirmationExpiration;
-            _cancellable = Scheduler.Schedule(this, null, TimeSpan.FromMilliseconds(DefaultRedispatchDelay),
+            _cancellable = Scheduler.Schedule(this, null, TimeSpan.FromMilliseconds(redispatchDelay),
                 TimeSpan.FromMilliseconds(checkConfirmationExpirationInterval));
             foreach (var dispatcher in _dispatchers)
             {
                 dispatcher.ControlWith(this);   
             }
+        }
+
+        public DispatcherControlActor(
+            IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers,
+            IDispatcherControlDelegate<TEntry, TState> @delegate,
+            long checkConfirmationExpirationInterval,
+            long confirmationExpiration) : this(dispatchers, @delegate, DefaultRedispatchDelay, checkConfirmationExpirationInterval, confirmationExpiration)
+        {
         }
         
         public DispatcherControlActor(
@@ -44,7 +53,7 @@ namespace Vlingo.Symbio.Store.Dispatch.Control
             IDispatcherControlDelegate<TEntry, TState> @delegate,
             long checkConfirmationExpirationInterval,
             long confirmationExpiration)
-        : this (new []{dispatcher}, @delegate, checkConfirmationExpirationInterval, confirmationExpiration)
+        : this (new []{dispatcher}, @delegate, DefaultRedispatchDelay, checkConfirmationExpirationInterval, confirmationExpiration)
         {
         }
 
