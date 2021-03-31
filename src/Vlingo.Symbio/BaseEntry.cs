@@ -144,6 +144,8 @@ namespace Vlingo.Symbio
         /// <inheritdoc/>
         public Type Typed => Entry<T>.TypedFrom(_type);
 
+        public object UntypedEntryData => EntryData!;
+
         public string EntryRawData => JsonSerialization.Serialized(EntryData);
 
         /// <summary>

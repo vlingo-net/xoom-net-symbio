@@ -70,6 +70,8 @@ namespace Vlingo.Symbio
         /// Gets the Type.
         /// </summary>
         Type Typed { get; }
+        
+        object UntypedEntryData { get; }
 
         string EntryRawData { get; }
     }
