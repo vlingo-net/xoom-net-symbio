@@ -23,11 +23,11 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
         {
             outcome.AndThen(result => {
                 _access.WriteUsing("appendResultedIn",
-                    new JournalData<TSource, TSnapshotState>(streamName, streamVersion, null, result, new List<TSource> { source }, snapshot));
+                    new JournalData<TSource, TState>(streamName, streamVersion, null, result, new List<TSource> { source }, snapshot.Map(s => (TState)(object)s)));
                 return result;
             }).Otherwise(cause => {
                 _access.WriteUsing("appendResultedIn",
-                    new JournalData<TSource, TSnapshotState>(streamName, streamVersion, cause, Result.Error, new List<TSource> { source }, snapshot));
+                    new JournalData<TSource, TState>(streamName, streamVersion, cause, Result.Error, new List<TSource> { source }, snapshot.Map(s => (TState)(object)s)));
                 return cause.Result;
             });
         }

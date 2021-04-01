@@ -32,11 +32,11 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
                 stage.ActorFor<IJournal<T>>(typeof(TActor), dispatchers) :
                 stage.ActorFor<IJournal<T>>(typeof(TActor), dispatchers, additional);
 
-        public void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, IAppendResultInterest interest, object @object) where TSource : ISource =>
-            _journal.Append<TSource, TSnapshotState>(streamName, streamVersion, source, interest, @object);
+        public void Append<TSource>(string streamName, int streamVersion, TSource source, IAppendResultInterest interest, object @object) where TSource : ISource =>
+            _journal.Append(streamName, streamVersion, source, interest, @object);
 
-        public void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource =>
-            _journal.Append<TSource, TSnapshotState>(streamName, streamVersion, source, metadata, interest, @object);
+        public void Append<TSource>(string streamName, int streamVersion, TSource source, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource =>
+            _journal.Append(streamName, streamVersion, source, metadata, interest, @object);
 
         public void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : ISource =>
             _journal.AppendWith(streamName, streamVersion, source, snapshot, interest, @object);
@@ -44,11 +44,11 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
         public void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : ISource
             => _journal.AppendWith(streamName, streamVersion, source, metadata, snapshot, interest, @object);
 
-        public void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, IAppendResultInterest interest, object @object) where TSource : ISource =>
-            _journal.AppendAll<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, interest, @object);
+        public void AppendAll<TSource>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, IAppendResultInterest interest, object @object) where TSource : ISource =>
+            _journal.AppendAll<TSource>(streamName, fromStreamVersion, sources, interest, @object);
 
-        public void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource
-            => _journal.AppendAll<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, metadata, interest, @object);
+        public void AppendAll<TSource>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource
+            => _journal.AppendAll<TSource>(streamName, fromStreamVersion, sources, metadata, interest, @object);
 
         public void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : ISource
             => _journal.AppendAllWith<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, snapshot, interest, @object);

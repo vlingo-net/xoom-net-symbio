@@ -38,7 +38,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             var source = new Test1Source();
             var streamName = "123";
             var streamVersion = 1;
-            _journal.Append<Test1Source, SnapshotState>(streamName, streamVersion, source, interest, _object);
+            _journal.Append(streamName, streamVersion, source, interest, _object);
 
             Assert.Equal(1, interest.ReceivedAppendsSize);
 
@@ -110,7 +110,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             var streamName = "123";
             var streamVersion = 1;
             
-            _journal.Append<Test1Source, SnapshotState>(streamName, streamVersion, source,  interest, _object);
+            _journal.Append(streamName, streamVersion, source,  interest, _object);
 
             var accessResults = new TestResults().AfterCompleting(1);
             _journal.JournalReader("test")
@@ -131,7 +131,7 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             interest.AfterCompleting(1);
 
             var three = new List<Source<string>> { new Test1Source(), new Test2Source(), new Test1Source() };
-            _journal.AppendAll<Source<string>, SnapshotState>("123", 1, three, interest, _object);
+            _journal.AppendAll<Source<string>>("123", 1, three, interest, _object);
 
             var accessResults = new TestResults().AfterCompleting(1);
             _journal.JournalReader("test")
@@ -153,11 +153,11 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             _dispatcher.AfterCompleting(1);
             interest.AfterCompleting(1);
 
-            _journal.Append<Test1Source, SnapshotState>("123", 1, new Test1Source(), interest, _object);
-            _journal.Append<Test1Source, SnapshotState>("123", 2, new Test1Source(), interest, _object);
+            _journal.Append("123", 1, new Test1Source(), interest, _object);
+            _journal.Append("123", 2, new Test1Source(), interest, _object);
             _journal.AppendWith("123", 3, new Test1Source(), new SnapshotState(), interest, _object);
-            _journal.Append<Test1Source, SnapshotState>("123", 4, new Test1Source(), interest, _object);
-            _journal.Append<Test1Source, SnapshotState>("123", 5, new Test1Source(), interest, _object);
+            _journal.Append("123", 4, new Test1Source(), interest, _object);
+            _journal.Append("123", 5, new Test1Source(), interest, _object);
 
             var accessResults = new TestResults().AfterCompleting(1);
             _journal.StreamReader("test")
@@ -179,11 +179,11 @@ namespace Vlingo.Symbio.Tests.Store.Journal.InMemory
             _dispatcher.AfterCompleting(5);
             interest.AfterCompleting(5);
 
-            _journal.Append<Test1Source, SnapshotState>("123", 1, new Test1Source(), interest, _object);
-            _journal.Append<Test1Source, SnapshotState>("123", 2, new Test1Source(), interest, _object);
+            _journal.Append("123", 1, new Test1Source(), interest, _object);
+            _journal.Append("123", 2, new Test1Source(), interest, _object);
             _journal.AppendWith("123", 3, new Test1Source(), new SnapshotState(), interest, _object);
-            _journal.Append<Test1Source, SnapshotState>("123", 4, new Test1Source(), interest, _object);
-            _journal.Append<Test1Source, SnapshotState>("123", 5, new Test1Source(), interest, _object);
+            _journal.Append("123", 4, new Test1Source(), interest, _object);
+            _journal.Append("123", 5, new Test1Source(), interest, _object);
 
             var accessResults = new TestResults().AfterCompleting(1);
             _journal.StreamReader("test")

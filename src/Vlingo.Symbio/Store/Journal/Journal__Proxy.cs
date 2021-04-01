@@ -22,10 +22,10 @@ namespace Vlingo.Symbio.Store.Journal
             "Using<TActor, TEntry, TState>(Vlingo.Actors.Stage, IEnumerable<IDispatcher<IDispatchable<TEntry, TState>>>, System.Object[])";
 
         private const string AppendRepresentation3 =
-            "Append<TSource, TSnapshotState>(string, int, TSource, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+            "Append<TSource>(string, int, TSource, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
         private const string AppendRepresentation4 =
-            "Append<TSource, TSnapshotState>(string, int, TSource, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+            "Append<TSource>(string, int, TSource, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
         private const string AppendWithRepresentation5 =
             "AppendWith<TSource, TSnapshotState>(string, int, TSource, TSnapshotState, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
@@ -34,10 +34,10 @@ namespace Vlingo.Symbio.Store.Journal
             "AppendWith<TSource, TSnapshotState>(string, int, TSource, Vlingo.Symbio.Metadata, TSnapshotState, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
         private const string AppendAllRepresentation7 =
-            "AppendAll<TSource, TSnapshotState>(string, int, IEnumerable<TSource>, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+            "AppendAll<TSource>(string, int, IEnumerable<TSource>, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
         private const string AppendAllRepresentation8 =
-            "AppendAll<TSource, TSnapshotState>(string, int, IEnumerable<TSource>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
+            "AppendAll<TSource>(string, int, IEnumerable<TSource>, Vlingo.Symbio.Metadata, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
 
         private const string AppendAllWithRepresentation9 =
             "AppendAllWith<TSource, TSnapshotState>(string, int, IEnumerable<TSource>, TSnapshotState, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
@@ -57,13 +57,13 @@ namespace Vlingo.Symbio.Store.Journal
             this.mailbox = mailbox;
         }
 
-        public void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source,
+        public void Append<TSource>(string streamName, int streamVersion, TSource source,
             IAppendResultInterest interest, object @object) where TSource : ISource
         {
             if (!actor.IsStopped)
             {
                 Action<IJournal<T>> cons1113662861 = __ =>
-                    __.Append<TSource, TSnapshotState>(streamName, streamVersion, source, interest, @object);
+                    __.Append(streamName, streamVersion, source, interest, @object);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons1113662861, null, AppendRepresentation3);
                 else
@@ -75,13 +75,13 @@ namespace Vlingo.Symbio.Store.Journal
             }
         }
 
-        public void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source,
+        public void Append<TSource>(string streamName, int streamVersion, TSource source,
             Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource
         {
             if (!actor.IsStopped)
             {
                 Action<IJournal<T>> cons397294566 = __ =>
-                    __.Append<TSource, TSnapshotState>(streamName, streamVersion, source, metadata, interest, @object);
+                    __.Append(streamName, streamVersion, source, metadata, interest, @object);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons397294566, null, AppendRepresentation4);
                 else
@@ -130,13 +130,13 @@ namespace Vlingo.Symbio.Store.Journal
             }
         }
 
-        public void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion,
+        public void AppendAll<TSource>(string streamName, int fromStreamVersion,
             IEnumerable<ISource> sources, IAppendResultInterest interest, object @object) where TSource : ISource
         {
             if (!actor.IsStopped)
             {
                 Action<IJournal<T>> cons1438749561 = __ =>
-                    __.AppendAll<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, interest, @object);
+                    __.AppendAll<TSource>(streamName, fromStreamVersion, sources, interest, @object);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons1438749561, null, AppendAllRepresentation7);
                 else
@@ -148,14 +148,14 @@ namespace Vlingo.Symbio.Store.Journal
             }
         }
 
-        public void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion,
+        public void AppendAll<TSource>(string streamName, int fromStreamVersion,
             IEnumerable<ISource> sources, Metadata metadata, IAppendResultInterest interest, object @object)
             where TSource : ISource
         {
             if (!actor.IsStopped)
             {
                 Action<IJournal<T>> cons1619280850 = __ =>
-                    __.AppendAll<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, metadata, interest,
+                    __.AppendAll<TSource>(streamName, fromStreamVersion, sources, metadata, interest,
                         @object);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons1619280850, null, AppendAllRepresentation8);

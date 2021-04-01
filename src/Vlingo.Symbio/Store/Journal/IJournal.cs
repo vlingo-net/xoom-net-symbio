@@ -27,8 +27,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="interest">The Actor-backed <see cref="IAppendResultInterest"/> used to convey the result of the append</param>
         /// <param name="object">The object from the sender that is to be included in the <see cref="IAppendResultInterest"/> response</param>
         /// <typeparam name="TSource">The <see cref="Source{T}"/> type</typeparam>
-        /// <typeparam name="TSnapshotState">The snapshot state type</typeparam>
-        void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, IAppendResultInterest interest, object @object) where TSource : ISource;
+        void Append<TSource>(string streamName, int streamVersion, TSource source, IAppendResultInterest interest, object @object) where TSource : ISource;
 
         /// <summary>
         /// Appends the single <see cref="Source{T}"/> as an <see cref="IEntry{T}"/> to the end of the journal
@@ -44,8 +43,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="interest">The Actor-backed <see cref="IAppendResultInterest"/> used to convey the result of the append</param>
         /// <param name="object">The object from the sender that is to be included in the <see cref="IAppendResultInterest"/> response</param>
         /// <typeparam name="TSource">The <see cref="Source{T}"/> type</typeparam>
-        /// <typeparam name="TSnapshotState">The snapshot state type</typeparam>
-        void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource;
+        void Append<TSource>(string streamName, int streamVersion, TSource source, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource;
 
         /// <summary>
         /// Appends the single <see cref="Source{T}"/> as an <see cref="IEntry{T}"/> to the end of the journal
@@ -96,8 +94,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="interest">The Actor-backed <see cref="IAppendResultInterest"/> used to convey the result of the append</param>
         /// <param name="object">The object from the sender that is to be included in the <see cref="IAppendResultInterest"/> response</param>
         /// <typeparam name="TSource">The <see cref="Source{T}"/> type</typeparam>
-        /// <typeparam name="TSnapshotState">The snapshot state type</typeparam>
-        void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, IAppendResultInterest interest, object @object) where TSource : ISource;
+        void AppendAll<TSource>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, IAppendResultInterest interest, object @object) where TSource : ISource;
         
         /// <summary>
         /// Appends all <see cref="Source{T}"/> instances as an <see cref="IEntry{T}"/> to the end of the journal
@@ -112,8 +109,7 @@ namespace Vlingo.Symbio.Store.Journal
         /// <param name="interest">The Actor-backed <see cref="IAppendResultInterest"/> used to convey the result of the append</param>
         /// <param name="object">The object from the sender that is to be included in the <see cref="IAppendResultInterest"/> response</param>
         /// <typeparam name="TSource">The <see cref="Source{T}"/> type</typeparam>
-        /// <typeparam name="TSnapshotState">The snapshot state type</typeparam>
-        void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource;
+        void AppendAll<TSource>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource;
         
         /// <summary>
         /// Appends all <see cref="Source{T}"/> instances as an <see cref="IEntry{T}"/> instances to the end of the journal
@@ -258,20 +254,20 @@ namespace Vlingo.Symbio.Store.Journal
         IJournal<T> IJournal<T>.Using<TActor, TEntry, TState>(Stage stage, IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, params object[] additional)
             => Using<TActor, TEntry, TState>(stage, dispatchers, additional);
 
-        public virtual void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, IAppendResultInterest interest, object @object) where TSource : ISource 
-            => Append<TSource, TSnapshotState>(streamName, streamVersion, source, Metadata.NullMetadata(), interest, @object);
+        public virtual void Append<TSource>(string streamName, int streamVersion, TSource source, IAppendResultInterest interest, object @object) where TSource : ISource 
+            => Append<TSource>(streamName, streamVersion, source, Metadata.NullMetadata(), interest, @object);
 
-        public abstract void Append<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource;
+        public abstract void Append<TSource>(string streamName, int streamVersion, TSource source, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource;
 
         public virtual void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : ISource
             => AppendWith(streamName, streamVersion, source, Metadata.NullMetadata(), snapshot, interest, @object);
 
         public abstract void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : ISource;
 
-        public virtual void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, IAppendResultInterest interest, object @object) where TSource : ISource
-            => AppendAll<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, Metadata.NullMetadata(), interest, @object);
+        public virtual void AppendAll<TSource>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, IAppendResultInterest interest, object @object) where TSource : ISource
+            => AppendAll<TSource>(streamName, fromStreamVersion, sources, Metadata.NullMetadata(), interest, @object);
 
-        public abstract void AppendAll<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource;
+        public abstract void AppendAll<TSource>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, Metadata metadata, IAppendResultInterest interest, object @object) where TSource : ISource;
 
         public virtual void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : ISource
             => AppendAllWith<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, Metadata.NullMetadata(), snapshot, interest, @object);
