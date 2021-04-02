@@ -71,8 +71,6 @@ namespace Vlingo.Symbio
         /// </summary>
         Type Typed { get; }
         
-        object UntypedEntryData { get; }
-
         string EntryRawData { get; }
     }
     
