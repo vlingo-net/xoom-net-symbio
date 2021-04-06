@@ -12,13 +12,13 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Tests.Store.Dispatch
 {
-    public class MockDispatcher : IDispatcher<Dispatchable<IEntry, IState>>
+    public class MockDispatcher : IDispatcher
     {
         private AccessSafely _access;
 
         private readonly IConfirmDispatchedResultInterest _confirmDispatchedResultInterest;
         private IDispatcherControl _control;
-        private readonly List<Dispatchable<IEntry, IState>> _dispatched = new List<Dispatchable<IEntry, IState>>();
+        private readonly List<Dispatchable> _dispatched = new List<Dispatchable>();
         private readonly AtomicBoolean _processDispatch = new AtomicBoolean(true);
         private int _dispatchAttemptCount;
 
@@ -30,7 +30,7 @@ namespace Vlingo.Symbio.Tests.Store.Dispatch
 
         public void ControlWith(IDispatcherControl control) => _control = control;
 
-        public void Dispatch(Dispatchable<IEntry, IState> dispatchable)
+        public void Dispatch(Dispatchable dispatchable)
         {
             _dispatchAttemptCount++;
             if (_processDispatch.Get())
@@ -44,7 +44,7 @@ namespace Vlingo.Symbio.Tests.Store.Dispatch
         public AccessSafely AfterCompleting(int times)
         {
             _access = AccessSafely.AfterCompleting(times)
-                .WritingWith<Dispatchable<IEntry, IState>>("dispatched", action => _dispatched.Add(action))
+                .WritingWith<Dispatchable>("dispatched", action => _dispatched.Add(action))
                 .ReadingWith("dispatched", () => _dispatched)
 
                 .WritingWith<bool>("processDispatch", s => _processDispatch.Set(s))
@@ -56,10 +56,10 @@ namespace Vlingo.Symbio.Tests.Store.Dispatch
         
         public int DispatchedCount()
         {
-            var dispatched = _access.ReadFrom<List<Dispatchable<IEntry, IState>>>("dispatched");
+            var dispatched = _access.ReadFrom<List<Dispatchable>>("dispatched");
             return dispatched.Count;
         }
 
-        public List<Dispatchable<IEntry, IState>> GetDispatched() => _access.ReadFrom<List<Dispatchable<IEntry, IState>>>("dispatched");
+        public List<Dispatchable> GetDispatched() => _access.ReadFrom<List<Dispatchable>>("dispatched");
     }
 }
