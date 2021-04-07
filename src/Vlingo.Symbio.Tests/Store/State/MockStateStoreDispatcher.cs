@@ -13,14 +13,14 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Tests.Store.State
 {
-    public class MockStateStoreDispatcher<TEntry, TState> : IDispatcher<Dispatchable<TEntry, TState>> where TEntry : IEntry where TState : class, IState
+    public class MockStateStoreDispatcher<TState> : IDispatcher where TState : class, IState
     {
         private AccessSafely _access = AccessSafely.AfterCompleting(0);
         
         private readonly IConfirmDispatchedResultInterest _confirmDispatchedResultInterest;
         private IDispatcherControl _control;
         private readonly Dictionary<string, TState> _dispatched = new Dictionary<string, TState>();
-        private readonly ConcurrentQueue<TEntry> _dispatchedEntries = new ConcurrentQueue<TEntry>();
+        private readonly ConcurrentQueue<IEntry> _dispatchedEntries = new ConcurrentQueue<IEntry>();
         private readonly AtomicBoolean _processDispatch = new AtomicBoolean(true);
         private int _dispatchAttemptCount;
 
@@ -31,7 +31,7 @@ namespace Vlingo.Symbio.Tests.Store.State
 
         public void ControlWith(IDispatcherControl control) => _control = control;
 
-        public void Dispatch(Dispatchable<TEntry, TState> dispatchable)
+        public void Dispatch(Dispatchable dispatchable)
         {
             _dispatchAttemptCount++;
             if (_processDispatch.Get())
@@ -78,10 +78,10 @@ namespace Vlingo.Symbio.Tests.Store.State
 
         public class DispatchInternal
         {
-            public IEnumerable<TEntry> Entries { get; }
+            public IEnumerable<IEntry> Entries { get; }
             public TState State { get; }
 
-            public DispatchInternal(TState state, IEnumerable<TEntry> entries)
+            public DispatchInternal(TState state, IEnumerable<IEntry> entries)
             {
                 State = state;
                 Entries = entries;
