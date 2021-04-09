@@ -13,6 +13,7 @@ using Vlingo.Common;
 using Vlingo.Symbio.Store.Dispatch;
 using Vlingo.Symbio.Store.Dispatch.Control;
 using Vlingo.Symbio.Store.Dispatch.InMemory;
+using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
@@ -25,11 +26,11 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
         private readonly Dictionary<string, IStreamReader> _streamReaders;
         private readonly Dictionary<string, Dictionary<int, int>> _streamIndexes;
         private readonly Dictionary<string, IState> _snapshots;
-        private readonly List<Dispatchable<IEntry, IState>> _dispatchables;
-        private readonly List<IDispatcher<Dispatchable<IEntry, IState>>> _dispatchers;
+        private readonly List<Dispatchable> _dispatchables;
+        private readonly List<IDispatcher> _dispatchers;
         private readonly IDispatcherControl _dispatcherControl;
 
-        public InMemoryJournal(IEnumerable<IDispatcher<Dispatchable<IEntry, IState>>> dispatchers, World world, long checkConfirmationExpirationInterval = 1000L, long confirmationExpiration = 1000L)
+        public InMemoryJournal(IEnumerable<IDispatcher> dispatchers, World world, long checkConfirmationExpirationInterval = 1000L, long confirmationExpiration = 1000L)
         {
             _dispatchers = dispatchers.ToList();
             _entryAdapterProvider = EntryAdapterProvider.Instance(world);
@@ -39,19 +40,19 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
             _streamReaders = new Dictionary<string, IStreamReader>(1);
             _streamIndexes = new Dictionary<string, Dictionary<int, int>>();
             _snapshots = new Dictionary<string, IState>();
-            _dispatchables = new List<Dispatchable<IEntry, IState>>();
+            _dispatchables = new List<Dispatchable>();
 
-            var dispatcherControlDelegate = new InMemoryDispatcherControlDelegate<IEntry, IState>(_dispatchables);
+            var dispatcherControlDelegate = new InMemoryDispatcherControlDelegate(_dispatchables);
 
             _dispatcherControl = world.Stage.ActorFor<IDispatcherControl>(
-                () => new DispatcherControlActor<IEntry, IState>(
+                () => new DispatcherControlActor(
                     _dispatchers,
                     dispatcherControlDelegate,
                     checkConfirmationExpirationInterval,
                     confirmationExpiration));
         }
 
-        public InMemoryJournal(IDispatcher<Dispatchable<IEntry, IState>> dispatcher, World world,
+        public InMemoryJournal(IDispatcher dispatcher, World world,
             long checkConfirmationExpirationInterval = 1000L, long confirmationExpiration = 1000L)
         : this (new []{dispatcher}, world, checkConfirmationExpirationInterval, confirmationExpiration)
         {
@@ -187,7 +188,7 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
         {
             var dispatchableEntries = entries as IEntry[] ?? entries.ToArray();
             var id = GetDispatchId(streamName, streamVersion, dispatchableEntries);
-            var dispatchable = new Dispatchable<IEntry, IState>(id,  DateTimeOffset.Now, snapshot, dispatchableEntries);
+            var dispatchable = new Dispatchable(id,  DateTimeOffset.Now, snapshot, dispatchableEntries);
             _dispatchables.Add(dispatchable);
             foreach (var dispatcher in _dispatchers)
             {
