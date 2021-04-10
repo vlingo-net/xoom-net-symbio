@@ -10,8 +10,7 @@ namespace Vlingo.Symbio.Store.Dispatch
     /// <summary>
     /// Defines the support for dispatching.
     /// </summary>
-    /// <typeparam name="TDispatchable">The type of the dispatchable</typeparam>
-    public interface IDispatcher<TDispatchable>
+    public interface IDispatcher
     {
         /// <summary>
         /// Register the <paramref name="control"/> with the receiver.
@@ -20,9 +19,9 @@ namespace Vlingo.Symbio.Store.Dispatch
         void ControlWith(IDispatcherControl control);
 
         /// <summary>
-        /// Dispatch the <see cref="Dispatchable{TEntry, TState}"/> instance.
+        /// Dispatch the <see cref="Dispatchable"/> instance.
         /// </summary>
-        /// <param name="dispatchable">The <see cref="Dispatchable{TEntry, TState}"/> instance to this dispatch</param>
-        void Dispatch(TDispatchable dispatchable);
+        /// <param name="dispatchable">The <see cref="Dispatchable"/> instance to this dispatch</param>
+        void Dispatch(Dispatchable dispatchable);
     }
 }
