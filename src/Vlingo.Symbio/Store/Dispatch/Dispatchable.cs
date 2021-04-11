@@ -17,16 +17,14 @@ namespace Vlingo.Symbio.Store.Dispatch
     /// successfully stored and is then dispatched to registered
     /// interests.
     /// </summary>
-    /// <typeparam name="TEntry">The concrete <see cref="IEntry{T}"/> type of the entries</typeparam>
-    /// <typeparam name="TState">The concrete <see cref="State{T}"/> type of the storage</typeparam>
-    public class Dispatchable<TEntry, TState> where TEntry : IEntry where TState : class, IState
+    public class Dispatchable
     {
-        public Dispatchable(string id, DateTimeOffset createdOn, TState? state, IEnumerable<TEntry> entries)
+        public Dispatchable(string id, DateTimeOffset createdOn, IState? state, IEnumerable<IEntry> entries)
         {
             Id = id;
             CreatedOn = createdOn;
             State = Optional.OfNullable(state!);
-            Entries = new List<TEntry>(entries);
+            Entries = new List<IEntry>(entries);
         }
 
         /// <summary>
@@ -40,18 +38,18 @@ namespace Vlingo.Symbio.Store.Dispatch
         public DateTimeOffset CreatedOn { get; }
 
         /// <summary>
-        /// My <typeparamref name="TState"/> concrete <see cref="State{T}"/> type.
+        /// My concrete <see cref="State{T}"/> type.
         /// </summary>
-        public Optional<TState> State { get; }
+        public Optional<IState> State { get; }
 
         /// <summary>
         /// My <code>List{TEntry}</code> to dispatch
         /// </summary>
-        public List<TEntry> Entries { get; }
+        public List<IEntry> Entries { get; }
 
-        public bool HasEntries => Entries != null && Entries.Any();
+        public bool HasEntries => Entries.Any();
 
-        public TNewState TypedState<TNewState>() where TNewState : IState => (TNewState) (object) State.Get()!;
+        public TNewState TypedState<TNewState>() where TNewState : IState => (TNewState) State.Get()!;
 
         public override bool Equals(object? obj)
         {
@@ -65,7 +63,7 @@ namespace Vlingo.Symbio.Store.Dispatch
                 return false;
             }
 
-            var that = (Dispatchable<TEntry, TState>) obj;
+            var that = (Dispatchable) obj;
             return Id.Equals(that.Id);
         }
 
