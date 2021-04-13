@@ -9,13 +9,13 @@ using System.Collections.Generic;
 
 namespace Vlingo.Symbio.Store.Dispatch.InMemory
 {
-    public class InMemoryDispatcherControlDelegate<TEntry, TState> : IDispatcherControlDelegate<TEntry, TState> where TEntry : IEntry where TState : class, IState
+    public class InMemoryDispatcherControlDelegate : IDispatcherControlDelegate
     {
-        private readonly List<Dispatchable<TEntry, TState>> _dispatchables;
+        private readonly List<Dispatchable> _dispatchables;
 
-        public InMemoryDispatcherControlDelegate(List<Dispatchable<TEntry, TState>> dispatchables) => _dispatchables = dispatchables;
+        public InMemoryDispatcherControlDelegate(List<Dispatchable> dispatchables) => _dispatchables = dispatchables;
 
-        public IEnumerable<Dispatchable<TEntry, TState>> AllUnconfirmedDispatchableStates => _dispatchables;
+        public IEnumerable<Dispatchable> AllUnconfirmedDispatchableStates => _dispatchables;
 
         public void ConfirmDispatched(string dispatchId) => _dispatchables.RemoveAll(d => d.Id.Equals(dispatchId));
 

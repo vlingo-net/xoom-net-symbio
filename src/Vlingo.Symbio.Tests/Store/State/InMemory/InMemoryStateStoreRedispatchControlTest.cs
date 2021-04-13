@@ -9,11 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Vlingo.Actors;
-using Vlingo.Symbio.Store.Dispatch;
 using Vlingo.Symbio.Store.State;
 using Vlingo.Symbio.Store.State.InMemory;
 using Xunit;
 using Xunit.Abstractions;
+using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;
 
 namespace Vlingo.Symbio.Tests.Store.State.InMemory
 {
@@ -21,7 +21,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
     {
         private static string _storeName = typeof(Entity1).FullName;
 
-        private readonly MockStateStoreDispatcher<IEntry<string>, TextState> _dispatcher;
+        private readonly MockStateStoreDispatcher<TextState> _dispatcher;
         private readonly MockStateStoreResultInterest _interest;
         private readonly IStateStore _store;
         private readonly World _world;
@@ -65,7 +65,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
 
             _interest = new MockStateStoreResultInterest();
             _interest.AfterCompleting<string, Entity1>(0);
-            _dispatcher = new MockStateStoreDispatcher<IEntry<string>, TextState>(_interest);
+            _dispatcher = new MockStateStoreDispatcher<TextState>(_interest);
 
             var stateAdapterProvider = new StateAdapterProvider(_world);
             new EntryAdapterProvider(_world);
@@ -75,7 +75,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
 
             StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity1).FullName, typeof(Entity1));
             
-            _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState, IEntry<string>>), new List<IDispatcher<Dispatchable<IEntry<string>, TextState>>> {_dispatcher});
+            _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState, IEntry<string>>), new List<IDispatcher> {_dispatcher});
         }
 
         public void Dispose()

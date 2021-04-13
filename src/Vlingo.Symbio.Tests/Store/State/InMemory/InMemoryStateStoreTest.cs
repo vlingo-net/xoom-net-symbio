@@ -11,11 +11,11 @@ using System.Linq;
 using Vlingo.Actors;
 using Vlingo.Actors.TestKit;
 using Vlingo.Symbio.Store;
-using Vlingo.Symbio.Store.Dispatch;
 using Vlingo.Symbio.Store.State;
 using Vlingo.Symbio.Store.State.InMemory;
 using Xunit;
 using Xunit.Abstractions;
+using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;
 
 namespace Vlingo.Symbio.Tests.Store.State.InMemory
 {
@@ -24,7 +24,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         private readonly string _storeName1 = typeof(Entity1).FullName;
         private readonly string _storeName2 = typeof(Entity2).FullName;
         
-        private readonly MockStateStoreDispatcher<TextEntry, TextState> _dispatcher;
+        private readonly MockStateStoreDispatcher<TextState> _dispatcher;
         private readonly MockStateStoreResultInterest _interest;
         private readonly IStateStore _store;
         private readonly World _world;
@@ -292,7 +292,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             _world = testWorld.World;
 
             _interest = new MockStateStoreResultInterest();
-            _dispatcher = new MockStateStoreDispatcher<TextEntry, TextState>(_interest);
+            _dispatcher = new MockStateStoreDispatcher<TextState>(_interest);
 
             var stateAdapterProvider = new StateAdapterProvider(_world);
             new EntryAdapterProvider(_world);
@@ -300,7 +300,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
             // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState, TextEntry>), new List<IDispatcher<Dispatchable<TextEntry, TextState>>> {_dispatcher});
+            _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState, TextEntry>), new List<IDispatcher> {_dispatcher});
 
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName1, typeof(Entity1));
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName2, typeof(Entity2));

@@ -10,7 +10,7 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Store.Object
 {
-    public interface IObjectStoreDelegate<TEntry, TState> : IDispatcherControlDelegate<TEntry, TState> where TEntry : IEntry where TState : class, IState
+    public interface IObjectStoreDelegate : IDispatcherControlDelegate
     {
         /// <summary>
         /// Gets all registered <see cref="StateObjectMapper"/>s
@@ -32,7 +32,7 @@ namespace Vlingo.Symbio.Store.Object
         /// Copy this delegate.
         /// </summary>
         /// <returns>A copy of this delegate</returns>
-        IObjectStoreDelegate<TEntry, TState> Copy();
+        IObjectStoreDelegate Copy();
         
         /// <summary>
         /// Begin store transaction.
@@ -56,7 +56,7 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="updateId">The long identity to facilitate update; &lt; 0 for create &gt; 0 for update</param>
         /// <param name="metadata">The <see cref="Metadata"/> associated with the stateObjects and sources</param>
         /// <returns>The persisted collection of states, created from <paramref name="stateObjects"/></returns>
-        IEnumerable<TState> PersistAll(IEnumerable<StateObject> stateObjects, long updateId, Metadata metadata);
+        IEnumerable<IState> PersistAll(IEnumerable<StateObject> stateObjects, long updateId, Metadata metadata);
         
         /// <summary>
         /// Persists the <paramref name="stateObject"/> with <paramref name="metadata"/>.
@@ -65,19 +65,19 @@ namespace Vlingo.Symbio.Store.Object
         /// <param name="updateId">The long identity to facilitate update; &lt; 0 for create &gt; 0 for update</param>
         /// <param name="metadata">The <see cref="Metadata"/> associated with the stateObjects and sources</param>
         /// <returns>The persisted state, created from <paramref name="stateObject"/></returns>
-        TState Persist(StateObject stateObject, long updateId, Metadata metadata);
+        IState Persist(StateObject stateObject, long updateId, Metadata metadata);
 
         /// <summary>
         /// Persist the <code>IEnumerable{IEntry}</code> of entries, that originated from sources.
         /// </summary>
         /// <param name="entries"><code>IEnumerable{TEntry}</code></param>
-        void PersistEntries(IEnumerable<TEntry> entries);
+        void PersistEntries(IEnumerable<IEntry> entries);
 
         /// <summary>
-        /// Persist the <code>Dispatchable{E, ST}</code> that originated from write.
+        /// Persist the <code>Dispatchable</code> that originated from write.
         /// </summary>
-        /// <param name="dispatchable"><see cref="Dispatchable{TEntry, TState}"/></param>
-        void PersistDispatchable(Dispatchable<TEntry, TState> dispatchable);
+        /// <param name="dispatchable"><see cref="Dispatchable"/></param>
+        void PersistDispatchable(Dispatchable dispatchable);
 
         /// <summary>
         /// Executes the query defined by <paramref name="expression"/> that may result in zero to many objects.

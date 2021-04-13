@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using Vlingo.Actors;
 using Vlingo.Common;
-using Vlingo.Symbio.Store.Dispatch;
+using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;
 
 namespace Vlingo.Symbio.Store.Journal
 {
@@ -242,14 +242,14 @@ namespace Vlingo.Symbio.Store.Journal
             return null!;
         }
 
-        public IJournal<T> Using<TActor, TEntry, TState>(Stage stage,
-            IDispatcher<Dispatchable<TEntry, TState>> dispatcher, object[] additional)
-            where TActor : Actor where TState : class, IState where TEntry : IEntry<T>
+        public IJournal<T> Using<TActor>(Stage stage,
+            IDispatcher dispatcher, object[] additional)
+            where TActor : Actor
         {
             if (!actor.IsStopped)
             {
                 Action<IJournal<T>> cons617400048 =
-                    __ => __.Using<TActor, TEntry, TState>(stage, dispatcher, additional);
+                    __ => __.Using<TActor>(stage, dispatcher, additional);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons617400048, null, UsingRepresentation1);
                 else
@@ -263,14 +263,14 @@ namespace Vlingo.Symbio.Store.Journal
             return null!;
         }
 
-        public IJournal<T> Using<TActor, TEntry, TState>(Stage stage,
-            IEnumerable<IDispatcher<Dispatchable<TEntry, TState>>> dispatchers, object[] additional)
-            where TActor : Actor where TState : class, IState where TEntry : IEntry<T>
+        public IJournal<T> Using<TActor>(Stage stage,
+            IEnumerable<IDispatcher> dispatchers, object[] additional)
+            where TActor : Actor
         {
             if (!actor.IsStopped)
             {
                 Action<IJournal<T>> cons1486857027 =
-                    __ => __.Using<TActor, TEntry, TState>(stage, dispatchers, additional);
+                    __ => __.Using<TActor>(stage, dispatchers, additional);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons1486857027, null, UsingRepresentation2);
                 else

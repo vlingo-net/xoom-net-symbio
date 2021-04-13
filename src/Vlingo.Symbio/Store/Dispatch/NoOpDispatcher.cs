@@ -7,13 +7,13 @@
 
 namespace Vlingo.Symbio.Store.Dispatch
 {
-    public class NoOpDispatcher : IDispatcher<Dispatchable<IEntry<string>, TextState>>, IConfirmDispatchedResultInterest
+    public class NoOpDispatcher : IDispatcher, IConfirmDispatchedResultInterest
     {
         private IDispatcherControl? _control;
 
         public void ControlWith(IDispatcherControl control) => _control = control;
 
-        public void Dispatch(Dispatchable<IEntry<string>, TextState> dispatchable) => _control?.ConfirmDispatched(dispatchable.Id, this);
+        public void Dispatch(Dispatchable dispatchable) => _control?.ConfirmDispatched(dispatchable.Id, this);
 
         public void ConfirmDispatchedResultedIn(Result result, string dispatchId)
         {

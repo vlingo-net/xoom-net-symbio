@@ -115,7 +115,7 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
             _objectStore = world.ActorFor<IObjectStore>(typeof(Vlingo.Symbio.Store.Object.InMemory.InMemoryObjectStoreActor<Test1Source>), _dispatcher);
         }
         
-        private void ValidateDispatchedState(Person persistedObject, Dispatchable<IEntry, IState> dispatched)
+        private void ValidateDispatchedState(Person persistedObject, Dispatchable dispatched)
         {
             Assert.NotNull(dispatched);
             Assert.NotNull(dispatched.Id);

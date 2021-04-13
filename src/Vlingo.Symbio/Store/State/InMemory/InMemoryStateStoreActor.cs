@@ -13,13 +13,14 @@ using Vlingo.Common;
 using Vlingo.Symbio.Store.Dispatch;
 using Vlingo.Symbio.Store.Dispatch.Control;
 using Vlingo.Symbio.Store.Dispatch.InMemory;
+using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;
 
 namespace Vlingo.Symbio.Store.State.InMemory
 {
     public class InMemoryStateStoreActor<TRawState, TEntry> : Actor, IStateStore where TEntry : IEntry where TRawState : class, IState
     {
-        private readonly List<Dispatchable<TEntry, TRawState>> _dispatchables;
-        private readonly List<IDispatcher<Dispatchable<TEntry, TRawState>>> _dispatchers;
+        private readonly List<Dispatchable> _dispatchables;
+        private readonly List<IDispatcher> _dispatchers;
         private readonly IDispatcherControl _dispatcherControl;
         // this is based on mock database design, it represents a database entries and it's shared (like database)
         // between this and InMemoryStateStoreEntryReaderActor
@@ -30,21 +31,21 @@ namespace Vlingo.Symbio.Store.State.InMemory
         private readonly ReadAllResultCollector _readAllResultCollector;
         private readonly Dictionary<string, Dictionary<string, TRawState>> _store;
 
-        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher) : this(new []{dispatcher}, 1000L, 1000L)
+        public InMemoryStateStoreActor(IDispatcher dispatcher) : this(new []{dispatcher}, 1000L, 1000L)
         {
         }
 
-        public InMemoryStateStoreActor(IDispatcher<Dispatchable<TEntry, TRawState>> dispatcher, long checkConfirmationExpirationInterval, long confirmationExpiration)
+        public InMemoryStateStoreActor(IDispatcher dispatcher, long checkConfirmationExpirationInterval, long confirmationExpiration)
         : this (new []{dispatcher}, checkConfirmationExpirationInterval, confirmationExpiration)
         {
         }
 
-        public InMemoryStateStoreActor(IEnumerable<IDispatcher<Dispatchable<TEntry, TRawState>>> dispatchers)
+        public InMemoryStateStoreActor(IEnumerable<IDispatcher> dispatchers)
         : this (dispatchers, 1000L, 1000L)
         {
         }
 
-        public InMemoryStateStoreActor(IEnumerable<IDispatcher<Dispatchable<TEntry, TRawState>>> dispatchers, long checkConfirmationExpirationInterval, long confirmationExpiration)
+        public InMemoryStateStoreActor(IEnumerable<IDispatcher> dispatchers, long checkConfirmationExpirationInterval, long confirmationExpiration)
         {
             if (dispatchers == null)
             {
@@ -57,13 +58,13 @@ namespace Vlingo.Symbio.Store.State.InMemory
             _entries = new List<TEntry>();
             _entryReaders = new Dictionary<string, IStateStoreEntryReader<TEntry>>();
             _store = new Dictionary<string, Dictionary<string, TRawState>>();
-            _dispatchables = new List<Dispatchable<TEntry, TRawState>>();
+            _dispatchables = new List<Dispatchable>();
             _readAllResultCollector = new ReadAllResultCollector();
 
-            var dispatcherControlDelegate = new InMemoryDispatcherControlDelegate<TEntry, TRawState>(_dispatchables);
+            var dispatcherControlDelegate = new InMemoryDispatcherControlDelegate(_dispatchables);
 
             _dispatcherControl = Stage.ActorFor<IDispatcherControl>(
-                () => new DispatcherControlActor<TEntry, TRawState>(
+                () => new DispatcherControlActor(
                     _dispatchers,
                     dispatcherControlDelegate,
                     checkConfirmationExpirationInterval,
@@ -267,7 +268,7 @@ namespace Vlingo.Symbio.Store.State.InMemory
         private void Dispatch(string id, string storeName, TRawState raw, IEnumerable<TEntry> entries)
         {
             var dispatchId = $"{storeName}:{id}";
-            var dispatchable = new Dispatchable<TEntry, TRawState>(dispatchId, DateTimeOffset.Now, raw, entries);
+            var dispatchable = new Dispatchable(dispatchId, DateTimeOffset.Now, raw, entries.Cast<IEntry>());
             _dispatchables.Add(dispatchable);
             _dispatchers.ForEach(d => d.Dispatch(dispatchable));
         }

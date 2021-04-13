@@ -8,7 +8,7 @@
 using System.Collections.Generic;
 using Vlingo.Actors;
 using Vlingo.Common;
-using Vlingo.Symbio.Store.Dispatch;
+using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
@@ -16,18 +16,18 @@ namespace Vlingo.Symbio.Store.Journal.InMemory
     {
         private readonly InMemoryJournal<T> _journal;
 
-        public InMemoryJournalActor(IDispatcher<Dispatchable<IEntry, IState>> dispatcher)
+        public InMemoryJournalActor(IDispatcher dispatcher)
             => _journal = new InMemoryJournal<T>(dispatcher, Stage.World);
         
-        public InMemoryJournalActor(IEnumerable<IDispatcher<Dispatchable<IEntry, IState>>> dispatchers)
+        public InMemoryJournalActor(IEnumerable<IDispatcher> dispatchers)
             => _journal = new InMemoryJournal<T>(dispatchers, Stage.World);
         
-        public IJournal<T> Using<TActor, TNewEntry, TNewState>(Stage stage, IDispatcher<Dispatchable<TNewEntry, TNewState>> dispatcher, params object[] additional) where TActor : Actor where TNewEntry : IEntry<T> where TNewState : class, IState
+        public IJournal<T> Using<TActor>(Stage stage, IDispatcher dispatcher, params object[] additional) where TActor : Actor
             => additional.Length == 0 ?
                     stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher) :
                     stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher, additional);
 
-        public IJournal<T> Using<TActor, TNewEntry, TNewState>(Stage stage, IEnumerable<IDispatcher<Dispatchable<TNewEntry, TNewState>>> dispatchers, params object[] additional) where TActor : Actor where TNewEntry : IEntry<T> where TNewState : class, IState
+        public IJournal<T> Using<TActor>(Stage stage, IEnumerable<IDispatcher> dispatchers, params object[] additional) where TActor : Actor
             => additional.Length == 0 ?
                 stage.ActorFor<IJournal<T>>(typeof(TActor), dispatchers) :
                 stage.ActorFor<IJournal<T>>(typeof(TActor), dispatchers, additional);

@@ -12,6 +12,7 @@ using Vlingo.Actors;
 using Vlingo.Common;
 using Vlingo.Symbio.Store.Dispatch;
 using Vlingo.Symbio.Store.Dispatch.Control;
+using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;
 
 namespace Vlingo.Symbio.Store.Object.InMemory
 {
@@ -23,30 +24,30 @@ namespace Vlingo.Symbio.Store.Object.InMemory
     {
         private readonly EntryAdapterProvider _entryAdapterProvider;
 
-        private readonly IDispatcher<Dispatchable<IEntry, IState>> _dispatcher;
+        private readonly IDispatcher _dispatcher;
         private readonly IDispatcherControl _dispatcherControl;
         private readonly IReadOnlyDictionary<string, IObjectStoreEntryReader<IEntry<T>>> _entryReaders;
-        private readonly IObjectStoreDelegate<IEntry, IState> _storeDelegate;
+        private readonly IObjectStoreDelegate _storeDelegate;
 
         /// <summary>
         /// Construct my default state.
         /// </summary>
         /// <param name="dispatcher">The dispatcher to be used</param>
-        public InMemoryObjectStoreActor(IDispatcher<Dispatchable<IEntry, IState>> dispatcher) : this(dispatcher, 1000L, 1000L)
+        public InMemoryObjectStoreActor(IDispatcher dispatcher) : this(dispatcher, 1000L, 1000L)
         {
         }
 
-        public InMemoryObjectStoreActor(IDispatcher<Dispatchable<IEntry, IState>> dispatcher, long checkConfirmationExpirationInterval, long confirmationExpiration)
+        public InMemoryObjectStoreActor(IDispatcher dispatcher, long checkConfirmationExpirationInterval, long confirmationExpiration)
         {
             _entryAdapterProvider = EntryAdapterProvider.Instance(Stage.World);
             _dispatcher = dispatcher;
 
             _entryReaders = new Dictionary<string, IObjectStoreEntryReader<IEntry<T>>>();
 
-            _storeDelegate = new InMemoryObjectStoreDelegate<IEntry, IState>(StateAdapterProvider.Instance(Stage.World));
+            _storeDelegate = new InMemoryObjectStoreDelegate(StateAdapterProvider.Instance(Stage.World));
 
             _dispatcherControl = Stage.ActorFor<IDispatcherControl>(
-                () => new DispatcherControlActor<IEntry, IState>(dispatcher, _storeDelegate,
+                () => new DispatcherControlActor(dispatcher, _storeDelegate,
                     checkConfirmationExpirationInterval, confirmationExpiration));
         }
 
@@ -198,17 +199,17 @@ namespace Vlingo.Symbio.Store.Object.InMemory
 
         public long NoId { get; } = -1L;
         
-        private void Dispatch(Dispatchable<IEntry, IState> dispatchable) => _dispatcher.Dispatch(dispatchable);
+        private void Dispatch(Dispatchable dispatchable) => _dispatcher.Dispatch(dispatchable);
 
-        private static Dispatchable<IEntry, IState> BuildDispatchable(IState state, IList<IEntry<T>> entries)
+        private static Dispatchable BuildDispatchable(IState state, IList<IEntry<T>> entries)
         {
             var id = GetDispatchId(state, entries);
-            return new Dispatchable<IEntry, IState>(id, DateTimeOffset.Now, state, entries);
+            return new Dispatchable(id, DateTimeOffset.Now, state, entries);
         }
 
         private static string GetDispatchId(IState raw, IEnumerable<IEntry> entries) =>
             $"{raw.Id}:{string.Join(":", entries.Select(entry => entry.Id))}";
         
-        private List<IEntry> ReadOnlyJournal() => ((InMemoryObjectStoreDelegate<IEntry, IState>) _storeDelegate).ReadOnlyJournal();
+        private List<IEntry> ReadOnlyJournal() => ((InMemoryObjectStoreDelegate) _storeDelegate).ReadOnlyJournal();
     }
 }

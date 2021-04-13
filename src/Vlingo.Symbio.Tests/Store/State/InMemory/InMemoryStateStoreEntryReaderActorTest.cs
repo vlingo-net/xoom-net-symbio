@@ -22,7 +22,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
         private const string Id2 = "123-B";
         private const string Id3 = "123-C";
 
-        private readonly MockStateStoreDispatcher<IEntry<string>, TextState> _dispatcher;
+        private readonly MockStateStoreDispatcher<TextState> _dispatcher;
         private readonly EntryAdapterProvider _entryAdapterProvider;
         private readonly MockStateStoreResultInterest _interest;
         private readonly IStateStoreEntryReader<IEntry<string>> _reader;
@@ -62,7 +62,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             var world = testWorld.World;
 
             _interest = new MockStateStoreResultInterest();
-            _dispatcher = new MockStateStoreDispatcher<IEntry<string>, TextState>(_interest);
+            _dispatcher = new MockStateStoreDispatcher<TextState>(_interest);
 
             var stateAdapterProvider = new StateAdapterProvider(world);
             _entryAdapterProvider = new EntryAdapterProvider(world);
@@ -70,7 +70,7 @@ namespace Vlingo.Symbio.Tests.Store.State.InMemory
             stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
             // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState, IEntry<string>>), new List<IDispatcher<Dispatchable<IEntry<string>, TextState>>> {_dispatcher});
+            _store = world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState, IEntry<string>>), new List<IDispatcher> {_dispatcher});
             
             var completes = _store.EntryReader<IEntry<string>>("test");
             _reader = completes.Await();

@@ -14,22 +14,22 @@ using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Store.Object.InMemory
 {
-    public class InMemoryObjectStoreDelegate<TEntry, TState> : IObjectStoreDelegate<TEntry, TState> where TEntry : IEntry where TState : class, IState
+    public class InMemoryObjectStoreDelegate : IObjectStoreDelegate
     {
         private long _nextId;
 
-        private readonly Dictionary<Type , Dictionary<long, TState>> _stores;
-        private readonly List<TEntry> _entries;
-        private readonly List<Dispatchable<TEntry, TState>> _dispatchables;
+        private readonly Dictionary<Type , Dictionary<long, IState>> _stores;
+        private readonly List<IEntry> _entries;
+        private readonly List<Dispatchable> _dispatchables;
         private readonly StateAdapterProvider _stateAdapterProvider;
         private readonly IIdentityGenerator _identityGenerator;
 
         public InMemoryObjectStoreDelegate(StateAdapterProvider stateAdapterProvider)
         {
             _stateAdapterProvider = stateAdapterProvider;
-            _stores = new Dictionary<Type, Dictionary<long, TState>>();
-            _entries = new List<TEntry>();
-            _dispatchables = new List<Dispatchable<TEntry, TState>>();
+            _stores = new Dictionary<Type, Dictionary<long, IState>>();
+            _entries = new List<IEntry>();
+            _dispatchables = new List<Dispatchable>();
             _identityGenerator = IdentityGeneratorType.Random.Generator();
 
             _nextId = 1;
@@ -59,7 +59,7 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         }
 
         /// <inheritdoc />
-        public IObjectStoreDelegate<TEntry, TState> Copy() => new InMemoryObjectStoreDelegate<TEntry, TState>(_stateAdapterProvider);
+        public IObjectStoreDelegate Copy() => new InMemoryObjectStoreDelegate(_stateAdapterProvider);
 
         /// <inheritdoc />
         public void BeginTransaction()
@@ -80,10 +80,10 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         }
 
         /// <inheritdoc />
-        public IEnumerable<TState> PersistAll(IEnumerable<StateObject> stateObjects, long updateId, Metadata metadata)
+        public IEnumerable<IState> PersistAll(IEnumerable<StateObject> stateObjects, long updateId, Metadata metadata)
         {
             var states = stateObjects as StateObject[] ?? stateObjects.ToArray();
-            var persistedStates = new List<TState>(states.Length);
+            var persistedStates = new List<IState>(states.Length);
             foreach (var stateObject in states)
             {
                 var raw = Persist(stateObject, metadata);
@@ -94,11 +94,11 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         }
 
         /// <inheritdoc />
-        public TState Persist(StateObject stateObject, long updateId, Metadata metadata) =>
+        public IState Persist(StateObject stateObject, long updateId, Metadata metadata) =>
             Persist(stateObject, metadata);
 
         /// <inheritdoc />
-        public void PersistEntries(IEnumerable<TEntry> entries)
+        public void PersistEntries(IEnumerable<IEntry> entries)
         {
             foreach (var entry in entries)
             {
@@ -111,7 +111,7 @@ namespace Vlingo.Symbio.Store.Object.InMemory
         }
 
         /// <inheritdoc />
-        public void PersistDispatchable(Dispatchable<TEntry, TState> dispatchable) => _dispatchables.Add(dispatchable);
+        public void PersistDispatchable(Dispatchable dispatchable) => _dispatchables.Add(dispatchable);
 
         /// <inheritdoc />
         public QueryMultiResults QueryAll(QueryExpression expression)
@@ -119,10 +119,10 @@ namespace Vlingo.Symbio.Store.Object.InMemory
             // NOTE: No query constraints accepted; selects all stored objects
 
             var all = new List<StateObject>();
-            var store = _stores.ComputeIfAbsent(expression.Type, type => new Dictionary<long, TState>());
+            var store = _stores.ComputeIfAbsent(expression.Type, type => new Dictionary<long, IState>());
             foreach (var entry in store.Values)
             {
-                var stateObject = _stateAdapterProvider.FromRaw<StateObject, TState>(entry);
+                var stateObject = _stateAdapterProvider.FromRaw<StateObject, IState>(entry);
                 all.Add(stateObject);
             }
 
@@ -149,31 +149,28 @@ namespace Vlingo.Symbio.Store.Object.InMemory
                 throw new StorageException(Result.Error, $"Unknown query type: {expression}");
             }
 
-            var store = _stores.ComputeIfAbsent(expression.Type, type => new Dictionary<long, TState>());
+            var store = _stores.ComputeIfAbsent(expression.Type, type => new Dictionary<long, IState>());
             var found = id == null || id.Equals("-1") ? null! : store[long.Parse(id)];
 
             var result = Optional
                 .OfNullable(found)
-                .Map(state => _stateAdapterProvider.FromRaw<StateObject, TState>(state))
+                .Map(state => _stateAdapterProvider.FromRaw<StateObject, IState>(state))
                 .OrElse(null!);
             return new QuerySingleResult(result);
         }
 
         /// <inheritdoc />
-        public IEnumerable<Dispatchable<TEntry, TState>> AllUnconfirmedDispatchableStates => _dispatchables;
+        public IEnumerable<Dispatchable> AllUnconfirmedDispatchableStates => _dispatchables;
         
         /// <inheritdoc />
         public IEnumerable<StateObjectMapper> RegisteredMappers { get; } = Enumerable.Empty<StateObjectMapper>();
         
-        internal List<TEntry> ReadOnlyJournal()
+        internal List<IEntry> ReadOnlyJournal() => _entries;
+
+        private IState Persist(StateObject stateObject, Metadata metadata)
         {
-            return _entries;
-        }
-        
-        private TState Persist(StateObject stateObject, Metadata metadata)
-        {
-            var raw = _stateAdapterProvider.AsRaw<StateObject, TState>(stateObject.PersistenceId.ToString(), stateObject, 1, metadata);
-            var store = _stores.ComputeIfAbsent(stateObject.GetType(), type => new Dictionary<long, TState>());
+            var raw = _stateAdapterProvider.AsRaw<StateObject, IState>(stateObject.PersistenceId.ToString(), stateObject, 1, metadata);
+            var store = _stores.ComputeIfAbsent(stateObject.GetType(), type => new Dictionary<long, IState>());
             var persistenceId = stateObject.PersistenceId == -1L ? _nextId++ : stateObject.PersistenceId;
             if (store.ContainsKey(persistenceId))
             {
