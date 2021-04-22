@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Vlingo.Common.Version;
+using Vlingo.Xoom.Common.Version;
 
 namespace Vlingo.Symbio
 {

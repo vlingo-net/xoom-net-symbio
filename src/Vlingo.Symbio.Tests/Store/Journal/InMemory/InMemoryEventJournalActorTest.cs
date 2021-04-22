@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vlingo.Actors;
 using Vlingo.Actors.TestKit;
-using Vlingo.Common.Serialization;
+using Vlingo.Xoom.Common.Serialization;
 using Vlingo.Symbio.Store;
 using Vlingo.Symbio.Store.Journal;
 using Vlingo.Symbio.Store.Journal.InMemory;

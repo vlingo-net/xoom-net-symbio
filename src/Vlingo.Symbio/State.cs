@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using Vlingo.Common.Serialization;
+using Vlingo.Xoom.Common.Serialization;
 using Vlingo.Symbio.Store;
 
 namespace Vlingo.Symbio
