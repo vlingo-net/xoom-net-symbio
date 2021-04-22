@@ -8,8 +8,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Vlingo.Common;
-using Vlingo.Common.Identity;
+using Vlingo.Xoom.Common;
+using Vlingo.Xoom.Common.Identity;
 using Vlingo.Symbio.Store.Dispatch;
 
 namespace Vlingo.Symbio.Store.Object.InMemory

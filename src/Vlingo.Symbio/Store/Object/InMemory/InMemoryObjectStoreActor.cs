@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vlingo.Actors;
-using Vlingo.Common;
+using Vlingo.Xoom.Common;
 using Vlingo.Symbio.Store.Dispatch;
 using Vlingo.Symbio.Store.Dispatch.Control;
 using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;

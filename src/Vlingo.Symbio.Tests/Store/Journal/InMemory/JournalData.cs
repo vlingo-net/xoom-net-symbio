@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using Vlingo.Common;
+using Vlingo.Xoom.Common;
 using Vlingo.Symbio.Store;
 
 namespace Vlingo.Symbio.Tests.Store.Journal.InMemory

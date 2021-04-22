@@ -6,10 +6,9 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Vlingo.Actors.TestKit;
-using Vlingo.Common;
+using Vlingo.Xoom.Common;
 using Vlingo.Symbio.Store;
 using Vlingo.Symbio.Store.Object;
 
@@ -18,7 +17,7 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
     public class MockQueryResultInterest : IQueryResultInterest
     {
         private AccessSafely _access = AccessSafely.AfterCompleting(1);
-        private List<object> _stateObjects = new List<object>();
+        private readonly List<object> _stateObjects = new List<object>();
 
         public void QueryAllResultedIn(IOutcome<StorageException, Result> outcome, QueryMultiResults results, object @object)
             => _access.WriteUsing("addAll", results.StateObjects);

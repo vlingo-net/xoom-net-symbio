@@ -7,13 +7,13 @@
 
 using System.Collections.Generic;
 using Vlingo.Actors;
-using Vlingo.Common;
+using Vlingo.Xoom.Common;
 
 namespace Vlingo.Symbio.Store.Journal.InMemory
 {
     public class InMemoryJournalReaderActor<TEntry> : Actor, IJournalReader<TEntry>
     {
-        private IJournalReader<TEntry> _reader;
+        private readonly IJournalReader<TEntry> _reader;
 
         public InMemoryJournalReaderActor(IJournalReader<TEntry> reader) => _reader = reader;
 

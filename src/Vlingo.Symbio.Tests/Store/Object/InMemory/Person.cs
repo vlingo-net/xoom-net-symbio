@@ -6,16 +6,16 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System;
-using Vlingo.Common;
+using Vlingo.Xoom.Common;
 using Vlingo.Symbio.Store.Object;
 
 namespace Vlingo.Symbio.Tests.Store.Object.InMemory
 {
     public class Person : StateObject, IComparable<Person>
     {
-        private static AtomicLong _identityGenerator = new AtomicLong(0);
+        private static readonly AtomicLong IdentityGenerator = new AtomicLong(0);
 
-        public Person(string name, int age, long persistenceId = -1L) : base(persistenceId > -1L ? persistenceId : _identityGenerator.IncrementAndGet())
+        public Person(string name, int age, long persistenceId = -1L) : base(persistenceId > -1L ? persistenceId : IdentityGenerator.IncrementAndGet())
         {
             Name = name;
             Age = age;

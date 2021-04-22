@@ -7,7 +7,7 @@
 
 using System.Collections.Generic;
 using Vlingo.Actors;
-using Vlingo.Common;
+using Vlingo.Xoom.Common;
 
 namespace Vlingo.Symbio.Store.Object.InMemory
 {

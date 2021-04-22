@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using Vlingo.Actors.TestKit;
-using Vlingo.Common;
+using Vlingo.Xoom.Common;
 using Vlingo.Symbio.Store;
 using Vlingo.Symbio.Store.Object;
 
@@ -17,7 +17,7 @@ namespace Vlingo.Symbio.Tests.Store.Object.InMemory
     public class MockPersistResultInterest : IPersistResultInterest
     {
         private AccessSafely _access = AccessSafely.AfterCompleting(1);
-        private List<object> _stateObjects = new List<object>();
+        private readonly List<object> _stateObjects = new List<object>();
         
         public void PersistResultedIn(IOutcome<StorageException, Result> outcome, object stateObject, int possible, int actual, object @object)
         {
