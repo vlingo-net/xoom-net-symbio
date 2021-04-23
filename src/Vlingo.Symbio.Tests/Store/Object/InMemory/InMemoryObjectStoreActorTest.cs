@@ -7,11 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using Vlingo.Actors;
 using Vlingo.Symbio.Store;
 using Vlingo.Symbio.Store.Dispatch;
 using Vlingo.Symbio.Store.Object;
 using Vlingo.Symbio.Tests.Store.Dispatch;
+using Vlingo.Xoom.Actors;
 using Xunit;
 using Xunit.Abstractions;
 

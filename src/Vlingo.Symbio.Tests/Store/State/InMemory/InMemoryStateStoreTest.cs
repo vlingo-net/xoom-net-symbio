@@ -8,11 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Vlingo.Actors;
-using Vlingo.Actors.TestKit;
 using Vlingo.Symbio.Store;
 using Vlingo.Symbio.Store.State;
 using Vlingo.Symbio.Store.State.InMemory;
+using Vlingo.Xoom.Actors;
+using Vlingo.Xoom.Actors.TestKit;
 using Xunit;
 using Xunit.Abstractions;
 using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;

@@ -8,14 +8,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Vlingo.Actors;
-using Vlingo.Actors.TestKit;
 using Vlingo.Xoom.Common.Serialization;
 using Vlingo.Symbio.Store;
 using Vlingo.Symbio.Store.Journal;
 using Vlingo.Symbio.Store.Journal.InMemory;
 using Vlingo.Symbio.Tests.Store.Dispatch;
 using Vlingo.Symbio.Tests.Store.State;
+using Vlingo.Xoom.Actors;
+using Vlingo.Xoom.Actors.TestKit;
 using Xunit;
 using Xunit.Abstractions;
 

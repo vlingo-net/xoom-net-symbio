@@ -6,8 +6,8 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System;
-using Vlingo.Actors;
 using Vlingo.Symbio.Store.State;
+using Vlingo.Xoom.Actors;
 using Xunit;
 using Xunit.Abstractions;
 

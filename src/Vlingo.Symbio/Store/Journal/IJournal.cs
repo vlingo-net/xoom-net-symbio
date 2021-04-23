@@ -6,7 +6,7 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System.Collections.Generic;
-using Vlingo.Actors;
+using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
 using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;
 

@@ -7,10 +7,10 @@
 
 using System;
 using System.Collections.Generic;
-using Vlingo.Actors.TestKit;
 using Vlingo.Xoom.Common;
 using Vlingo.Symbio.Store;
 using Vlingo.Symbio.Store.Object;
+using Vlingo.Xoom.Actors.TestKit;
 
 namespace Vlingo.Symbio.Tests.Store.Object.InMemory
 {

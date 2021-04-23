@@ -8,9 +8,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Vlingo.Actors;
 using Vlingo.Symbio.Store.State;
 using Vlingo.Symbio.Store.State.InMemory;
+using Vlingo.Xoom.Actors;
 using Xunit;
 using Xunit.Abstractions;
 using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;

@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using Vlingo.Actors;
+using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
-using Environment = Vlingo.Actors.Environment;
+using Environment = Vlingo.Xoom.Actors.Environment;
 
 namespace Vlingo.Symbio.Store.State
 {

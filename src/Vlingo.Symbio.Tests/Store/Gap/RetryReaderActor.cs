@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using Vlingo.Actors;
 using Vlingo.Xoom.Common;
 using Vlingo.Symbio.Store.Gap;
+using Vlingo.Xoom.Actors;
 
 namespace Vlingo.Symbio.Tests.Store.Gap
 {

@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using Vlingo.Actors;
+using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
 using IDispatcher = Vlingo.Symbio.Store.Dispatch.IDispatcher;
 
@@ -16,10 +16,10 @@ namespace Vlingo.Symbio.Store.Journal
     public class Journal__Proxy<T> : IJournal<T>
     {
         private const string UsingRepresentation1 =
-            "Using<TActor, TEntry, TState>(Vlingo.Actors.Stage, IDispatcher<IDispatchable<TEntry, TState>>, System.Object[])";
+            "Using<TActor, TEntry, TState>(Vlingo.Xoom.Actors.Stage, IDispatcher<IDispatchable<TEntry, TState>>, System.Object[])";
 
         private const string UsingRepresentation2 =
-            "Using<TActor, TEntry, TState>(Vlingo.Actors.Stage, IEnumerable<IDispatcher<IDispatchable<TEntry, TState>>>, System.Object[])";
+            "Using<TActor, TEntry, TState>(Vlingo.Xoom.Actors.Stage, IEnumerable<IDispatcher<IDispatchable<TEntry, TState>>>, System.Object[])";
 
         private const string AppendRepresentation3 =
             "Append<TSource>(string, int, TSource, Vlingo.Symbio.Store.Journal.IAppendResultInterest, object)";
