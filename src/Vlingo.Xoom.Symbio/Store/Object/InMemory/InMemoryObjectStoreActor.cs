@@ -26,7 +26,7 @@ namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
 
         private readonly IDispatcher _dispatcher;
         private readonly IDispatcherControl _dispatcherControl;
-        private readonly IReadOnlyDictionary<string, IObjectStoreEntryReader<IEntry<T>>> _entryReaders;
+        private readonly IReadOnlyDictionary<string, IObjectStoreEntryReader> _entryReaders;
         private readonly IObjectStoreDelegate _storeDelegate;
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
             _entryAdapterProvider = EntryAdapterProvider.Instance(Stage.World);
             _dispatcher = dispatcher;
 
-            _entryReaders = new Dictionary<string, IObjectStoreEntryReader<IEntry<T>>>();
+            _entryReaders = new Dictionary<string, IObjectStoreEntryReader>();
 
             _storeDelegate = new InMemoryObjectStoreDelegate(StateAdapterProvider.Instance(Stage.World));
 
@@ -57,15 +57,15 @@ namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
 
         public bool IsId(long id) => id > NoId;
 
-        public ICompletes<IEntryReader<TNewEntry>> EntryReader<TNewEntry>(string name) where TNewEntry : IEntry
+        public ICompletes<IEntryReader> EntryReader<TNewEntry>(string name) where TNewEntry : IEntry
         {
             if (!_entryReaders.TryGetValue(name, out var reader))
             {
                 var definition = Definition.Has<InMemoryObjectStoreEntryReaderActor>(Definition.Parameters(ReadOnlyJournal(), name));
-                reader = (IObjectStoreEntryReader<IEntry<T>>)ChildActorFor<IObjectStoreEntryReader<TNewEntry>>(definition);
+                reader = (IObjectStoreEntryReader)ChildActorFor<IObjectStoreEntryReader>(definition);
             }
             
-            return Completes().With((IEntryReader<TNewEntry>)reader);
+            return Completes().With((IEntryReader)reader);
         }
 
         public void QueryAll(QueryExpression expression, IQueryResultInterest interest) =>

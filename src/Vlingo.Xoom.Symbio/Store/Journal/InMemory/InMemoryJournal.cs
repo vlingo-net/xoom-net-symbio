@@ -22,7 +22,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
         private readonly EntryAdapterProvider _entryAdapterProvider;
         private readonly StateAdapterProvider _stateAdapterProvider;
         private readonly List<IEntry> _journal;
-        private readonly Dictionary<string, IJournalReader<IEntry>> _journalReaders;
+        private readonly Dictionary<string, IJournalReader> _journalReaders;
         private readonly Dictionary<string, IStreamReader> _streamReaders;
         private readonly Dictionary<string, Dictionary<int, int>> _streamIndexes;
         private readonly Dictionary<string, IState> _snapshots;
@@ -36,7 +36,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
             _entryAdapterProvider = EntryAdapterProvider.Instance(world);
             _stateAdapterProvider = StateAdapterProvider.Instance(world);
             _journal = new List<IEntry>();
-            _journalReaders = new Dictionary<string, IJournalReader<IEntry>>(1);
+            _journalReaders = new Dictionary<string, IJournalReader>(1);
             _streamReaders = new Dictionary<string, IStreamReader>(1);
             _streamIndexes = new Dictionary<string, Dictionary<int, int>>();
             _snapshots = new Dictionary<string, IState>();
@@ -124,9 +124,9 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
             interest.AppendAllResultedIn(Success.Of<StorageException, Result>(Result.Success), streamName, fromStreamVersion, sourcesForEntries, snapshotResult, @object);
         }
 
-        public override ICompletes<IJournalReader<IEntry>?> JournalReader(string name)
+        public override ICompletes<IJournalReader?> JournalReader(string name)
         {
-            IJournalReader<IEntry>? reader = null;
+            IJournalReader? reader = null;
             if (!_journalReaders.ContainsKey(name))
             {
                 reader = new InMemoryJournalReader(_journal, name);

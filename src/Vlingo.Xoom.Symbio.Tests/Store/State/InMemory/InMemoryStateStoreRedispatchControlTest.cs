@@ -75,7 +75,7 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
 
             StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity1).FullName, typeof(Entity1));
             
-            _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState, IEntry<string>>), new List<IDispatcher> {_dispatcher});
+            _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState>), new List<IDispatcher> {_dispatcher});
         }
 
         public void Dispose()

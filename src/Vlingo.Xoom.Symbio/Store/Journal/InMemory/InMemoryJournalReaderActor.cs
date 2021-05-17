@@ -11,21 +11,21 @@ using Vlingo.Xoom.Common;
 
 namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
 {
-    public class InMemoryJournalReaderActor<TEntry> : Actor, IJournalReader<TEntry>
+    public class InMemoryJournalReaderActor : Actor, IJournalReader
     {
-        private readonly IJournalReader<TEntry> _reader;
+        private readonly IJournalReader _reader;
 
-        public InMemoryJournalReaderActor(IJournalReader<TEntry> reader) => _reader = reader;
+        public InMemoryJournalReaderActor(IJournalReader reader) => _reader = reader;
 
         public void Close() => _reader.Close();
 
-        public ICompletes<TEntry> ReadNext() => Completes().With(_reader.ReadNext().Outcome);
+        public ICompletes<IEntry> ReadNext() => Completes().With(_reader.ReadNext().Outcome);
 
-        public ICompletes<TEntry> ReadNext(string fromId) => Completes().With(_reader.ReadNext(fromId).Outcome);
+        public ICompletes<IEntry> ReadNext(string fromId) => Completes().With(_reader.ReadNext(fromId).Outcome);
 
-        public ICompletes<IEnumerable<TEntry>> ReadNext(int maximumEntries) => Completes().With(_reader.ReadNext(maximumEntries).Outcome);
+        public ICompletes<IEnumerable<IEntry>> ReadNext(int maximumEntries) => Completes().With(_reader.ReadNext(maximumEntries).Outcome);
 
-        public ICompletes<IEnumerable<TEntry>> ReadNext(string fromId, int maximumEntries) => Completes().With(_reader.ReadNext(fromId, maximumEntries).Outcome);
+        public ICompletes<IEnumerable<IEntry>> ReadNext(string fromId, int maximumEntries) => Completes().With(_reader.ReadNext(fromId, maximumEntries).Outcome);
 
         public void Rewind() => _reader.Rewind();
 

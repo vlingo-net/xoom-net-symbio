@@ -57,7 +57,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
                 ActualTotal(totalWriters, MinimumWriters, MaximumWriters), parameter);
         }
 
-        public ICompletes<IStateStoreEntryReader<TEntry>> EntryReader<TEntry>(string name) where TEntry : IEntry => ReaderOf(name).EntryReader<TEntry>(name);
+        public ICompletes<IStateStoreEntryReader> EntryReader<TEntry>(string name) where TEntry : IEntry => ReaderOf(name).EntryReader<TEntry>(name);
 
         public void Read<TState>(string id, IReadResultInterest interest) => Read<TState>(id, interest, null);
 

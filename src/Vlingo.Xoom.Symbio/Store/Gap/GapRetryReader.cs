@@ -14,7 +14,7 @@ using Vlingo.Xoom.Common;
 namespace Vlingo.Xoom.Symbio.Store.Gap
 {
     /// <summary>
-    /// Detection and fill up (gap prevention) functionality related to <see cref="IEntryReader{T}"/>
+    /// Detection and fill up (gap prevention) functionality related to <see cref="IEntryReader"/>
     /// </summary>
     public class GapRetryReader<T>
     {

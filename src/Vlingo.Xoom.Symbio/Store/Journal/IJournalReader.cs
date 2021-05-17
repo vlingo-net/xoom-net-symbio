@@ -13,8 +13,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal
     /// first written <see cref="IEntry{T}"/> to the current last written <see cref="IEntry{T}"/>, and is prepared to read
     /// all newly appended <see cref="IEntry{T}"/> instances beyond that point when they become available.
     /// </summary>
-    /// <typeparam name="TEntry">The concrete type of <see cref="IEntry{T}"/> stored and read, which maybe be string, byte[], or object</typeparam>
-    public interface IJournalReader<TEntry> : IEntryReader<TEntry>
+    public interface IJournalReader : IEntryReader
     {
     }
 }

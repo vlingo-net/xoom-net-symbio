@@ -56,10 +56,10 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
         public void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : ISource
             => _journal.AppendAllWith<TSource, TSnapshotState>(streamName, fromStreamVersion, sources, metadata, snapshot, interest, @object);
 
-        public ICompletes<IJournalReader<IEntry>?> JournalReader(string name)
+        public ICompletes<IJournalReader?> JournalReader(string name)
         {
             var inmemory = _journal.JournalReader(name).Outcome!;
-            var actor = ChildActorFor<IJournalReader<IEntry>?>(() => new InMemoryJournalReaderActor<IEntry>(inmemory));
+            var actor = ChildActorFor<IJournalReader?>(() => new InMemoryJournalReaderActor(inmemory));
             return Completes().With(actor);
         }
 

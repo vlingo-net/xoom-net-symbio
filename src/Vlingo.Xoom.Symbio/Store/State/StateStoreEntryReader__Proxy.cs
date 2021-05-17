@@ -12,8 +12,7 @@ using Vlingo.Xoom.Common;
 
 namespace Vlingo.Xoom.Symbio.Store.State
 {
-    public class StateStoreEntryReader__Proxy<TEntry> : IStateStoreEntryReader<TEntry>
-        where TEntry : IEntry
+    public class StateStoreEntryReader__Proxy : IStateStoreEntryReader
     {
         private const string CloseRepresentation1 = "Close()";
         private const string ReadNextRepresentation2 = "ReadNext()";
@@ -44,7 +43,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
         {
             if (!_actor.IsStopped)
             {
-                Action<IStateStoreEntryReader<TEntry>> cons128873 = __ => __.Close();
+                Action<IStateStoreEntryReader> cons128873 = __ => __.Close();
                 if (_mailbox.IsPreallocated)
                 {
                     _mailbox.Send(_actor, cons128873, null, CloseRepresentation1);
@@ -52,7 +51,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
                 else
                 {
                     _mailbox.Send(
-                        new LocalMessage<IStateStoreEntryReader<TEntry>>(_actor,
+                        new LocalMessage<IStateStoreEntryReader>(_actor,
                             cons128873, CloseRepresentation1));
                 }
             }
@@ -62,12 +61,12 @@ namespace Vlingo.Xoom.Symbio.Store.State
             }
         }
 
-        public ICompletes<TEntry> ReadNext()
+        public ICompletes<IEntry> ReadNext()
         {
             if (!_actor.IsStopped)
             {
-                Action<IStateStoreEntryReader<TEntry>> cons128873 = __ => __.ReadNext();
-                var completes = new BasicCompletes<TEntry>(_actor.Scheduler);
+                Action<IStateStoreEntryReader> cons128873 = __ => __.ReadNext();
+                var completes = new BasicCompletes<IEntry>(_actor.Scheduler);
                 if (_mailbox.IsPreallocated)
                 {
                     _mailbox.Send(_actor, cons128873, completes, ReadNextRepresentation2);
@@ -75,7 +74,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
                 else
                 {
                     _mailbox.Send(
-                        new LocalMessage<IStateStoreEntryReader<TEntry>>(_actor,
+                        new LocalMessage<IStateStoreEntryReader>(_actor,
                             cons128873, completes, ReadNextRepresentation2));
                 }
 
@@ -89,12 +88,12 @@ namespace Vlingo.Xoom.Symbio.Store.State
             return null!;
         }
 
-        public ICompletes<TEntry> ReadNext(string fromId)
+        public ICompletes<IEntry> ReadNext(string fromId)
         {
             if (!_actor.IsStopped)
             {
-                Action<IStateStoreEntryReader<TEntry>> cons128873 = __ => __.ReadNext(fromId);
-                var completes = new BasicCompletes<TEntry>(_actor.Scheduler);
+                Action<IStateStoreEntryReader> cons128873 = __ => __.ReadNext(fromId);
+                var completes = new BasicCompletes<IEntry>(_actor.Scheduler);
                 if (_mailbox.IsPreallocated)
                 {
                     _mailbox.Send(_actor, cons128873, completes, ReadNextRepresentation3);
@@ -102,7 +101,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
                 else
                 {
                     _mailbox.Send(
-                        new LocalMessage<IStateStoreEntryReader<TEntry>>(_actor,
+                        new LocalMessage<IStateStoreEntryReader>(_actor,
                             cons128873, completes, ReadNextRepresentation3));
                 }
 
@@ -116,13 +115,13 @@ namespace Vlingo.Xoom.Symbio.Store.State
             return null!;
         }
 
-        public ICompletes<IEnumerable<TEntry>> ReadNext(int maximumEntries)
+        public ICompletes<IEnumerable<IEntry>> ReadNext(int maximumEntries)
         {
             if (!_actor.IsStopped)
             {
-                Action<IStateStoreEntryReader<TEntry>> cons128873 = __ =>
+                Action<IStateStoreEntryReader> cons128873 = __ =>
                     __.ReadNext(maximumEntries);
-                var completes = new BasicCompletes<IEnumerable<TEntry>>(_actor.Scheduler);
+                var completes = new BasicCompletes<IEnumerable<IEntry>>(_actor.Scheduler);
                 if (_mailbox.IsPreallocated)
                 {
                     _mailbox.Send(_actor, cons128873, completes, ReadNextRepresentation4);
@@ -130,7 +129,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
                 else
                 {
                     _mailbox.Send(
-                        new LocalMessage<IStateStoreEntryReader<TEntry>>(_actor,
+                        new LocalMessage<IStateStoreEntryReader>(_actor,
                             cons128873, completes, ReadNextRepresentation4));
                 }
 
@@ -144,13 +143,13 @@ namespace Vlingo.Xoom.Symbio.Store.State
             return null!;
         }
 
-        public ICompletes<IEnumerable<TEntry>> ReadNext(string fromId, int maximumEntries)
+        public ICompletes<IEnumerable<IEntry>> ReadNext(string fromId, int maximumEntries)
         {
             if (!_actor.IsStopped)
             {
-                Action<IStateStoreEntryReader<TEntry>> cons128873 = __ =>
+                Action<IStateStoreEntryReader> cons128873 = __ =>
                     __.ReadNext(fromId, maximumEntries);
-                var completes = new BasicCompletes<IEnumerable<TEntry>>(_actor.Scheduler);
+                var completes = new BasicCompletes<IEnumerable<IEntry>>(_actor.Scheduler);
                 if (_mailbox.IsPreallocated)
                 {
                     _mailbox.Send(_actor, cons128873, completes, ReadNextRepresentation5);
@@ -158,7 +157,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
                 else
                 {
                     _mailbox.Send(
-                        new LocalMessage<IStateStoreEntryReader<TEntry>>(_actor,
+                        new LocalMessage<IStateStoreEntryReader>(_actor,
                             cons128873, completes, ReadNextRepresentation5));
                 }
 
@@ -176,7 +175,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
         {
             if (!_actor.IsStopped)
             {
-                Action<IStateStoreEntryReader<TEntry>> cons128873 = __ => __.Rewind();
+                Action<IStateStoreEntryReader> cons128873 = __ => __.Rewind();
                 if (_mailbox.IsPreallocated)
                 {
                     _mailbox.Send(_actor, cons128873, null, RewindRepresentation6);
@@ -184,7 +183,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
                 else
                 {
                     _mailbox.Send(
-                        new LocalMessage<IStateStoreEntryReader<TEntry>>(_actor,
+                        new LocalMessage<IStateStoreEntryReader>(_actor,
                             cons128873, RewindRepresentation6));
                 }
             }
@@ -198,7 +197,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
         {
             if (!_actor.IsStopped)
             {
-                Action<IStateStoreEntryReader<TEntry>> cons128873 = __ => __.SeekTo(id);
+                Action<IStateStoreEntryReader> cons128873 = __ => __.SeekTo(id);
                 var completes = new BasicCompletes<string>(_actor.Scheduler);
                 if (_mailbox.IsPreallocated)
                 {
@@ -207,7 +206,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
                 else
                 {
                     _mailbox.Send(
-                        new LocalMessage<IStateStoreEntryReader<TEntry>>(_actor,
+                        new LocalMessage<IStateStoreEntryReader>(_actor,
                             cons128873, completes, SeekToRepresentation7));
                 }
 

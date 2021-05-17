@@ -25,7 +25,7 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
         private readonly MockStateStoreDispatcher<TextState> _dispatcher;
         private readonly EntryAdapterProvider _entryAdapterProvider;
         private readonly MockStateStoreResultInterest _interest;
-        private readonly IStateStoreEntryReader<IEntry<string>> _reader;
+        private readonly IStateStoreEntryReader _reader;
         private readonly IStateStore _store;
 
         [Fact]
@@ -50,7 +50,7 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             Assert.True(_entryAdapterProvider.AsEntry<Event, IEntry<string>>(new Event3(), 1, Metadata.NullMetadata()).WithId("2").Equals(entry3));
 
             _reader.Rewind();
-            Assert.Equal(new List<IEntry<string>> { entry1, entry2, entry3}, _reader.ReadNext(3).Await());
+            Assert.Equal(new List<IEntry> { entry1, entry2, entry3}, _reader.ReadNext(3).Await());
         }
 
         public InMemoryStateStoreEntryReaderActorTest(ITestOutputHelper output)
@@ -70,7 +70,7 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
             // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState, IEntry<string>>), new List<IDispatcher> {_dispatcher});
+            _store = world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState>), new List<IDispatcher> {_dispatcher});
             
             var completes = _store.EntryReader<IEntry<string>>("test");
             _reader = completes.Await();

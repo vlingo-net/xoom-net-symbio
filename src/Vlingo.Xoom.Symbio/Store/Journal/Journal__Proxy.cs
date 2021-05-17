@@ -206,12 +206,12 @@ namespace Vlingo.Xoom.Symbio.Store.Journal
             }
         }
 
-        public ICompletes<IJournalReader<IEntry>?> JournalReader(string name)
+        public ICompletes<IJournalReader?> JournalReader(string name)
         {
             if (!actor.IsStopped)
             {
                 Action<IJournal<T>> cons1385350909 = __ => __.JournalReader(name);
-                var completes = new BasicCompletes<IJournalReader<IEntry>>(actor.Scheduler);
+                var completes = new BasicCompletes<IJournalReader>(actor.Scheduler);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons1385350909, completes, JournalReaderRepresentation11);
                 else

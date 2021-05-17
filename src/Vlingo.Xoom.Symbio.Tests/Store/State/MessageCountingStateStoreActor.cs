@@ -25,11 +25,11 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State
             _totalPartitions = totalPartitions;
         }
 
-        public ICompletes<IStateStoreEntryReader<TEntry>> EntryReader<TEntry>(string name) where TEntry : IEntry
+        public ICompletes<IStateStoreEntryReader> EntryReader<TEntry>(string name) where TEntry : IEntry
         {
             _results.PutIncrementEntryReader();
 
-            return Completes().With<IStateStoreEntryReader<TEntry>>(null);
+            return Completes().With<IStateStoreEntryReader>(null);
         }
 
         public Actor Actor { get; } = null;

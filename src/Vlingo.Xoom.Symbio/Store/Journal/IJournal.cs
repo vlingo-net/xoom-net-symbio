@@ -149,16 +149,16 @@ namespace Vlingo.Xoom.Symbio.Store.Journal
         void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : ISource;
 
         /// <summary>
-        /// Eventually answers the <see cref="IJournalReader{TEntry}"/> named <paramref name="name"/> for this journal. If
+        /// Eventually answers the <see cref="IJournalReader"/> named <paramref name="name"/> for this journal. If
         /// the reader named <paramref name="name"/> does not yet exist, it is first created. Readers
         /// with different names enables reading from different positions and for different
         /// reasons. For example, some readers may be interested in publishing <see cref="IEntry{T}"/>
         /// instances messaging while others may be projecting and building pipelines
         /// of new streams.
         /// </summary>
-        /// <param name="name">The string name of the <see cref="IJournalReader{TEntry}"/> to answer</param>
-        /// <returns><see cref="ICompletes{T}"/> of <see cref="IJournalReader{TEntry}"/></returns>
-        ICompletes<IJournalReader<IEntry>?> JournalReader(string name);
+        /// <param name="name">The string name of the <see cref="IJournalReader"/> to answer</param>
+        /// <returns><see cref="ICompletes{T}"/> of <see cref="IJournalReader"/></returns>
+        ICompletes<IJournalReader?> JournalReader(string name);
         
         /// <summary>
         /// Eventually answers the <see cref="IStreamReader"/> named <paramref name="name"/> for this journal. If
@@ -175,7 +175,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal
     /// The top-level journal used within a Bounded Context (microservice) to store all of
     /// its <see cref="IEntry{T}"/> instances for <code>EventSourced</code> and <code>CommandSourced</code> components. Each use of
     /// the journal appends some number of <see cref="IEntry{T}"/> instances and perhaps a single snapshot <see cref="State{T}"/>.
-    /// The journal may also be queried for a <see cref="IJournalReader{T}"/> and a <see cref="IStreamReader"/>.
+    /// The journal may also be queried for a <see cref="IJournalReader"/> and a <see cref="IStreamReader"/>.
     /// Assuming that all successfully appended <see cref="IEntry{T}"/> instances should be dispatched in some way
     /// after each write transaction, you should register an <code>StreamJournalListener{T}</code> when first
     /// creating your <see cref="IStreamReader"/>.
@@ -265,7 +265,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal
 
         public abstract void AppendAllWith<TSource, TSnapshotState>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object) where TSource : ISource;
 
-        public abstract ICompletes<IJournalReader<IEntry>?> JournalReader(string name);
+        public abstract ICompletes<IJournalReader?> JournalReader(string name);
 
         public abstract ICompletes<IStreamReader?> StreamReader(string name);
     }

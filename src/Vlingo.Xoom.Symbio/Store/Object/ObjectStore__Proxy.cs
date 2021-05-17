@@ -147,13 +147,13 @@ namespace Vlingo.Xoom.Symbio.Store.Object
             return false;
         }
 
-        public ICompletes<IEntryReader<TNewEntry>> EntryReader<TNewEntry>(string name)
+        public ICompletes<IEntryReader> EntryReader<TNewEntry>(string name)
             where TNewEntry : IEntry
         {
             if (!actor.IsStopped)
             {
                 Action<IObjectStore> cons371671809 = __ => __.EntryReader<TNewEntry>(name);
-                var completes = new BasicCompletes<IEntryReader<TNewEntry>>(actor.Scheduler);
+                var completes = new BasicCompletes<IEntryReader>(actor.Scheduler);
                 if (mailbox.IsPreallocated)
                     mailbox.Send(actor, cons371671809, completes, EntryReaderRepresentation4);
                 else

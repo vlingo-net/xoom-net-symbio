@@ -15,11 +15,11 @@ namespace Vlingo.Xoom.Symbio.Store.State
     public interface IStateStore : IStateStoreReader, IStateStoreWriter
     {
         /// <summary>
-        /// Answer the <see cref="IStateStoreEntryReader{TEntry}"/> identified by the <paramref name="name"/>.
+        /// Answer the <see cref="IStateStoreEntryReader"/> identified by the <paramref name="name"/>.
         /// </summary>
         /// <param name="name">The string name of the reader</param>
         /// <typeparam name="TEntry">The specific type of <see cref="IEntry{TEntry}"/> that will be read</typeparam>
         /// <returns><see cref="ICompletes{T}"/></returns>
-        ICompletes<IStateStoreEntryReader<TEntry>> EntryReader<TEntry>(string name) where TEntry : IEntry;
+        ICompletes<IStateStoreEntryReader> EntryReader<TEntry>(string name) where TEntry : IEntry;
     }
 }

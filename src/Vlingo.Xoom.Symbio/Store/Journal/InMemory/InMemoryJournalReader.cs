@@ -11,7 +11,7 @@ using Vlingo.Xoom.Common;
 
 namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
 {
-    public class InMemoryJournalReader : IJournalReader<IEntry>
+    public class InMemoryJournalReader : IJournalReader
     {
         private int _currentIndex;
         private readonly IList<IEntry> _journalView;

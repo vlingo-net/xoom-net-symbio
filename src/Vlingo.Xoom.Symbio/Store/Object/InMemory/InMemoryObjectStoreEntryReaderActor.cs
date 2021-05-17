@@ -11,13 +11,13 @@ using Vlingo.Xoom.Common;
 
 namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
 {
-    public class InMemoryObjectStoreEntryReaderActor : Actor, IObjectStoreEntryReader<IEntry<string>>
+    public class InMemoryObjectStoreEntryReaderActor : Actor, IObjectStoreEntryReader
     {
         private int _currentIndex;
-        private readonly List<IEntry<string>> _entriesView;
+        private readonly List<IEntry> _entriesView;
         private readonly string _name;
 
-        public InMemoryObjectStoreEntryReaderActor(List<IEntry<string>> entriesView, string name)
+        public InMemoryObjectStoreEntryReaderActor(List<IEntry> entriesView, string name)
         {
             _entriesView = entriesView;
             _name = name;
@@ -28,25 +28,25 @@ namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
         {
         }
         
-        public ICompletes<IEntry<string>> ReadNext()
+        public ICompletes<IEntry> ReadNext()
         {
             if (_currentIndex < _entriesView.Count)
             {
                 return Completes().With(_entriesView[_currentIndex++]);
             }
             
-            return Completes().With<IEntry<string>>(null!);
+            return Completes().With<IEntry>(null!);
         }
 
-        public ICompletes<IEntry<string>> ReadNext(string fromId)
+        public ICompletes<IEntry> ReadNext(string fromId)
         {
             SeekTo(fromId);
             return ReadNext();
         }
 
-        public ICompletes<IEnumerable<IEntry<string>>> ReadNext(int maximumEntries)
+        public ICompletes<IEnumerable<IEntry>> ReadNext(int maximumEntries)
         {
-            var entries = new List<IEntry<string>>(maximumEntries);
+            var entries = new List<IEntry>(maximumEntries);
 
             for (var count = 0; count < maximumEntries; ++count)
             {
@@ -59,10 +59,10 @@ namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
                     break;
                 }
             }
-            return Completes().With<IEnumerable<IEntry<string>>>(entries);
+            return Completes().With<IEnumerable<IEntry>>(entries);
         }
 
-        public ICompletes<IEnumerable<IEntry<string>>> ReadNext(string fromId, int maximumEntries)
+        public ICompletes<IEnumerable<IEntry>> ReadNext(string fromId, int maximumEntries)
         {
             SeekTo(fromId);
             return ReadNext(maximumEntries);
