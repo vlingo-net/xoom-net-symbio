@@ -207,7 +207,7 @@ namespace Vlingo.Xoom.Symbio
     
     public sealed class ObjectState<T> : State<T>
     {
-        private static readonly ObjectState<T> Null = new ObjectState<T>();
+        public static readonly ObjectState<T> Null = new ObjectState<T>();
         
         public ObjectState(string id, Type type, int typeVersion, T data, int dataVersion, Metadata metadata) : base(id, type, typeVersion, data, dataVersion, metadata)
         {
