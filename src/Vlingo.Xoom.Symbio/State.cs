@@ -36,7 +36,7 @@ namespace Vlingo.Xoom.Symbio
     public abstract class State<T> : IComparable<State<T>>, IState
     {
         protected static readonly byte[] EmptyBytesData = new byte[0];
-        protected static readonly T EmptyObjectData = default!;
+        protected static readonly T EmptyObjectData;
         protected static readonly string EmptyTextData = string.Empty;
         
         public static string NoOp = string.Empty;
@@ -120,7 +120,7 @@ namespace Vlingo.Xoom.Symbio
             {
                 return false;
             }
-            return Id.Equals(((BaseEntry<T>) obj).Id);
+            return Id.Equals(((State<T>) obj).Id);
         }
         
         public override string ToString()
@@ -153,7 +153,19 @@ namespace Vlingo.Xoom.Symbio
             : this(id, type, typeVersion, data, dataVersion, Metadata.NullMetadata())
         {
         }
-        
+
+        static State()
+        {
+            try
+            {
+                EmptyObjectData = Activator.CreateInstance<T>();
+            }
+            catch
+            {
+                EmptyObjectData = default!;
+            }
+        }
+
         private int CompareData(State<T> state1, State<T> state2)
         {
             if (state1.IsText && state2.IsText)
@@ -167,7 +179,7 @@ namespace Vlingo.Xoom.Symbio
                 var data2 = (byte[])(object)state2.Data!;
                 if (data1.Length == data2.Length)
                 {
-                    for (int idx = 0; idx < data1.Length; ++idx)
+                    for (var idx = 0; idx < data1.Length; ++idx)
                     {
                         if (data1[idx] != data2[idx])
                         {
