@@ -97,8 +97,9 @@ namespace Vlingo.Xoom.Symbio
                 // case when serializer restores with full name
                 if (state.Type.Contains(','))
                 {
-                    var simplifiedName = state.Type.Split(',').First();
-                    if (!_namedAdapters.ContainsKey(simplifiedName))
+                    var type = Type.GetType(state.Type);
+                    var simplifiedName = type?.FullName;
+                    if (!string.IsNullOrEmpty(simplifiedName) && !_namedAdapters.ContainsKey(simplifiedName))
                     {
                         return null;
                     }
