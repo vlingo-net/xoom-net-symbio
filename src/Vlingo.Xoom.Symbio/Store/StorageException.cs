@@ -13,15 +13,9 @@ namespace Vlingo.Xoom.Symbio.Store
     {
         public Result Result { get; }
 
-        public StorageException(Result result, string message, Exception exception) : base(message, exception)
-        {
-            Result = result;
-        }
-        
-        public StorageException(Result result, string message) : base(message)
-        {
-            Result = result;
-        }
+        public StorageException(Result result, string message, Exception exception) : base(message, exception) => Result = result;
+
+        public StorageException(Result result, string message) : base(message) => Result = result;
 
         public override bool Equals(object? obj)
         {
