@@ -14,7 +14,7 @@ namespace Vlingo.Xoom.Symbio.Tests
 {
     public class Converter : TextWriter
     {
-        readonly ITestOutputHelper _output;
+        private readonly ITestOutputHelper _output;
         
         public Converter(ITestOutputHelper output) => _output = output;
 
