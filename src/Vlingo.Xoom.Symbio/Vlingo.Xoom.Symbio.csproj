@@ -37,12 +37,14 @@
         <When Condition="'$(Configuration)' == 'Debug With Project References'">
             <ItemGroup>
                 <ProjectReference Include="..\..\..\xoom-net-actors\src\Vlingo.Xoom.Actors\Vlingo.Xoom.Actors.csproj" />
+                <ProjectReference Include="..\..\..\xoom-net-streams\src\Vlingo.Xoom.Streams\Vlingo.Xoom.Streams.csproj" />
             </ItemGroup>
         </When>
         <Otherwise>
             <ItemGroup>
                 <PackageReference Include="Vlingo.Xoom.Actors" Version="$(VlingoVersion)" />
                 <PackageReference Include="Vlingo.Xoom.Common" Version="$(VlingoVersion)" />
+                <PackageReference Include="Vlingo.Xoom.Streams" Version="$(VlingoVersion)" />
             </ItemGroup>
         </Otherwise>
     </Choose>
