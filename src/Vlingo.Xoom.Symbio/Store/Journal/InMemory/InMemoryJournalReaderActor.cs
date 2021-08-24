@@ -8,14 +8,20 @@
 using System.Collections.Generic;
 using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
+using Vlingo.Xoom.Streams;
 
 namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
 {
     public class InMemoryJournalReaderActor : Actor, IJournalReader
     {
+        private readonly EntryAdapterProvider _entryAdapterProvider;
         private readonly IJournalReader _reader;
 
-        public InMemoryJournalReaderActor(IJournalReader reader) => _reader = reader;
+        public InMemoryJournalReaderActor(IJournalReader reader, EntryAdapterProvider entryAdapterProvider)
+        {
+            _reader = reader;
+            _entryAdapterProvider = entryAdapterProvider;
+        }
 
         public void Close() => _reader.Close();
 
@@ -35,6 +41,9 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
         
         public ICompletes<long> Size => Completes().With(_reader.Size.Outcome);
         
+        public ICompletes<IStream> StreamAll() => 
+            Completes().With((IStream) new EntryReaderStream(Stage, SelfAs<IJournalReader>(), _entryAdapterProvider));
+
         public string Beginning { get; } = EntryReader.Beginning;
 
         public string End { get; } = EntryReader.End;

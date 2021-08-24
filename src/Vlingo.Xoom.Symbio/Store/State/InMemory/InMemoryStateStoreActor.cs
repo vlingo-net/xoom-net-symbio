@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vlingo.Xoom.Common;
 using Vlingo.Xoom.Actors;
+using Vlingo.Xoom.Streams;
 using Vlingo.Xoom.Symbio.Store.Dispatch;
 using Vlingo.Xoom.Symbio.Store.Dispatch.Control;
 using Vlingo.Xoom.Symbio.Store.Dispatch.InMemory;
@@ -87,6 +88,29 @@ namespace Vlingo.Xoom.Symbio.Store.State.InMemory
 
             var outcome = _readAllResultCollector.ReadResultOutcome(typedStateBundles.Count);
             interest.ReadResultedIn<TState>(outcome!, _readAllResultCollector.ReadBundles, @object);
+        }
+
+        public ICompletes<IStream> StreamAllOf<TState>()
+        {
+            var storeName = StateTypeStateStoreMap.StoreNameFrom(typeof(TState));
+
+            if (string.IsNullOrEmpty(storeName))
+            {
+                throw new ArgumentNullException(nameof(storeName), $"Cannot retrieve the store for name: {storeName}");
+            }
+            
+            if (!_store.TryGetValue(storeName!, out var typeStore))
+            {
+                typeStore = new Dictionary<string, TRawState>();
+            }
+            
+            return Completes().With((IStream) new StateStream<TRawState>(Stage, typeStore, _stateAdapterProvider));
+        }
+
+        public ICompletes<IStream> StreamSomeUsing(QueryExpression query)
+        {
+            // TODO Auto-generated method stub
+            return null!;
         }
 
         public void Write<TState>(string id, TState state, int stateVersion, IWriteResultInterest interest) =>

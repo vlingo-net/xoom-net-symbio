@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Vlingo.Xoom.Common;
+using Vlingo.Xoom.Streams;
 
 namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
 {
@@ -96,6 +97,8 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
         public ICompletes<string> Name => Completes.WithSuccess(_name);
 
         public ICompletes<long> Size => Completes.WithSuccess<long>(_journalView.Count);
+
+        public ICompletes<IStream> StreamAll() => null!;
 
         public string Beginning { get; } = EntryReader.Beginning;
 

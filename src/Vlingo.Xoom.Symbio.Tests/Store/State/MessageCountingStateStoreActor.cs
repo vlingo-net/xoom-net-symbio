@@ -11,6 +11,8 @@ using Vlingo.Xoom.Common;
 using Vlingo.Xoom.Symbio.Store.State;
 using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Actors.TestKit;
+using Vlingo.Xoom.Streams;
+using Vlingo.Xoom.Symbio.Store;
 
 namespace Vlingo.Xoom.Symbio.Tests.Store.State
 {
@@ -42,6 +44,20 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State
         public void ReadAll<TState1>(IEnumerable<TypedStateBundle> bundles, IReadResultInterest interest,
             object @object)
             => _results.PutIncrementReadAll();
+
+        public ICompletes<IStream> StreamAllOf<TState>()
+        {
+            _results.PutIncrementStreamAllOf();
+
+            return Completes().With((IStream) null);
+        }
+
+        public ICompletes<IStream> StreamSomeUsing(QueryExpression query)
+        {
+            _results.PutIncrementStreamSomeUsing();
+
+            return Completes().With((IStream) null);
+        }
 
         public void Write<TState1>(string id, TState1 state, int stateVersion, IWriteResultInterest interest)
             => _results.PutIncrementWrite(id, _totalPartitions);
@@ -173,6 +189,10 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State
         public void PutIncrementRead(string id, int totalPartitions) => _access.WriteUsing("read", id, totalPartitions);
 
         public void PutIncrementReadAll() => _access.WriteUsing("readAll", 1);
+        
+        public void PutIncrementStreamAllOf() => _access.WriteUsing("streamAllOf", 1);
+
+        public void PutIncrementStreamSomeUsing() => _access.WriteUsing("streamSomeUsing", 1);
 
         public void PutIncrementWrite(string id, int totalPartitions) => _access.WriteUsing("write", id, totalPartitions);
 

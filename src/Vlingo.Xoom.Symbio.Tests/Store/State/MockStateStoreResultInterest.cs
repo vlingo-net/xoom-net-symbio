@@ -34,7 +34,7 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State
         private readonly ConcurrentQueue<object> _sources = new ConcurrentQueue<object>();
         private readonly ConcurrentBag<object> _readAllStates = new ConcurrentBag<object>();
 
-        public MockStateStoreResultInterest() => _access = AfterCompleting<object, object>(0);
+        public MockStateStoreResultInterest() => _access = AfterCompleting<object, Entity1>(0);
 
         public void ReadResultedIn<TState>(IOutcome<StorageException, Result> outcome, string id, TState state, int stateVersion, Metadata metadata, object @object)
         {

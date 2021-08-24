@@ -72,6 +72,13 @@ namespace Vlingo.Xoom.Symbio
         Type Typed { get; }
         
         string EntryRawData { get; }
+        
+        /// <summary>
+        /// Gets a copy of myself with the id.
+        /// </summary>
+        /// <param name="id">The identity to assign to my copy.</param>
+        /// <returns>A copy of myself with new identity.</returns>
+        IEntry WithId(string id);
     }
     
     /// <summary>
@@ -97,21 +104,14 @@ namespace Vlingo.Xoom.Symbio
         /// Gets current entry's data.
         /// </summary>
         T EntryData { get; }
-
-        /// <summary>
-        /// Gets a copy of myself with the id.
-        /// </summary>
-        /// <param name="id">The identity to assign to my copy.</param>
-        /// <returns>A copy of myself with new identity.</returns>
-        IEntry<T> WithId(string id);
     }
 
     public static class Entry<T>
     {
         public static int DefaultVersion => -1;
 
-        public static IEnumerable<IEntry<T>> None => new IEntry<T>[0]; // Enumerable.Empty<IEntry<T>>(); throws an exception on deserialization with Netwtonsoft 
+        public static IEnumerable<IEntry<T>> None => Array.Empty<IEntry<T>>(); // Enumerable.Empty<IEntry<T>>(); throws an exception on deserialization with Netwtonsoft 
 
-        public static Type TypedFrom(string type) => StoredTypes.ForName(type)!;
+        public static Type TypedFrom(string type) => StoredTypes.ForName(type);
     }
 }

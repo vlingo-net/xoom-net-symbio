@@ -8,11 +8,14 @@
 using System.Collections.Generic;
 using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
+using Vlingo.Xoom.Streams;
+using Vlingo.Xoom.Symbio.Store.Journal;
 
 namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
 {
     public class InMemoryObjectStoreEntryReaderActor : Actor, IObjectStoreEntryReader
     {
+        private readonly EntryAdapterProvider _entryAdapterProvider;
         private int _currentIndex;
         private readonly List<IEntry> _entriesView;
         private readonly string _name;
@@ -22,6 +25,7 @@ namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
             _entriesView = entriesView;
             _name = name;
             _currentIndex = 0;
+            _entryAdapterProvider = EntryAdapterProvider.Instance(Stage.World);
         }
 
         public void Close()
@@ -109,6 +113,9 @@ namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
         public ICompletes<string> Name => Completes().With(_name);
 
         public ICompletes<long> Size => Completes().With((long) _entriesView.Count);
+        
+        public ICompletes<IStream> StreamAll() => 
+            Completes().With((IStream) new EntryReaderStream(Stage, SelfAs<IJournalReader>(), _entryAdapterProvider));
 
         private void ToEnd() => _currentIndex = _entriesView.Count - 1;
 

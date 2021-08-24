@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
+using Vlingo.Xoom.Streams;
 using Environment = Vlingo.Xoom.Actors.Environment;
 
 namespace Vlingo.Xoom.Symbio.Store.State
@@ -65,6 +66,30 @@ namespace Vlingo.Xoom.Symbio.Store.State
 
         public void ReadAll<TState>(IEnumerable<TypedStateBundle> bundles, IReadResultInterest interest, object? @object)
             => LeastBusyReader()?.ReadAll<TState>(bundles, interest, @object);
+
+        public ICompletes<IStream> StreamAllOf<TState>()
+        {
+            var leastBusyReader = LeastBusyReader();
+            if (leastBusyReader != null)
+            {
+                return leastBusyReader.StreamAllOf<TState>();
+            }
+            
+            // Don't know whether it should return Empty stream or a failure.
+            return Completes.WithFailure<IStream>();
+        }
+
+        public ICompletes<IStream> StreamSomeUsing(QueryExpression query)
+        {
+            var leastBusyReader = LeastBusyReader();
+            if (leastBusyReader != null)
+            {
+                return leastBusyReader.StreamSomeUsing(query);
+            }
+            
+            // Don't know whether it should return Empty stream or a failure.
+            return Completes.WithFailure<IStream>();
+        }
 
         public void Write<TState>(string id, TState state, int stateVersion, IWriteResultInterest interest)
             => Write(id, state, stateVersion, Source<TState>.None(), Metadata.NullMetadata(), interest, null);
@@ -160,8 +185,8 @@ namespace Vlingo.Xoom.Symbio.Store.State
             for (var idx = 0; idx < total; ++idx)
             {
                 var stateStore = (StateStore__Proxy) stage.ActorFor<IStateStore>(stateStoreActorType, parameter, total);
-                Pending(stateStore.Actor!);
-                stateStores[idx] = new Tuple<IStateStore, Actor>(stateStore, stateStore.Actor!);
+                Pending(stateStore.Actor);
+                stateStores[idx] = new Tuple<IStateStore, Actor>(stateStore, stateStore.Actor);
             }
 
             return stateStores;

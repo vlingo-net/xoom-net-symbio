@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
+using Vlingo.Xoom.Streams;
 
 namespace Vlingo.Xoom.Symbio.Store.State
 {
@@ -21,6 +22,7 @@ namespace Vlingo.Xoom.Symbio.Store.State
         private const string ReadNextRepresentation5 = "ReadNext(string, int)";
         private const string RewindRepresentation6 = "Rewind()";
         private const string SeekToRepresentation7 = "SeekTo(string)";
+        private const string StreamAllRepresentation8 = "StreamAll()";
 
         private readonly Actor _actor;
         private readonly IMailbox _mailbox;
@@ -215,6 +217,33 @@ namespace Vlingo.Xoom.Symbio.Store.State
             else
             {
                 _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, SeekToRepresentation7));
+            }
+
+            return null!;
+        }
+        
+        public ICompletes<IStream> StreamAll()
+        {
+            if (!_actor.IsStopped)
+            {
+                Action<IStateStoreEntryReader> cons128870 = __ => __.StreamAll();
+                var completes = new BasicCompletes<IStream>(_actor.Scheduler);
+                if (_mailbox.IsPreallocated)
+                {
+                    _mailbox.Send(_actor, cons128870, completes, StreamAllRepresentation8);
+                }
+                else
+                {
+                    _mailbox.Send(
+                        new LocalMessage<IStateStoreEntryReader>(_actor,
+                            cons128870, completes, StreamAllRepresentation8));
+                }
+
+                return completes;
+            }
+            else
+            {
+                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, StreamAllRepresentation8));
             }
 
             return null!;

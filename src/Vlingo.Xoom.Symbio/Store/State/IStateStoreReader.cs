@@ -6,6 +6,8 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System.Collections.Generic;
+using Vlingo.Xoom.Common;
+using IStream = Vlingo.Xoom.Streams.IStream;
 
 namespace Vlingo.Xoom.Symbio.Store.State
 {
@@ -39,5 +41,24 @@ namespace Vlingo.Xoom.Symbio.Store.State
         /// <param name="object">an object that will be sent to the <see cref="IReadResultInterest"/> when the read has succeeded or failed</param>
         /// <typeparam name="TState">The type of the state to read.</typeparam>
         void ReadAll<TState>(IEnumerable<TypedStateBundle> bundles, IReadResultInterest interest, object? @object);
+        
+        /// <summary>
+        /// Answer a new <see cref="IStream"/> for flowing all of the instances of the <typeparamref name="TState"/>.
+        /// Elements are streamed as type <see cref="StateBundle"/> to the <see cref="Streams.Sink{StateBundle}"/>.
+        /// </summary>
+        /// <typeparam name="TState">The type of the state to read</typeparam>
+        /// <returns><see cref="ICompletes{IStream}"/></returns>
+        ICompletes<IStream> StreamAllOf<TState>();
+        
+        /// <summary>
+        /// Answer a new <see cref="IStream"/> for flowing all instances per <paramref name="query"/>. Currently
+        /// the only supported query types are <see cref="QueryExpression"/> (no query parameters), and
+        /// <see cref="ListQueryExpression"/> (a <see cref="List{T}"/> of <see cref="object"/> parameters).
+        /// In the future <see cref="ListQueryExpression"/> will be supported. Elements are streamed as
+        /// type <see cref="StateBundle"/> to the <see cref="Streams.Sink{StateBundle}"/>.
+        /// </summary>
+        /// <param name="query">The <see cref="QueryExpression"/> used to constrain the Stream</param>
+        /// <returns><see cref="ICompletes{IStream}"/></returns>
+        ICompletes<IStream> StreamSomeUsing(QueryExpression query);
     }
 }

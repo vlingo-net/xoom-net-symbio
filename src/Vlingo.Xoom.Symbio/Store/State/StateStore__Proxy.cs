@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
+using Vlingo.Xoom.Streams;
 
 namespace Vlingo.Xoom.Symbio.Store.State
 {
@@ -49,6 +50,10 @@ namespace Vlingo.Xoom.Symbio.Store.State
         private const string WriteRepresentation11 =
             "Write<TState, TSource>(string, TState, int, IEnumerable<TSource>, Vlingo.Xoom.Symbio.Metadata, Vlingo.Xoom.Symbio.Store.State.IWriteResultInterest, object)";
 
+        private const string StreamAllOfRepresentation12 = "StreamAllOf()";
+        
+        private const string StreamSomeUsingRepresentation13 = "StreamSomeUsing(QueryExpression query)";
+        
         private readonly Actor _actor;
         private readonly IMailbox _mailbox;
 
@@ -150,6 +155,58 @@ namespace Vlingo.Xoom.Symbio.Store.State
             {
                 _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, ReadRepresentation3A));
             }
+        }
+
+        public ICompletes<IStream> StreamAllOf<TState>()
+        {
+            if (!_actor.IsStopped)
+            {
+                Action<IStateStore> cons128880 = __ => __.StreamAllOf<TState>();
+                var completes = new BasicCompletes<IStream>(_actor.Scheduler);
+                if (_mailbox.IsPreallocated)
+                {
+                    _mailbox.Send(_actor, cons128880, completes, StreamAllOfRepresentation12);
+                }
+                else
+                {
+                    _mailbox.Send(
+                        new LocalMessage<IStateStore>(_actor, cons128880, completes, StreamAllOfRepresentation12));
+                }
+
+                return completes;
+            }
+            else
+            {
+                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, StreamAllOfRepresentation12));
+            }
+
+            return null!;
+        }
+
+        public ICompletes<IStream> StreamSomeUsing(QueryExpression query)
+        {
+            if (!_actor.IsStopped)
+            {
+                Action<IStateStore> cons128881 = __ => __.StreamSomeUsing(query);
+                var completes = new BasicCompletes<IStream>(_actor.Scheduler);
+                if (_mailbox.IsPreallocated)
+                {
+                    _mailbox.Send(_actor, cons128881, completes, StreamSomeUsingRepresentation13);
+                }
+                else
+                {
+                    _mailbox.Send(
+                        new LocalMessage<IStateStore>(_actor, cons128881, completes, StreamSomeUsingRepresentation13));
+                }
+
+                return completes;
+            }
+            else
+            {
+                _actor.DeadLetters?.FailedDelivery(new DeadLetter(_actor, StreamSomeUsingRepresentation13));
+            }
+
+            return null!;
         }
 
         public void Write<TState>(string id, TState state, int stateVersion,

@@ -14,14 +14,21 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
 {
     public class InMemoryJournalActor<T> : Actor, IJournal<T>
     {
+        private readonly EntryAdapterProvider _entryAdapterProvider;
         private readonly InMemoryJournal<T> _journal;
 
         public InMemoryJournalActor(IDispatcher dispatcher)
-            => _journal = new InMemoryJournal<T>(dispatcher, Stage.World);
-        
+        {
+            _journal = new InMemoryJournal<T>(dispatcher, Stage.World);
+            _entryAdapterProvider = EntryAdapterProvider.Instance(Stage.World);
+        }
+
         public InMemoryJournalActor(IEnumerable<IDispatcher> dispatchers)
-            => _journal = new InMemoryJournal<T>(dispatchers, Stage.World);
-        
+        {
+            _journal = new InMemoryJournal<T>(dispatchers, Stage.World);
+            _entryAdapterProvider = EntryAdapterProvider.Instance(Stage.World);
+        }
+
         public IJournal<T> Using<TActor>(Stage stage, IDispatcher dispatcher, params object[] additional) where TActor : Actor
             => additional.Length == 0 ?
                     stage.ActorFor<IJournal<T>>(typeof(TActor), dispatcher) :
@@ -59,7 +66,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
         public ICompletes<IJournalReader?> JournalReader(string name)
         {
             var inmemory = _journal.JournalReader(name).Outcome!;
-            var actor = ChildActorFor<IJournalReader?>(() => new InMemoryJournalReaderActor(inmemory));
+            var actor = ChildActorFor<IJournalReader?>(() => new InMemoryJournalReaderActor(inmemory, _entryAdapterProvider));
             return Completes().With(actor);
         }
 

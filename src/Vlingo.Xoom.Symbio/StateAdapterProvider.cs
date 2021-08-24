@@ -108,7 +108,7 @@ namespace Vlingo.Xoom.Symbio
                 }
             }
             
-            var adapter = (IStateAdapter<TState, TRawState>) _namedAdapters[typeName];
+            var adapter = (IStateAdapter<TState, TRawState>) _namedAdapters[typeName!];
             return adapter;
         }
     }

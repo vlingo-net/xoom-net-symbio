@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using Vlingo.Xoom.Common;
+using Vlingo.Xoom.Streams;
 
 namespace Vlingo.Xoom.Symbio.Store
 {
@@ -149,6 +150,12 @@ namespace Vlingo.Xoom.Symbio.Store
         /// is not known or not queryable, the value of <code>-1L</code> is answered.
         /// </summary>
         ICompletes<long> Size { get; }
+        
+        /// <summary>
+        /// Answer a new <see cref="IStream"/> for flowing all <see cref="IEntry{T}"/> instances in total time order.
+        /// </summary>
+        /// <returns><see cref="ICompletes{IStream}"/></returns>
+        ICompletes<IStream> StreamAll();
     }
 
     /// <summary>

@@ -153,7 +153,7 @@ namespace Vlingo.Xoom.Symbio
         /// </summary>
         public string Type => _type;
 
-        public abstract IEntry<T> WithId(string id);
+        public abstract IEntry WithId(string id);
 
         public int CompareTo(IEntry<T>? other)
         {
@@ -256,7 +256,7 @@ namespace Vlingo.Xoom.Symbio
 
         public override bool IsEmpty => EntryData.Length == 0;
 
-        public override IEntry<byte[]> WithId(string id) => new BinaryEntry(id, Typed, TypeVersion, EntryData);
+        public override IEntry WithId(string id) => new BinaryEntry(id, Typed, TypeVersion, EntryData);
     }
     
     /// <summary>
@@ -292,7 +292,7 @@ namespace Vlingo.Xoom.Symbio
 
         public override bool IsEmpty => EntryData!.Equals(EmptyObjectData);
 
-        public override IEntry<T> WithId(string id) => new ObjectEntry<T>(id, Typed, TypeVersion, EntryData, 1);
+        public override IEntry WithId(string id) => new ObjectEntry<T>(id, Typed, TypeVersion, EntryData, 1);
     }
     
     /// <summary>
@@ -328,7 +328,7 @@ namespace Vlingo.Xoom.Symbio
 
         public override bool IsEmpty => string.IsNullOrEmpty(EntryData);
 
-        public override IEntry<string> WithId(string id) => new TextEntry(id, Typed, TypeVersion, EntryData);
+        public override IEntry WithId(string id) => new TextEntry(id, Typed, TypeVersion, EntryData);
     }
     
     /// <summary>
@@ -344,6 +344,6 @@ namespace Vlingo.Xoom.Symbio
 
         public override bool IsEmpty => true;
 
-        public override IEntry<T> WithId(string id) => this;
+        public override IEntry WithId(string id) => this;
     }
 }

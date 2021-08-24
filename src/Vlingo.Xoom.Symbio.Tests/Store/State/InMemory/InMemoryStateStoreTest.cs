@@ -13,6 +13,8 @@ using Vlingo.Xoom.Symbio.Store.State;
 using Vlingo.Xoom.Symbio.Store.State.InMemory;
 using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Actors.TestKit;
+using Vlingo.Xoom.Common;
+using Vlingo.Xoom.Streams.Sink;
 using Xunit;
 using Xunit.Abstractions;
 using IDispatcher = Vlingo.Xoom.Symbio.Store.Dispatch.IDispatcher;
@@ -28,6 +30,7 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
         private readonly MockStateStoreResultInterest _interest;
         private readonly IStateStore _store;
         private readonly World _world;
+        private AtomicInteger _totalStates = new AtomicInteger(0);
 
         [Fact]
         public void TestThatStateStoreWritesText()
@@ -283,6 +286,107 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             Assert.Equal(entity, access1.ReadFrom<object>("objectState"));
         }
 
+        [Theory]
+        [InlineData(200)]
+        [InlineData(204)]
+        public void TestThatAllOfTypeStreams(int nbOfElements)
+        {
+            for (var count = 1; count <= nbOfElements; ++count)
+            {
+              var entity1 = new Entity1("" + count, count);
+              _store.Write(entity1.Id, entity1, 1, _interest);
+            }
+
+            var all = _store.StreamAllOf<Entity1>().Await();
+
+            var access = AccessSafely.AfterCompleting(nbOfElements);
+            
+            access.WritingWith<int>("stateCounter", state => _totalStates.IncrementAndGet());
+            access.ReadingWith("stateCount", () => _totalStates.Get());
+            
+            all.FlowInto(new ConsumerSink<Entity1>(state => access.WriteUsing("stateCounter", 1)), 10);
+            
+            var stateCount = access.ReadFromExpecting("stateCount", nbOfElements);
+            
+            Assert.Equal(nbOfElements, _totalStates.Get());
+            Assert.Equal(_totalStates.Get(), stateCount);
+        }
+
+      // @Test
+      // public void testThatAllOfTypeStreamsUntilStop() {
+      //   for (int count = 1; count <= 10000; ++count) {
+      //     final Entity1 entity1 = new Entity1("" + count, count);
+      //     store.write(entity1.id, entity1, 1, interest);
+      //   }
+      //
+      //   final Stream all = store.streamAllOf(Entity1.class).await();
+      //
+      //   final AccessSafely access = AccessSafely.afterCompleting(200);
+      //
+      //   access.writingWith("stateCounter", (state) -> { totalStates.incrementAndGet(); });
+      //   access.readingWith("stateCount", () -> totalStates.get());
+      //
+      //   all.flowInto(new ConsumerSink<>((state) -> {
+      //         access.writeUsing("stateCounter", 1);
+      //           final int count = totalStates.get();
+      //           if (count == 100) {
+      //             all.request(1);
+      //           }
+      //         }),
+      //         50);
+      //
+      //   final int stateCount = access.readFromExpecting("stateCount", 200);
+      //
+      //   Assert.assertNotEquals(10000, stateCount);
+      //   Assert.assertNotEquals(10000, totalStates.get());
+      // }
+      //
+      // @Test
+      // public void testThatAllOfTypeStreamsAdjusting() {
+      //   for (int count = 1; count <= 10000; ++count) {
+      //     final Entity1 entity1 = new Entity1("" + count, count);
+      //     store.write(entity1.id, entity1, 1, interest);
+      //   }
+      //
+      //   final Stream all = store.streamAllOf(Entity1.class).await();
+      //
+      //   final AccessSafely access = AccessSafely.afterCompleting(200);
+      //
+      //   access.writingWith("stateCounter", (state) -> { totalStates.incrementAndGet(); });
+      //   access.readingWith("stateCount", () -> totalStates.get());
+      //
+      //   all.flowInto(new ConsumerSink<>((state) -> {
+      //         access.writeUsing("stateCounter", 1);
+      //           final int count = totalStates.get();
+      //           if (count == 100) {
+      //             all.request(10);
+      //           }
+      //         }),
+      //         50);
+      //
+      //   final int stateCount = access.readFromExpecting("stateCount", 10000);
+      //
+      //   Assert.assertEquals(10000, stateCount);
+      //   Assert.assertEquals(10000, totalStates.get());
+      // }
+      //
+      // @Test
+      // public void testThatAllOfTypeStreamsAnEmptyStream() {
+      //   final Stream all = store.streamAllOf(Entity1.class).await();
+      //
+      //   final AccessSafely access = AccessSafely.afterCompleting(0);
+      //
+      //   access.writingWith("stateCounter", (state) -> { totalStates.incrementAndGet(); });
+      //   access.readingWith("stateCount", () -> totalStates.get());
+      //
+      //   all.flowInto(new ConsumerSink<>((state) -> access.writeUsing("stateCounter", 1)), 10);
+      //
+      //   final int stateCount = access.readFromExpecting("stateCount", 0);
+      //
+      //   Assert.assertEquals(totalStates.get(), 0);
+      //   Assert.assertEquals(totalStates.get(), stateCount);
+      // }
+      
         public InMemoryStateStoreTest(ITestOutputHelper output)
         {
             var converter = new Converter(output);
@@ -293,6 +397,8 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
 
             _interest = new MockStateStoreResultInterest();
             _dispatcher = new MockStateStoreDispatcher<TextState>(_interest);
+            
+            _dispatcher.AfterCompleting(0); // avoid NPE
 
             var stateAdapterProvider = new StateAdapterProvider(_world);
             new EntryAdapterProvider(_world);
@@ -306,11 +412,8 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName2, typeof(Entity2));
         }
 
-        public void Dispose()
-        {
-            _world?.Terminate();
-        }
-        
+        public void Dispose() => _world?.Terminate();
+
         private string DispatchId(string entityId) => $"{_storeName1}:{entityId}";
     }
 }

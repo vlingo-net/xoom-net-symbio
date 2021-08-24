@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
+using Vlingo.Xoom.Streams;
 
 namespace Vlingo.Xoom.Symbio.Store.State
 {
@@ -42,6 +43,18 @@ namespace Vlingo.Xoom.Symbio.Store.State
         {
             Logger.Error(WarningMessage);
             ((ICompletes<TRawState>)Completes()).Failed();
+        }
+
+        public ICompletes<IStream> StreamAllOf<TState>()
+        {
+            Logger.Error(WarningMessage);
+            return Common.Completes.WithFailure<IStream>();
+        }
+
+        public ICompletes<IStream> StreamSomeUsing(QueryExpression query)
+        {
+            Logger.Error(WarningMessage);
+            return Common.Completes.WithFailure<IStream>();
         }
 
         public void Write<TState>(string id, TState state, int stateVersion, IWriteResultInterest interest)
