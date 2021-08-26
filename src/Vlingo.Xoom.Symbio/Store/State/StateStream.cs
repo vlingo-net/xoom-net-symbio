@@ -121,25 +121,6 @@ namespace Vlingo.Xoom.Symbio.Store.State
                 // TODO: should have been -> var elements = Elements<T>.Of(next.Cast<T>().ToArray());
                 var elements = Elements<T>.Of(next.Select(e => e.Object).Cast<T>().ToArray());
                 return Completes.WithSuccess(elements);
-                
-                // if (_iterator.MoveNext())
-                // {
-                //     var count = 0;
-                //     var next = new List<StateBundle>();
-                //     do
-                //     {
-                //         var id = _iterator.Current;
-                //         var state = _states[id];
-                //         var @object = _stateAdapterProvider.FromRaw<T, TRawState>(state);
-                //         next.Add(new StateBundle(state, @object!));
-                //     } while (++count < _flowElementsRate);
-                //
-                //     // TODO: should have been -> var elements = Elements<T>.Of(next.Cast<T>().ToArray());
-                //     var elements = Elements<T>.Of(next.Select(e => e.Object).Cast<T>().ToArray());
-                //     return Completes.WithSuccess(elements);
-                // }
-                //
-                // return Completes.WithSuccess(Elements<T>.Terminated());
             }
 
             public ICompletes<Elements<T>> Next(int maximumElements) => Next();
