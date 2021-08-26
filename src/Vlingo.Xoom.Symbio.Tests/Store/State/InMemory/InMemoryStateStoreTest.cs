@@ -25,12 +25,12 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
     {
         private readonly string _storeName1 = typeof(Entity1).FullName;
         private readonly string _storeName2 = typeof(Entity2).FullName;
-        
+
         private readonly MockStateStoreDispatcher<TextState> _dispatcher;
         private readonly MockStateStoreResultInterest _interest;
         private readonly IStateStore _store;
         private readonly World _world;
-        private AtomicInteger _totalStates = new AtomicInteger(0);
+        private readonly AtomicInteger _totalStates = new AtomicInteger(0);
 
         [Fact]
         public void TestThatStateStoreWritesText()
@@ -47,7 +47,7 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectWriteResult"));
             Assert.Equal(entity, access1.ReadFrom<Entity1>("objectState"));
         }
-        
+
         [Fact]
         public void TestThatStateStoreWritesAndReadsObject()
         {
@@ -63,13 +63,13 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             Assert.Equal(1, access1.ReadFrom<int>("writeObjectResultedIn"));
             Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectReadResult"));
             Assert.Equal(entity, access1.ReadFrom<Entity1>("objectState"));
-            
+
             var readEntity = access1.ReadFrom<Entity1>("objectState");
 
             Assert.Equal("123", readEntity.Id);
             Assert.Equal(5, readEntity.Value);
         }
-        
+
         [Fact]
         public void TestThatStateStoreWritesAndReadsMetadataValue()
         {
@@ -90,13 +90,13 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             var metadata = access1.ReadFrom<Metadata>("metadataHolder");
             Assert.True(metadata.HasValue);
             Assert.Equal("value", metadata.Value);
-            
+
             var readEntity = access1.ReadFrom<Entity1>("objectState");
 
             Assert.Equal("123", readEntity.Id);
             Assert.Equal(5, readEntity.Value);
         }
-        
+
         [Fact]
         public void TestThatStateStoreWritesAndReadsMetadataOperation()
         {
@@ -117,13 +117,13 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             var metadata = access1.ReadFrom<Metadata>("metadataHolder");
             Assert.True(metadata.HasOperation);
             Assert.Equal("operation", metadata.Operation);
-            
+
             var readEntity = access1.ReadFrom<Entity1>("objectState");
 
             Assert.Equal("123", readEntity.Id);
             Assert.Equal(5, readEntity.Value);
         }
-        
+
         [Fact]
         public void TestThatConcurrencyViolationsDetected()
         {
@@ -139,7 +139,7 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectWriteAccumulatedResults"));
             Assert.Equal(Result.Success, access1.ReadFrom<Result>("objectWriteAccumulatedResults"));
             Assert.Equal(0, access1.ReadFrom<int>("objectWriteAccumulatedResultsCount"));
-            
+
             var access2 = _interest.AfterCompleting<Entity1, Entity1>(3);
             _dispatcher.AfterCompleting(3);
 
@@ -252,7 +252,7 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             var result1 = access1.ReadFrom<Result>("objectReadResult");
             Assert.True(result1 == Result.Error);
         }
-        
+
         [Fact]
         public void TestThatWriteErrorIsReported()
         {
@@ -269,13 +269,13 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             var objectState = access1.ReadFrom<object>("objectState");
             Assert.Null(objectState);
         }
-        
+
         [Fact]
         public void TestThatStateStoreWritesTextWithDefaultAdapter()
         {
             var access1 = _interest.AfterCompleting<Entity2, Entity2>(1);
             _dispatcher.AfterCompleting(1);
-            
+
             var entity = new Entity2("123", "5");
 
             _store.Write(entity.Id, entity, 1, _interest);
@@ -287,14 +287,20 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
         }
 
         [Theory]
-        [InlineData(200)]
-        [InlineData(204)]
-        public void TestThatAllOfTypeStreams(int nbOfElements)
+        [InlineData(200, 10)]
+        [InlineData(204, 10)]
+        [InlineData(307, 10)]
+        [InlineData(10000, 10)]
+        [InlineData(200, 50)]
+        [InlineData(204, 50)]
+        [InlineData(307, 50)]
+        [InlineData(10000, 50)]
+        public void TestThatAllOfTypeStreams(int nbOfElements, int flowElementRate)
         {
             for (var count = 1; count <= nbOfElements; ++count)
             {
-              var entity1 = new Entity1("" + count, count);
-              _store.Write(entity1.Id, entity1, 1, _interest);
+                var entity1 = new Entity1($"{count}", count);
+                _store.Write(entity1.Id, entity1, 1, _interest);
             }
 
             var all = _store.StreamAllOf<Entity1>().Await();
@@ -303,101 +309,104 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             
             access.WritingWith<int>("stateCounter", state => _totalStates.IncrementAndGet());
             access.ReadingWith("stateCount", () => _totalStates.Get());
-            
-            all.FlowInto(new ConsumerSink<Entity1>(state => access.WriteUsing("stateCounter", 1)), 10);
-            
+
+            all.FlowInto(new ConsumerSink<Entity1>(state => access.WriteUsing("stateCounter", 1)), flowElementRate);
+
             var stateCount = access.ReadFromExpecting("stateCount", nbOfElements);
-            
+
             Assert.Equal(nbOfElements, _totalStates.Get());
             Assert.Equal(_totalStates.Get(), stateCount);
         }
 
-      // @Test
-      // public void testThatAllOfTypeStreamsUntilStop() {
-      //   for (int count = 1; count <= 10000; ++count) {
-      //     final Entity1 entity1 = new Entity1("" + count, count);
-      //     store.write(entity1.id, entity1, 1, interest);
-      //   }
-      //
-      //   final Stream all = store.streamAllOf(Entity1.class).await();
-      //
-      //   final AccessSafely access = AccessSafely.afterCompleting(200);
-      //
-      //   access.writingWith("stateCounter", (state) -> { totalStates.incrementAndGet(); });
-      //   access.readingWith("stateCount", () -> totalStates.get());
-      //
-      //   all.flowInto(new ConsumerSink<>((state) -> {
-      //         access.writeUsing("stateCounter", 1);
-      //           final int count = totalStates.get();
-      //           if (count == 100) {
-      //             all.request(1);
-      //           }
-      //         }),
-      //         50);
-      //
-      //   final int stateCount = access.readFromExpecting("stateCount", 200);
-      //
-      //   Assert.assertNotEquals(10000, stateCount);
-      //   Assert.assertNotEquals(10000, totalStates.get());
-      // }
-      //
-      // @Test
-      // public void testThatAllOfTypeStreamsAdjusting() {
-      //   for (int count = 1; count <= 10000; ++count) {
-      //     final Entity1 entity1 = new Entity1("" + count, count);
-      //     store.write(entity1.id, entity1, 1, interest);
-      //   }
-      //
-      //   final Stream all = store.streamAllOf(Entity1.class).await();
-      //
-      //   final AccessSafely access = AccessSafely.afterCompleting(200);
-      //
-      //   access.writingWith("stateCounter", (state) -> { totalStates.incrementAndGet(); });
-      //   access.readingWith("stateCount", () -> totalStates.get());
-      //
-      //   all.flowInto(new ConsumerSink<>((state) -> {
-      //         access.writeUsing("stateCounter", 1);
-      //           final int count = totalStates.get();
-      //           if (count == 100) {
-      //             all.request(10);
-      //           }
-      //         }),
-      //         50);
-      //
-      //   final int stateCount = access.readFromExpecting("stateCount", 10000);
-      //
-      //   Assert.assertEquals(10000, stateCount);
-      //   Assert.assertEquals(10000, totalStates.get());
-      // }
-      //
-      // @Test
-      // public void testThatAllOfTypeStreamsAnEmptyStream() {
-      //   final Stream all = store.streamAllOf(Entity1.class).await();
-      //
-      //   final AccessSafely access = AccessSafely.afterCompleting(0);
-      //
-      //   access.writingWith("stateCounter", (state) -> { totalStates.incrementAndGet(); });
-      //   access.readingWith("stateCount", () -> totalStates.get());
-      //
-      //   all.flowInto(new ConsumerSink<>((state) -> access.writeUsing("stateCounter", 1)), 10);
-      //
-      //   final int stateCount = access.readFromExpecting("stateCount", 0);
-      //
-      //   Assert.assertEquals(totalStates.get(), 0);
-      //   Assert.assertEquals(totalStates.get(), stateCount);
-      // }
-      
+        [Fact]
+        public void TestThatAllOfTypeStreamsUntilStop()
+        {
+            for (var count = 1; count <= 10000; ++count)
+            {
+                var entity1 = new Entity1($"{count}", count);
+                _store.Write(entity1.Id, entity1, 1, _interest);
+            }
+
+            var all = _store.StreamAllOf<Entity1>().Await();
+
+            var access = AccessSafely.AfterCompleting(200);
+
+            access.WritingWith<int>("stateCounter", state => _totalStates.IncrementAndGet());
+            access.ReadingWith("stateCount", () => _totalStates.Get());
+
+            all.FlowInto(new ConsumerSink<Entity1>(state =>
+                {
+                    access.WriteUsing("stateCounter", 1);
+                    var count = _totalStates.Get();
+                    if (count == 100) all.Request(1);
+                }),
+                50);
+
+            var stateCount = access.ReadFromExpecting("stateCount", 200, (expected, actual) => actual >= expected);
+
+            Assert.NotEqual(10000, stateCount);
+            Assert.NotEqual(10000, _totalStates.Get());
+        }
+
+        [Fact]
+        public void TestThatAllOfTypeStreamsAdjusting()
+        {
+            for (var count = 1; count <= 10000; ++count)
+            {
+                var entity1 = new Entity1($"{count}", count);
+                _store.Write(entity1.Id, entity1, 1, _interest);
+            }
+
+            var all = _store.StreamAllOf<Entity1>().Await();
+
+            var access = AccessSafely.AfterCompleting(200);
+
+            access.WritingWith<int>("stateCounter", state => _totalStates.IncrementAndGet());
+            access.ReadingWith("stateCount", () => _totalStates.Get());
+
+            all.FlowInto(new ConsumerSink<Entity1>(state =>
+                {
+                    access.WriteUsing("stateCounter", 1);
+                    var count = _totalStates.Get();
+                    if (count == 100) all.Request(10);
+                }),
+                50);
+
+            var stateCount = access.ReadFromExpecting("stateCount", 10000);
+
+            Assert.Equal(10000, stateCount);
+            Assert.Equal(10000, _totalStates.Get());
+        }
+
+        [Fact]
+        public void TestThatAllOfTypeStreamsAnEmptyStream()
+        {
+            var all = _store.StreamAllOf<Entity1>().Await();
+
+            var access = AccessSafely.AfterCompleting(0);
+
+            access.WritingWith<int>("stateCounter", state => _totalStates.IncrementAndGet());
+            access.ReadingWith("stateCount", () => _totalStates.Get());
+
+            all.FlowInto(new ConsumerSink<Entity1>(state => access.WriteUsing("stateCounter", 1)), 10);
+
+            var stateCount = access.ReadFromExpecting("stateCount", 0);
+
+            Assert.Equal(0, _totalStates.Get());
+            Assert.Equal(_totalStates.Get(), stateCount);
+        }
+
         public InMemoryStateStoreTest(ITestOutputHelper output)
         {
             var converter = new Converter(output);
             Console.SetOut(converter);
-            
+
             var testWorld = TestWorld.StartWithDefaults("test-store");
             _world = testWorld.World;
 
             _interest = new MockStateStoreResultInterest();
             _dispatcher = new MockStateStoreDispatcher<TextState>(_interest);
-            
+
             _dispatcher.AfterCompleting(0); // avoid NPE
 
             var stateAdapterProvider = new StateAdapterProvider(_world);
@@ -406,7 +415,8 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
             stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
             // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState>), new List<IDispatcher> {_dispatcher});
+            _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState>),
+                new List<IDispatcher> { _dispatcher });
 
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName1, typeof(Entity1));
             StateTypeStateStoreMap.StateTypeToStoreName(_storeName2, typeof(Entity2));
