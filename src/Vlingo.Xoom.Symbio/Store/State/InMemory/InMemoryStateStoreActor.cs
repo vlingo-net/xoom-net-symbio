@@ -275,7 +275,7 @@ namespace Vlingo.Xoom.Symbio.Store.State.InMemory
 
         private IEnumerable<IEntry> AppendEntries<TSource>(IEnumerable<ISource> sources, int stateVersion, Metadata? metadata)
         {
-            var adapted = _entryAdapterProvider.AsEntries<TSource, IEntry>(sources, stateVersion, metadata);
+            var adapted = _entryAdapterProvider.AsEntries(sources, stateVersion, metadata);
             var appendEntries = adapted.ToList();
             foreach (var entry in appendEntries)
             {

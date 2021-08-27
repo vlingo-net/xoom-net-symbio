@@ -12,6 +12,7 @@ using Vlingo.Xoom.Symbio.Store.Dispatch;
 using Vlingo.Xoom.Symbio.Store.Object;
 using Vlingo.Xoom.Symbio.Tests.Store.Dispatch;
 using Vlingo.Xoom.Actors;
+using Vlingo.Xoom.Common.Serialization;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -138,20 +139,22 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.Object.InMemory
         }
     }
     
-    public class Test1SourceAdapter : EntryAdapter<Test1Source, IEntry<Test1Source>>
+    public class Test1SourceAdapter : EntryAdapter
     {
-        public override Test1Source FromEntry(IEntry<Test1Source> entry) => entry.EntryData;
+        public override ISource FromEntry(IEntry entry) => JsonSerialization.Deserialized<Test1Source>(entry.EntryRawData);
 
-        public override IEntry<Test1Source> ToEntry(Test1Source source, Metadata metadata) =>
-            new ObjectEntry<Test1Source>(typeof(Test1Source), 1, source, metadata);
+        public override IEntry ToEntry(ISource source, Metadata metadata) =>
+            new ObjectEntry<Test1Source>(typeof(Test1Source), 1, (Test1Source) source, metadata);
 
-        public override IEntry<Test1Source> ToEntry(Test1Source source, int version, Metadata metadata)
-            => new ObjectEntry<Test1Source>(typeof(Test1Source), 1, source, version, metadata);
+        public override IEntry ToEntry(ISource source, int version, Metadata metadata)
+            => new ObjectEntry<Test1Source>(typeof(Test1Source), 1, (Test1Source) source, version, metadata);
 
-        public override IEntry<Test1Source> ToEntry(Test1Source source, int version, string id, Metadata metadata)
-            => new ObjectEntry<Test1Source>(id, typeof(Test1Source), 1, source, version, metadata);
+        public override IEntry ToEntry(ISource source, int version, string id, Metadata metadata)
+            => new ObjectEntry<Test1Source>(id, typeof(Test1Source), 1, (Test1Source) source, version, metadata);
 
-        public override IEntry<Test1Source> ToEntry(Test1Source source, string id, Metadata metadata)=>
-            new ObjectEntry<Test1Source>(id, typeof(Test1Source), 1, source, metadata);
+        public override Type SourceType { get; } = typeof(Test1Source);
+
+        public override IEntry ToEntry(ISource source, string id, Metadata metadata)=>
+            new ObjectEntry<Test1Source>(id, typeof(Test1Source), 1, (Test1Source) source, metadata);
     }
 }

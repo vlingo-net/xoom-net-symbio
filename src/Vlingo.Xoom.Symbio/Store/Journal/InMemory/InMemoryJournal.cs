@@ -60,7 +60,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
 
         public override void Append<TSource>(string streamName, int streamVersion, TSource source, Metadata metadata, IAppendResultInterest interest, object @object)
         {
-            var entry = _entryAdapterProvider.AsEntry<TSource, IEntry>(source, streamVersion, metadata);
+            var entry = _entryAdapterProvider.AsEntry(source, streamVersion, metadata);
             Insert(streamName, streamVersion, entry);
             Dispatch(streamName, streamVersion, new List<IEntry> { entry }, null);
             interest.AppendResultedIn(Success.Of<StorageException, Result>(Result.Success), streamName, streamVersion, source, Optional.Empty<object>(), @object);
@@ -68,7 +68,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
 
         public override void AppendWith<TSource, TSnapshotState>(string streamName, int streamVersion, TSource source, Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
         {
-            var entry = _entryAdapterProvider.AsEntry<TSource, IEntry>(source, streamVersion, metadata);
+            var entry = _entryAdapterProvider.AsEntry(source, streamVersion, metadata);
             Insert(streamName, streamVersion, entry);
             IState? raw;
             Optional<TSnapshotState> snapshotResult;
@@ -91,7 +91,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
         public override void AppendAll<TSource>(string streamName, int fromStreamVersion, IEnumerable<ISource> sources, Metadata metadata, IAppendResultInterest interest, object @object)
         {
             var sourcesForEntries = sources.ToList();
-            var entries = _entryAdapterProvider.AsEntries<TSource, IEntry<T>>(sourcesForEntries, fromStreamVersion, metadata);
+            var entries = _entryAdapterProvider.AsEntries(sourcesForEntries, fromStreamVersion, metadata);
             var dispatchableEntries = entries.ToList();
             Insert(streamName, fromStreamVersion, dispatchableEntries);
 
@@ -103,7 +103,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
             Metadata metadata, TSnapshotState snapshot, IAppendResultInterest interest, object @object)
         {
             var sourcesForEntries = sources.ToList();
-            var entries = _entryAdapterProvider.AsEntries<TSource, IEntry<T>>(sourcesForEntries, fromStreamVersion, metadata);
+            var entries = _entryAdapterProvider.AsEntries(sourcesForEntries, fromStreamVersion, metadata);
             var dispatchableEntries = entries.ToList();
             Insert(streamName, fromStreamVersion, dispatchableEntries);
             IState? raw;
@@ -174,7 +174,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
             versionIndexes.Add(streamVersion, entryIndex);
         }
 
-        private void Insert(string streamName, int fromStreamVersion, IEnumerable<IEntry<T>> entries)
+        private void Insert(string streamName, int fromStreamVersion, IEnumerable<IEntry> entries)
         {
             int index = 0;
             foreach (var entry in entries)

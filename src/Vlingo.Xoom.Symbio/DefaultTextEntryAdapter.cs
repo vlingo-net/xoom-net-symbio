@@ -11,14 +11,14 @@ using Vlingo.Xoom.Symbio.Store;
 
 namespace Vlingo.Xoom.Symbio
 {
-    public sealed class DefaultTextEntryAdapter<TState> : EntryAdapter<TState, TextEntry> where TState : ISource
+    public sealed class DefaultTextEntryAdapter<TState> : EntryAdapter where TState : ISource
     {
-        public override TState FromEntry(TextEntry entry)
+        public override ISource FromEntry(IEntry entry)
         {
             try
             {
                 var sourceType = StoredTypes.ForName(entry.TypeName);
-                var bland = JsonSerialization.Deserialized(entry.EntryData, sourceType);
+                var bland = JsonSerialization.Deserialized(entry.EntryRawData, sourceType);
                 return (TState) bland!;
             } 
             catch (Exception) 
@@ -27,25 +27,27 @@ namespace Vlingo.Xoom.Symbio
             }
         }
 
-        public override TextEntry ToEntry(TState source, Metadata metadata)
+        public override IEntry ToEntry(ISource source, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(source.GetType(), 1, serialization, 1, metadata);
         }
 
-        public override TextEntry ToEntry(TState source, string id, Metadata metadata)
+        public override IEntry ToEntry(ISource source, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, source.GetType(), 1, serialization, metadata);
         }
         
-        public override TextEntry ToEntry(TState source, int version, string id, Metadata metadata)
+        public override IEntry ToEntry(ISource source, int version, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, source.GetType(), 1, serialization, version, metadata);
         }
-        
-        public override TextEntry ToEntry(TState source, int version, Metadata metadata)
+
+        public override Type SourceType { get; } = typeof(TState);
+
+        public override IEntry ToEntry(ISource source, int version, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(source.GetType(), 1, serialization, version, metadata);

@@ -146,7 +146,7 @@ namespace Vlingo.Xoom.Symbio
 
         public object UntypedEntryData => EntryData!;
 
-        public string EntryRawData => JsonSerialization.Serialized(EntryData);
+        public string EntryRawData => (EntryData is string ? EntryData.ToString() : JsonSerialization.Serialized(EntryData))!;
 
         /// <summary>
         /// My string type that is the fully-qualified class name of the original entry type.

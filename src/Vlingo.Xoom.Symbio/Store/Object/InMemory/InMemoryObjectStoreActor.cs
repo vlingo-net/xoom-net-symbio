@@ -124,7 +124,7 @@ namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
                 var raw = _storeDelegate.Persist(stateObject, updateId, metadata);
 
                 var entryVersion = (int) stateSources.StateObject.Version;
-                var entries = _entryAdapterProvider.AsEntries<TSource, IEntry<T>>(sources, entryVersion, metadata).ToList();
+                var entries = _entryAdapterProvider.AsEntries(sources, entryVersion, metadata).ToList();
                 var dispatchable = BuildDispatchable(raw, entries);
 
                 _storeDelegate.PersistEntries(entries);
@@ -173,7 +173,7 @@ namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
                     allPersistentObjects.Add(stateObject);
 
                     var entryVersion = (int) stateSources.StateObject.Version;
-                    var entries = _entryAdapterProvider.AsEntries<TSource, IEntry<T>>(stateSources.Sources, entryVersion, metadata).ToList();
+                    var entries = _entryAdapterProvider.AsEntries(stateSources.Sources, entryVersion, metadata).ToList();
                     _storeDelegate.PersistEntries(entries);
 
                     var dispatchable = BuildDispatchable(state, entries);
@@ -201,7 +201,7 @@ namespace Vlingo.Xoom.Symbio.Store.Object.InMemory
         
         private void Dispatch(Dispatchable dispatchable) => _dispatcher.Dispatch(dispatchable);
 
-        private static Dispatchable BuildDispatchable(IState state, IList<IEntry<T>> entries)
+        private static Dispatchable BuildDispatchable(IState state, IList<IEntry> entries)
         {
             var id = GetDispatchId(state, entries);
             return new Dispatchable(id, DateTimeOffset.Now, state, entries);
