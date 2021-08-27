@@ -16,6 +16,8 @@ using Vlingo.Xoom.Symbio.Tests.Store.Dispatch;
 using Vlingo.Xoom.Symbio.Tests.Store.State;
 using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Actors.TestKit;
+using Vlingo.Xoom.Common;
+using Vlingo.Xoom.Streams.Sink;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -27,7 +29,10 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.Journal.InMemory
         private readonly IJournal<string> _journal;
         private readonly World _world;
         private readonly MockDispatcher _dispatcher;
-
+        private readonly MockAppendResultInterest<Test1Source, SnapshotState> _interest = new MockAppendResultInterest<Test1Source, SnapshotState>();
+        private readonly AtomicInteger _totalSources = new AtomicInteger(0);
+        private ConsumerSink<Test1Source> _sink;
+        
         [Fact]
         public void TestThatJournalAppendsOneEvent()
         {
@@ -198,6 +203,40 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.Journal.InMemory
             Assert.Equal("5", accessResults.ReadFrom<int, string>("entryId", 1));
         }
         
+        [Fact]
+        public void TestThatJournalReaderStreams()
+        {
+            var limit = 1000;
+
+            _dispatcher.AfterCompleting(0);
+            _interest.AfterCompleting(0);
+
+            for (var count = 0; count < limit; ++count)
+            {
+                _journal.Append($"123-{count}", 1, new Test1Source(count), _interest, _object);
+            }
+
+            var access = AccessSafely.AfterCompleting(limit);
+
+            access.WritingWith<int>("sourcesCounter", state => _totalSources.IncrementAndGet());
+            access.ReadingWith("sourcesCount", () => _totalSources.Get());
+
+            // var all = _journal.JournalReader("test").AndThenTo(reader => reader.StreamAll()).Await();
+            var reader = _journal.JournalReader("test").Await();
+            var all = reader?.StreamAll().Await();
+            
+            Action<Test1Source> bundles = bundle => access.WriteUsing("sourcesCounter", 1);
+
+            _sink = new ConsumerSink<Test1Source>(bundles);
+            
+            all.FlowInto(_sink, 100);
+
+            var sourcesCount = access.ReadFromExpecting("sourcesCount", limit);
+
+            Assert.Equal(limit, _totalSources.Get());
+            Assert.Equal(_totalSources.Get(), sourcesCount);
+        }
+        
         public InMemoryEventJournalActorTest(ITestOutputHelper output)
         {
             var converter = new Converter(output);
@@ -217,9 +256,15 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.Journal.InMemory
     
     public class Test1Source : Source<string>
     {
-        private int _one = 1;
+        private readonly int _value;
 
-        public int One => _one;
+        public Test1Source() : this(1)
+        {
+        }
+
+        public Test1Source(int count) => _value = count;
+
+        public int One => _value;
     }
 
     public class Test2Source : Source<string>
@@ -229,58 +274,62 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.Journal.InMemory
         public int Two => _two;
     }
     
-    internal class Test1SourceAdapter : EntryAdapter<Test1Source, IEntry>
+    internal class Test1SourceAdapter : EntryAdapter
     {
-        public override Test1Source FromEntry(IEntry entry) => JsonSerialization.Deserialized<Test1Source>(entry.EntryRawData);
+        public override ISource FromEntry(IEntry entry) => JsonSerialization.Deserialized<Test1Source>(entry.EntryRawData);
         
-        public override IEntry ToEntry(Test1Source source, Metadata metadata)
+        public override IEntry ToEntry(ISource source, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(typeof(Test1Source), 1, serialization, metadata);
         }
 
-        public override IEntry ToEntry(Test1Source source, int version, Metadata metadata)
+        public override IEntry ToEntry(ISource source, int version, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(typeof(Test1Source), 1, serialization, version, metadata);
         }
 
-        public override IEntry ToEntry(Test1Source source, int version, string id, Metadata metadata)
+        public override IEntry ToEntry(ISource source, int version, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, typeof(Test1Source), 1, serialization, version, metadata);
         }
 
-        public override IEntry ToEntry(Test1Source source, string id, Metadata metadata)
+        public override Type SourceType { get; } = typeof(Test1Source);
+
+        public override IEntry ToEntry(ISource source, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, typeof(Test1Source), 1, serialization, metadata);
         }
     }
     
-    internal class Test2SourceAdapter : EntryAdapter<Test2Source, TextEntry>
+    internal class Test2SourceAdapter : EntryAdapter
     {
-        public override Test2Source FromEntry(TextEntry entry) => JsonSerialization.Deserialized<Test2Source>(entry.EntryData);
+        public override ISource FromEntry(IEntry entry) => JsonSerialization.Deserialized<Test2Source>(entry.EntryRawData);
 
-        public override TextEntry ToEntry(Test2Source source, Metadata metadata)
+        public override IEntry ToEntry(ISource source, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(typeof(Test2Source), 1, serialization, metadata);
         }
 
-        public override TextEntry ToEntry(Test2Source source, int version, Metadata metadata)
+        public override IEntry ToEntry(ISource source, int version, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(typeof(Test2Source), 1, serialization, version, metadata);
         }
 
-        public override TextEntry ToEntry(Test2Source source, int version, string id, Metadata metadata)
+        public override IEntry ToEntry(ISource source, int version, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, typeof(Test2Source), 1, serialization, version, metadata);
         }
 
-        public override TextEntry ToEntry(Test2Source source, string id, Metadata metadata)
+        public override Type SourceType { get; } = typeof(Test2Source);
+
+        public override IEntry ToEntry(ISource source, string id, Metadata metadata)
         {
             var serialization = JsonSerialization.Serialized(source);
             return new TextEntry(id, typeof(Test2Source), 1, serialization, metadata);
