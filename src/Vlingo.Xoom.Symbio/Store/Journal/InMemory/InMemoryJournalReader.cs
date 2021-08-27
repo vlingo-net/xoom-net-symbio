@@ -98,7 +98,7 @@ namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
 
         public ICompletes<long> Size => Completes.WithSuccess<long>(_journalView.Count);
 
-        public ICompletes<IStream> StreamAll() => null!;
+        public ICompletes<IStream> StreamAll() => null!; // provided by InMemoryJournalReaderActor
 
         public string Beginning { get; } = EntryReader.Beginning;
 
