@@ -16,10 +16,8 @@ namespace Vlingo.Xoom.Symbio.Store
         private readonly EntryAdapterProvider _entryAdapterProvider;
         private long _flowElementsRate;
         private readonly IEntryReader _entryReader;
-        private ISource<EntryBundle>? _entryReaderSource;
-        private IPublisher<EntryBundle>? _publisher;
         private readonly Stage _stage;
-        private EntryStreamSubscriber<EntryBundle>? _subscriber;
+        private EntryStreamSubscriber<object>? _subscriber;
 
         public EntryReaderStream(Stage stage, IEntryReader entryReader, EntryAdapterProvider entryAdapterProvider)
         {
@@ -50,13 +48,13 @@ namespace Vlingo.Xoom.Symbio.Store
                     Streams.Streams.DefaultBufferSize,
                     Streams.Streams.OverflowPolicy.DropCurrent);
 
-            _entryReaderSource = _stage.ActorFor<ISource<EntryBundle>>(() => new EntryReaderSource(_entryReader, _entryAdapterProvider, flowElementsRate));
+            var entryReaderSource = _stage.ActorFor<ISource<T>>(() => new EntryReaderSource<T>(_entryReader, _entryAdapterProvider, flowElementsRate));
 
-            _publisher = _stage.ActorFor<IPublisher<EntryBundle>>(() => new StreamPublisher<EntryBundle>(_entryReaderSource, configuration));
+            var publisher = _stage.ActorFor<IPublisher<T>>(() => new StreamPublisher<T>(entryReaderSource, configuration));
 
             var subscriber = _stage.ActorFor<ISubscriber<T>>(() => new EntryStreamSubscriber<T>(sink, flowElementsRate));
 
-            _publisher.Subscribe((ISubscriber<EntryBundle>) subscriber);
+            publisher.Subscribe(subscriber);
         }
 
         public void Stop() => _subscriber?.SubscriptionHook?.Cancel();

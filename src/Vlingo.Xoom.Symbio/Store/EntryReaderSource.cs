@@ -23,7 +23,7 @@ namespace Vlingo.Xoom.Symbio.Store
     /// provide a <code>maximumEntries</code> to the constructor, or use one of the two
     /// methods that requires a <code>maximumElements</code>.
     /// </summary>
-    public sealed class EntryReaderSource : Actor, ISource<EntryBundle>, IScheduled<object>
+    public sealed class EntryReaderSource<T> : Actor, ISource<T>, IScheduled<object>
     {
         private readonly Queue<IEntry> _cache;
         private readonly ICancellable _cancellable;
@@ -48,25 +48,25 @@ namespace Vlingo.Xoom.Symbio.Store
             _cancellable = Scheduler.Schedule(SelfAs<IScheduled<object?>>(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(Stream.FastProbeInterval));
         }
         
-        public ISource<EntryBundle> Empty() => Streams.Source<EntryBundle>.Empty();
+        public ISource<T> Empty() => Streams.Source<T>.Empty();
 
-        public ISource<EntryBundle> Only(IEnumerable<EntryBundle> elements) => Streams.Source<EntryBundle>.Only(elements);
+        public ISource<T> Only(IEnumerable<T> elements) => Streams.Source<T>.Only(elements);
 
-        public ISource<long> RangeOf(long startInclusive, long endExclusive) => Streams.Source<EntryBundle>.RangeOf(startInclusive, endExclusive);
+        public ISource<long> RangeOf(long startInclusive, long endExclusive) => Streams.Source<T>.RangeOf(startInclusive, endExclusive);
 
-        public long OrElseMaximum(long elements) => Streams.Source<EntryBundle>.OrElseMaximum(elements);
+        public long OrElseMaximum(long elements) => Streams.Source<T>.OrElseMaximum(elements);
 
-        public long OrElseMinimum(long elements) => Streams.Source<EntryBundle>.OrElseMinimum(elements);
+        public long OrElseMinimum(long elements) => Streams.Source<T>.OrElseMinimum(elements);
 
-        public ISource<EntryBundle> With(IEnumerable<EntryBundle> iterable) => Streams.Source<EntryBundle>.With(iterable);
+        public ISource<T> With(IEnumerable<T> iterable) => Streams.Source<T>.With(iterable);
 
-        public ISource<EntryBundle> With(IEnumerable<EntryBundle> iterable, bool slowIterable) => Streams.Source<EntryBundle>.With(iterable, slowIterable);
+        public ISource<T> With(IEnumerable<T> iterable, bool slowIterable) => Streams.Source<T>.With(iterable, slowIterable);
 
-        public ISource<EntryBundle> With(Func<EntryBundle> supplier) => Streams.Source<EntryBundle>.With(supplier);
+        public ISource<T> With(Func<T> supplier) => Streams.Source<T>.With(supplier);
 
-        public ISource<EntryBundle> With(Func<EntryBundle> supplier, bool slowSupplier) => Streams.Source<EntryBundle>.With(supplier, slowSupplier);
+        public ISource<T> With(Func<T> supplier, bool slowSupplier) => Streams.Source<T>.With(supplier, slowSupplier);
 
-        public ICompletes<Elements<EntryBundle>> Next()
+        public ICompletes<Elements<T>> Next()
         {
             if (_cache.Any())
             {
@@ -77,20 +77,22 @@ namespace Vlingo.Xoom.Symbio.Store
                     var entry = _cache.Dequeue();
                     // This little trick gets a PersistentEntry to a BaseEntry: entry.WithId(entry.Id)
                     var normalized = entry is BaseEntry ? entry : entry.WithId(entry.Id);
-                    var source = _entryAdapterProvider.AsSource<Source<EntryBundle>, IEntry>(normalized);
+                    var source = _entryAdapterProvider.AsSource<ISource, IEntry>(normalized);
                     next.Add(new EntryBundle(entry, source));
                 }
-                var elements = Elements<EntryBundle>.Of(next.ToArray());
-                return Completes().With(elements);
+                
+                // TODO: should have been -> var elements = Elements<T>.Of(next.Cast<T>().ToArray());
+                var partialElements = Elements<T>.Of(next.Select(e => e.Source).Cast<T>().ToArray());
+                return Completes().With(partialElements);
             }
-            return Completes().With(Elements<EntryBundle>.Empty());
+            return Completes().With(Elements<T>.Empty());
         }
 
-        public ICompletes<Elements<EntryBundle>> Next(int maximumElements) => Next();
+        public ICompletes<Elements<T>> Next(int maximumElements) => Next();
 
-        public ICompletes<Elements<EntryBundle>> Next(long index) => Next();
+        public ICompletes<Elements<T>> Next(long index) => Next();
 
-        public ICompletes<Elements<EntryBundle>> Next(long index, int maximumElements) => Next();
+        public ICompletes<Elements<T>> Next(long index, int maximumElements) => Next();
 
         public ICompletes<bool> IsSlow() => Completes().With(false);
 
