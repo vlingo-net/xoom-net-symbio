@@ -44,7 +44,7 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.Gap
             long previousId = -1;
             foreach (var currentEntry in entries2)
             {
-                long currentId = long.Parse(currentEntry.Id);
+                var currentId = long.Parse(currentEntry.Id);
                 Assert.True(previousId < currentId);
                 previousId = currentId;
             }
