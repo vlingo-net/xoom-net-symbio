@@ -50,7 +50,7 @@ namespace Vlingo.Xoom.Symbio
             if (!_adapters.ContainsKey(typeof(TSource)))
             {
                 _adapters.Add(typeof(TSource), adapter);
-                _namedAdapters.Add(typeof(TSource).FullName!, adapter);   
+                _namedAdapters.Add(typeof(TSource).AssemblyQualifiedName!, adapter);   
             }
         }
 
