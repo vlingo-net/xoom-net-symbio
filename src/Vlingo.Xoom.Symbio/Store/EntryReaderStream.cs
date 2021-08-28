@@ -17,7 +17,9 @@ namespace Vlingo.Xoom.Symbio.Store
         private long _flowElementsRate;
         private readonly IEntryReader _entryReader;
         private readonly Stage _stage;
+#pragma warning disable 649
         private EntryStreamSubscriber<object>? _subscriber;
+#pragma warning restore 649
 
         public EntryReaderStream(Stage stage, IEntryReader entryReader, EntryAdapterProvider entryAdapterProvider)
         {
