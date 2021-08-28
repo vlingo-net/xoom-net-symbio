@@ -222,6 +222,7 @@ namespace Vlingo.Xoom.Symbio.Tests.Store.Journal.InMemory
             access.ReadingWith("sourcesCount", () => _totalSources.Get());
 
             // var all = _journal.JournalReader("test").AndThenTo(reader => reader.StreamAll()).Await();
+            // TODO: the line above should be used instead of two lines below but can't because of https://github.com/vlingo-net/xoom-net-common/issues/63
             var reader = _journal.JournalReader("test").Await();
             var all = reader?.StreamAll().Await();
             
