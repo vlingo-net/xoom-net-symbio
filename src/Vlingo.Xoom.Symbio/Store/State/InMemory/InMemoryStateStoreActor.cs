@@ -255,7 +255,7 @@ namespace Vlingo.Xoom.Symbio.Store.State.InMemory
                         }
 
                         typeStore[id] = raw; // maybe useless as it was added by the line above var persistedState = typeStore.AddIfAbsent(raw.Id, raw);
-                        var entries = AppendEntries<TSource>(sources.Cast<ISource>(), stateVersion, metadata);
+                        var entries = AppendEntries(sources.Cast<ISource>(), stateVersion, metadata);
                         Dispatch(id, storeName, raw, entries);
 
                         interest.WriteResultedIn(Success.Of<StorageException, Result>(Result.Success), id, state, stateVersion, sources, @object);
@@ -273,7 +273,7 @@ namespace Vlingo.Xoom.Symbio.Store.State.InMemory
             }
         }
 
-        private IEnumerable<IEntry> AppendEntries<TSource>(IEnumerable<ISource> sources, int stateVersion, Metadata? metadata)
+        private IEnumerable<IEntry> AppendEntries(IEnumerable<ISource> sources, int stateVersion, Metadata? metadata)
         {
             var adapted = _entryAdapterProvider.AsEntries(sources, stateVersion, metadata);
             var appendEntries = adapted.ToList();
