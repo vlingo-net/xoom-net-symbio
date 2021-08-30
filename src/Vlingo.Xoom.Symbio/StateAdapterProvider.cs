@@ -99,7 +99,7 @@ namespace Vlingo.Xoom.Symbio
                 {
                     var type = Type.GetType(state.Type);
                     var simplifiedName = type?.FullName;
-                    if (!string.IsNullOrEmpty(simplifiedName) && !_namedAdapters.ContainsKey(simplifiedName))
+                    if (!string.IsNullOrEmpty(simplifiedName) && !_namedAdapters.ContainsKey(simplifiedName!))
                     {
                         return null;
                     }
