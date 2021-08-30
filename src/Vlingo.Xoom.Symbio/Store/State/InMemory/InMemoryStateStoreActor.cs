@@ -99,7 +99,7 @@ namespace Vlingo.Xoom.Symbio.Store.State.InMemory
                 throw new ArgumentNullException(nameof(storeName), $"Cannot retrieve the store for name: {storeName}");
             }
             
-            if (!_store.TryGetValue(storeName!, out var typeStore))
+            if (!_store.TryGetValue(storeName, out var typeStore))
             {
                 typeStore = new Dictionary<string, TRawState>();
             }
