@@ -5,12 +5,11 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
-namespace Vlingo.Xoom.Symbio.Store
+namespace Vlingo.Xoom.Symbio.Store;
+
+public enum DataFormat
 {
-    public enum DataFormat
-    {
-        Binary,
-        Native,
-        Text
-    }
+    Binary,
+    Native,
+    Text
 }

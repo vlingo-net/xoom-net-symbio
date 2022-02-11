@@ -7,21 +7,20 @@
 
 using Vlingo.Xoom.Common;
 
-namespace Vlingo.Xoom.Symbio.Store.Object
+namespace Vlingo.Xoom.Symbio.Store.Object;
+
+/// <summary>
+/// Defines the result of persisting to the store with a persistent object.
+/// </summary>
+public interface IPersistResultInterest
 {
     /// <summary>
-    /// Defines the result of persisting to the store with a persistent object.
+    /// Implemented by the interest of a given Object Store for persist operation results.
     /// </summary>
-    public interface IPersistResultInterest
-    {
-        /// <summary>
-        /// Implemented by the interest of a given Object Store for persist operation results.
-        /// </summary>
-        /// <param name="outcome">The <code>IOutcome{StorageException, Result}</code> of the persist operation</param>
-        /// <param name="stateObject">The object to persist; for PersistAll() this will be a <code>IEnumerable{Object}</code></param>
-        /// <param name="possible">The int number of possible objects to persist</param>
-        /// <param name="actual">The int number of actual objects persisted</param>
-        /// <param name="object">the object passed to Persist() that is sent back to the receiver, or null if not passed</param>
-        void PersistResultedIn(IOutcome<StorageException, Result> outcome, object? stateObject, int possible, int actual, object? @object);
-    }
+    /// <param name="outcome">The <code>IOutcome{StorageException, Result}</code> of the persist operation</param>
+    /// <param name="stateObject">The object to persist; for PersistAll() this will be a <code>IEnumerable{Object}</code></param>
+    /// <param name="possible">The int number of possible objects to persist</param>
+    /// <param name="actual">The int number of actual objects persisted</param>
+    /// <param name="object">the object passed to Persist() that is sent back to the receiver, or null if not passed</param>
+    void PersistResultedIn(IOutcome<StorageException, Result> outcome, object? stateObject, int possible, int actual, object? @object);
 }

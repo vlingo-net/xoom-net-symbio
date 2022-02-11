@@ -7,25 +7,24 @@
 
 using System;
 
-namespace Vlingo.Xoom.Symbio.Store
+namespace Vlingo.Xoom.Symbio.Store;
+
+public class StorageException : Exception
 {
-    public class StorageException : Exception
+    public Result Result { get; }
+
+    public StorageException(Result result, string message, Exception exception) : base(message, exception) => Result = result;
+
+    public StorageException(Result result, string message) : base(message) => Result = result;
+
+    public override bool Equals(object? obj)
     {
-        public Result Result { get; }
-
-        public StorageException(Result result, string message, Exception exception) : base(message, exception) => Result = result;
-
-        public StorageException(Result result, string message) : base(message) => Result = result;
-
-        public override bool Equals(object? obj)
+        if (obj == null || !obj.GetType().Equals(GetType()))
         {
-            if (obj == null || !obj.GetType().Equals(GetType()))
-            {
-                return false;
-            }
-            return Result == ((StorageException) obj).Result;
+            return false;
         }
-
-        public override int GetHashCode() => 31 * Result.GetHashCode();
+        return Result == ((StorageException) obj).Result;
     }
+
+    public override int GetHashCode() => 31 * Result.GetHashCode();
 }

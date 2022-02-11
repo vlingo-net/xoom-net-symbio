@@ -8,20 +8,19 @@
 using Reactive.Streams;
 using Vlingo.Xoom.Streams;
 
-namespace Vlingo.Xoom.Symbio.Store
+namespace Vlingo.Xoom.Symbio.Store;
+
+public class EntryStreamSubscriber<T> : StreamSubscriber<T>
 {
-    public class EntryStreamSubscriber<T> : StreamSubscriber<T>
+    public ISubscription? SubscriptionHook { get; private set; }
+
+    public EntryStreamSubscriber(Sink<T> sink, long requestThreshold) : base(sink, requestThreshold)
     {
-        public ISubscription? SubscriptionHook { get; private set; }
+    }
 
-        public EntryStreamSubscriber(Sink<T> sink, long requestThreshold) : base(sink, requestThreshold)
-        {
-        }
-
-        public override void OnSubscribe(ISubscription? subscription)
-        {
-            SubscriptionHook = subscription;
-            base.OnSubscribe(subscription);
-        }
+    public override void OnSubscribe(ISubscription? subscription)
+    {
+        SubscriptionHook = subscription;
+        base.OnSubscribe(subscription);
     }
 }

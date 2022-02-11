@@ -8,13 +8,12 @@
 using Vlingo.Xoom.Symbio.Store;
 using Vlingo.Xoom.Symbio.Store.Dispatch;
 
-namespace Vlingo.Xoom.Symbio.Tests.Store.Dispatch
+namespace Vlingo.Xoom.Symbio.Tests.Store.Dispatch;
+
+public class MockConfirmDispatchedResultInterest : IConfirmDispatchedResultInterest
 {
-    public class MockConfirmDispatchedResultInterest : IConfirmDispatchedResultInterest
+    public void ConfirmDispatchedResultedIn(Result result, string dispatchId)
     {
-        public void ConfirmDispatchedResultedIn(Result result, string dispatchId)
-        {
-            // not used
-        }
+        // not used
     }
 }

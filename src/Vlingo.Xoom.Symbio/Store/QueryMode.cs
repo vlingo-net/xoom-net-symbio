@@ -5,14 +5,13 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
-namespace Vlingo.Xoom.Symbio.Store
+namespace Vlingo.Xoom.Symbio.Store;
+
+/// <summary>
+/// The purpose of the query.
+/// </summary>
+public enum QueryMode
 {
-    /// <summary>
-    /// The purpose of the query.
-    /// </summary>
-    public enum QueryMode
-    {
-        ReadOnly,
-        ReadUpdate
-    }
+    ReadOnly,
+    ReadUpdate
 }

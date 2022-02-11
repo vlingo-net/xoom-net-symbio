@@ -7,19 +7,18 @@
 
 using System.Collections.Generic;
 
-namespace Vlingo.Xoom.Symbio.Store.Dispatch
+namespace Vlingo.Xoom.Symbio.Store.Dispatch;
+
+/// <summary>
+/// Defines the interface through which basic abstract storage implementations
+/// delegate to the technical implementations. See any of the existing concrete
+/// implementations for details.
+/// </summary>
+public interface IDispatcherControlDelegate
 {
-    /// <summary>
-    /// Defines the interface through which basic abstract storage implementations
-    /// delegate to the technical implementations. See any of the existing concrete
-    /// implementations for details.
-    /// </summary>
-    public interface IDispatcherControlDelegate
-    {
-        IEnumerable<Dispatchable> AllUnconfirmedDispatchableStates { get; }
+    IEnumerable<Dispatchable> AllUnconfirmedDispatchableStates { get; }
 
-        void ConfirmDispatched(string dispatchId);
+    void ConfirmDispatched(string dispatchId);
 
-        void Stop();
-    }
+    void Stop();
 }

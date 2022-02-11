@@ -8,40 +8,39 @@
 using System;
 using System.Collections.Generic;
 
-namespace Vlingo.Xoom.Symbio
+namespace Vlingo.Xoom.Symbio;
+
+public static class DictionaryExtensions
 {
-    public static class DictionaryExtensions
+    public static TValue AddIfAbsent<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value) where TKey : notnull
     {
-        public static TValue AddIfAbsent<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value) where TKey : notnull
+        if (dictionary.TryGetValue(key, out var ret))
         {
-            if (dictionary.TryGetValue(key, out var ret))
-            {
-                return ret;
-            }
+            return ret;
+        }
 
-            dictionary.Add(key, value);
+        dictionary.Add(key, value);
             
-            return default!;
-        }
+        return default!;
+    }
 
-        public static TValue ComputeIfAbsent<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Func<TKey, TValue> mappingFunction) where TKey : notnull
+    public static TValue ComputeIfAbsent<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Func<TKey, TValue> mappingFunction) where TKey : notnull
+    {
+        TValue v = default!;
+        if (!dictionary.ContainsKey(key))
         {
-            TValue v = default!;
-            if (!dictionary.ContainsKey(key))
+            var newValue = mappingFunction(key);
+            if (newValue != null)
             {
-                var newValue = mappingFunction(key);
-                if (newValue != null)
-                {
-                    dictionary.Add(key, newValue);
-                    return newValue;
-                }
+                dictionary.Add(key, newValue);
+                return newValue;
             }
-            else
-            {
-                return dictionary[key];
-            }
-
-            return v;
         }
+        else
+        {
+            return dictionary[key];
+        }
+
+        return v;
     }
 }

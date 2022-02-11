@@ -8,11 +8,10 @@
 using System.Collections.Generic;
 using Vlingo.Xoom.Common;
 
-namespace Vlingo.Xoom.Symbio.Tests.Store.Gap
+namespace Vlingo.Xoom.Symbio.Tests.Store.Gap;
+
+public interface IReader
 {
-    public interface IReader
-    {
-        public ICompletes<IEntry<string>> ReadOne();
-        public ICompletes<List<IEntry<string>>> ReadNext(int count);
-    }
+    public ICompletes<IEntry<string>> ReadOne();
+    public ICompletes<List<IEntry<string>>> ReadNext(int count);
 }

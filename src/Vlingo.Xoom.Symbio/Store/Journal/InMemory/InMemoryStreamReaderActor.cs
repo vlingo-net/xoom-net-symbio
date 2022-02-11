@@ -8,24 +8,23 @@
 using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
 
-namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
+namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory;
+
+public class InMemoryStreamReaderActor : Actor, IStreamReader
 {
-    public class InMemoryStreamReaderActor : Actor, IStreamReader
+    private readonly IStreamReader _reader;
+
+    public InMemoryStreamReaderActor(IStreamReader reader) => _reader = reader;
+
+    public override void Start()
     {
-        private readonly IStreamReader _reader;
-
-        public InMemoryStreamReaderActor(IStreamReader reader) => _reader = reader;
-
-        public override void Start()
-        {
-            Logger.Debug($"Starting InMemoryStreamReaderActor named: {_reader.Name}");
-            base.Start();
-        }
-
-        public ICompletes<EntityStream> StreamFor(string streamName) => Completes().With(_reader.StreamFor(streamName).Outcome);
-
-        public ICompletes<EntityStream> StreamFor(string streamName, int fromStreamVersion) => Completes().With(_reader.StreamFor(streamName, fromStreamVersion).Outcome);
-
-        public string Name => _reader.Name;
+        Logger.Debug($"Starting InMemoryStreamReaderActor named: {_reader.Name}");
+        base.Start();
     }
+
+    public ICompletes<EntityStream> StreamFor(string streamName) => Completes().With(_reader.StreamFor(streamName).Outcome);
+
+    public ICompletes<EntityStream> StreamFor(string streamName, int fromStreamVersion) => Completes().With(_reader.StreamFor(streamName, fromStreamVersion).Outcome);
+
+    public string Name => _reader.Name;
 }

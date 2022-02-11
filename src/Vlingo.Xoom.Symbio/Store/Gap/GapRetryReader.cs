@@ -11,65 +11,64 @@ using System.Linq;
 using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
 
-namespace Vlingo.Xoom.Symbio.Store.Gap
+namespace Vlingo.Xoom.Symbio.Store.Gap;
+
+/// <summary>
+/// Detection and fill up (gap prevention) functionality related to <see cref="IEntryReader"/>
+/// </summary>
+public class GapRetryReader<T>
 {
-    /// <summary>
-    /// Detection and fill up (gap prevention) functionality related to <see cref="IEntryReader"/>
-    /// </summary>
-    public class GapRetryReader<T>
+    private readonly IScheduled<RetryGappedEntries<T>> _actor;
+    private readonly Scheduler _scheduler;
+        
+    public GapRetryReader(Stage stage, Scheduler scheduler)
     {
-        private readonly IScheduled<RetryGappedEntries<T>> _actor;
-        private readonly Scheduler _scheduler;
+        _actor = stage.ActorFor<IScheduled<RetryGappedEntries<T>>>(() => new GapsFillUpActor<T>());
+        _scheduler = scheduler;
+    }
         
-        public GapRetryReader(Stage stage, Scheduler scheduler)
-        {
-            _actor = stage.ActorFor<IScheduled<RetryGappedEntries<T>>>(() => new GapsFillUpActor<T>());
-            _scheduler = scheduler;
-        }
+    /// <summary>
+    /// Single entry variant method of <see cref="M:DetecGaps"/>
+    /// </summary>
+    /// <param name="entry">The entry</param>
+    /// <param name="startIndex">This index refers to <see cref="M:IEntry.Id"/></param>
+    /// <param name="count">The number of entries</param>
+    /// <returns></returns>
+    public IEnumerable<long> DetectGaps(IEntry<T>? entry, long startIndex, long count)
+    {
+        var entries = entry == null ? Enumerable.Empty<IEntry<T>>() : new []{entry};
+        return DetectGaps(entries, startIndex, count);
+    }
         
-        /// <summary>
-        /// Single entry variant method of <see cref="M:DetecGaps"/>
-        /// </summary>
-        /// <param name="entry">The entry</param>
-        /// <param name="startIndex">This index refers to <see cref="M:IEntry.Id"/></param>
-        /// <param name="count">The number of entries</param>
-        /// <returns></returns>
-        public IEnumerable<long> DetectGaps(IEntry<T>? entry, long startIndex, long count)
-        {
-            var entries = entry == null ? Enumerable.Empty<IEntry<T>>() : new []{entry};
-            return DetectGaps(entries, startIndex, count);
-        }
-        
-        public IEnumerable<long> DetectGaps(IEnumerable<IEntry<T>> entries, long startIndex, long count)
-        {
-            var allIds = CollectIds(entries);
-            var gapIds = new List<long>();
+    public IEnumerable<long> DetectGaps(IEnumerable<IEntry<T>> entries, long startIndex, long count)
+    {
+        var allIds = CollectIds(entries);
+        var gapIds = new List<long>();
 
-            for (long index = 0; index < count; index++)
+        for (long index = 0; index < count; index++)
+        {
+            if (!allIds.Contains(startIndex + index))
             {
-                if (!allIds.Contains(startIndex + index))
-                {
-                    gapIds.Add(startIndex + index);
-                }
+                gapIds.Add(startIndex + index);
             }
+        }
 
-            return gapIds;
-        }
+        return gapIds;
+    }
         
-        public void ReadGaps(GappedEntries<T> gappedEntries, int retries, TimeSpan retryInterval, Func<List<long>, List<IEntry<T>>> gappedReader)
-        {
-            var entries = new RetryGappedEntries<T>(gappedEntries, 1, retries, retryInterval, gappedReader);
-            _scheduler.ScheduleOnce(_actor, entries, TimeSpan.Zero, retryInterval);
-        }
+    public void ReadGaps(GappedEntries<T> gappedEntries, int retries, TimeSpan retryInterval, Func<List<long>, List<IEntry<T>>> gappedReader)
+    {
+        var entries = new RetryGappedEntries<T>(gappedEntries, 1, retries, retryInterval, gappedReader);
+        _scheduler.ScheduleOnce(_actor, entries, TimeSpan.Zero, retryInterval);
+    }
         
-        private List<long> CollectIds(IEnumerable<IEntry<T>>? entries)
+    private List<long> CollectIds(IEnumerable<IEntry<T>>? entries)
+    {
+        if (entries == null)
         {
-            if (entries == null)
-            {
-                return new List<long>();
-            }
+            return new List<long>();
+        }
 
-            return entries.Select(e => long.Parse(e.Id)).ToList();
-        }
+        return entries.Select(e => long.Parse(e.Id)).ToList();
     }
 }

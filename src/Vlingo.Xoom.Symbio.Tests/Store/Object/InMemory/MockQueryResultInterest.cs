@@ -12,36 +12,35 @@ using Vlingo.Xoom.Symbio.Store;
 using Vlingo.Xoom.Symbio.Store.Object;
 using Vlingo.Xoom.Actors.TestKit;
 
-namespace Vlingo.Xoom.Symbio.Tests.Store.Object.InMemory
+namespace Vlingo.Xoom.Symbio.Tests.Store.Object.InMemory;
+
+public class MockQueryResultInterest : IQueryResultInterest
 {
-    public class MockQueryResultInterest : IQueryResultInterest
+    private AccessSafely _access = AccessSafely.AfterCompleting(1);
+    private readonly List<object> _stateObjects = new List<object>();
+
+    public void QueryAllResultedIn(IOutcome<StorageException, Result> outcome, QueryMultiResults results, object @object)
+        => _access.WriteUsing("addAll", results.StateObjects);
+
+    public void QueryObjectResultedIn(IOutcome<StorageException, Result> outcome, QuerySingleResult result, object @object)
     {
-        private AccessSafely _access = AccessSafely.AfterCompleting(1);
-        private readonly List<object> _stateObjects = new List<object>();
+        outcome
+            .AndThen(good => good)
+            .Otherwise(bad => throw new InvalidOperationException($"Bogus outcome: {bad.Message}"));
 
-        public void QueryAllResultedIn(IOutcome<StorageException, Result> outcome, QueryMultiResults results, object @object)
-            => _access.WriteUsing("addAll", results.StateObjects);
-
-        public void QueryObjectResultedIn(IOutcome<StorageException, Result> outcome, QuerySingleResult result, object @object)
-        {
-            outcome
-                .AndThen(good => good)
-                .Otherwise(bad => throw new InvalidOperationException($"Bogus outcome: {bad.Message}"));
-
-            _access.WriteUsing("add", result.StateObject);
-        }
+        _access.WriteUsing("add", result.StateObject);
+    }
         
-        public AccessSafely AfterCompleting(int times)
-        {
-            _access =
-                AccessSafely
-                    .AfterCompleting(times)
-                    .WritingWith<object>("add", value => _stateObjects.Add(value))
-                    .WritingWith<object>("addAll", values => _stateObjects.AddRange((List<StateObject>)values))
-                    .ReadingWith<int, object>("object", index => _stateObjects[index])
-                    .ReadingWith("size", () => _stateObjects.Count);
+    public AccessSafely AfterCompleting(int times)
+    {
+        _access =
+            AccessSafely
+                .AfterCompleting(times)
+                .WritingWith<object>("add", value => _stateObjects.Add(value))
+                .WritingWith<object>("addAll", values => _stateObjects.AddRange((List<StateObject>)values))
+                .ReadingWith<int, object>("object", index => _stateObjects[index])
+                .ReadingWith("size", () => _stateObjects.Count);
 
-            return _access;
-        }
+        return _access;
     }
 }

@@ -9,132 +9,131 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Vlingo.Xoom.Symbio.Store.Object
+namespace Vlingo.Xoom.Symbio.Store.Object;
+
+/// <summary>
+/// A base type for persistent object states.
+/// </summary>
+[Serializable]
+public abstract class StateObject
 {
+    private static long _initialVersion = 0L;
+        
     /// <summary>
-    /// A base type for persistent object states.
+    /// My surrogate (non-business) identity used by the database.
     /// </summary>
-    [Serializable]
-    public abstract class StateObject
+    private long _persistenceId = Unidentified;
+
+    /// <summary>
+    /// My persistent version, indicating how many state
+    /// mutations I have suffered over my lifetime. The default
+    /// value is <see cref="_initialVersion"/>.
+    /// </summary>
+    private long _version = _initialVersion;
+
+    /// <summary>
+    /// Answer <paramref name="stateObject"/> as a <code>StateObject</code>.
+    /// </summary>
+    /// <param name="stateObject"></param>
+    /// <returns>Casted <paramref name="stateObject"/> to <code>StateObject</code> or throws <exception cref="InvalidCastException"></exception></returns>
+    public static StateObject From(object stateObject) => (StateObject) stateObject;
+
+    /// <summary>
+    /// Increments my <see cref="Version"/>. This method is necessary for application-managed optimistic concurrency control, but should
+    /// not be used when the persistence mechanism manages this attribute on behalf of the application.
+    /// </summary>
+    public void IncrementVersion() => _version++;
+        
+    /// <summary>
+    /// Answer a <see cref="IEnumerable{T}"/> that may be used as query parameters.
+    /// </summary>
+    /// <returns><see cref="IEnumerable{T}"/></returns>
+    public IEnumerable<object> QueryList() => Enumerable.Empty<object>();
+        
+    /// <summary>
+    /// Answer a <code>IDictionary{string, object}</code> that may be used as query parameters.
+    /// </summary>
+    /// <returns><code>IDictionary{string, object}</code></returns>
+    public IDictionary<string, object> QueryMap() => new Dictionary<string, object>();
+
+    internal void SetPersistenceId(long persistenceId) => _persistenceId = persistenceId;
+
+    public override bool Equals(object? obj)
     {
-        private static long _initialVersion = 0L;
-        
-        /// <summary>
-        /// My surrogate (non-business) identity used by the database.
-        /// </summary>
-        private long _persistenceId = Unidentified;
-
-        /// <summary>
-        /// My persistent version, indicating how many state
-        /// mutations I have suffered over my lifetime. The default
-        /// value is <see cref="_initialVersion"/>.
-        /// </summary>
-        private long _version = _initialVersion;
-
-        /// <summary>
-        /// Answer <paramref name="stateObject"/> as a <code>StateObject</code>.
-        /// </summary>
-        /// <param name="stateObject"></param>
-        /// <returns>Casted <paramref name="stateObject"/> to <code>StateObject</code> or throws <exception cref="InvalidCastException"></exception></returns>
-        public static StateObject From(object stateObject) => (StateObject) stateObject;
-
-        /// <summary>
-        /// Increments my <see cref="Version"/>. This method is necessary for application-managed optimistic concurrency control, but should
-        /// not be used when the persistence mechanism manages this attribute on behalf of the application.
-        /// </summary>
-        public void IncrementVersion() => _version++;
-        
-        /// <summary>
-        /// Answer a <see cref="IEnumerable{T}"/> that may be used as query parameters.
-        /// </summary>
-        /// <returns><see cref="IEnumerable{T}"/></returns>
-        public IEnumerable<object> QueryList() => Enumerable.Empty<object>();
-        
-        /// <summary>
-        /// Answer a <code>IDictionary{string, object}</code> that may be used as query parameters.
-        /// </summary>
-        /// <returns><code>IDictionary{string, object}</code></returns>
-        public IDictionary<string, object> QueryMap() => new Dictionary<string, object>();
-
-        internal void SetPersistenceId(long persistenceId) => _persistenceId = persistenceId;
-
-        public override bool Equals(object? obj)
+        if (this == obj)
         {
-            if (this == obj)
-            {
-                return true;
-            }
-
-            if (obj == null)
-            {
-                return false;
-            }
-
-            if (GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            var other = (StateObject) obj;
-            
-            if (_persistenceId != other._persistenceId)
-            {
-                return false;
-            }
-
             return true;
         }
 
-        public override int GetHashCode()
+        if (obj == null)
         {
-            var prime = 31;
-            var result = 1;
-            result = prime * result + (int) ((ulong)_persistenceId ^ ((ulong)_persistenceId >> 32));
-            return result;
+            return false;
         }
 
-        /// <summary>
-        /// Gets the value of the unidentified id. May be used by subclasses to indicate they have not yet been persisted.
-        /// </summary>
-        public static long Unidentified { get; } = -1;
-
-        /// <summary>
-        /// Gets my persistence id.
-        /// </summary>
-        public long PersistenceId => _persistenceId;
-
-        /// <summary>
-        /// Gets a value whether or not I am uniquely identified or still awaiting identity assignment.
-        /// </summary>
-        public bool IsIdentified => _persistenceId != Unidentified;
-
-        /// <summary>
-        /// Gets my persistence version, which can be used to implement optimistic concurrency conflict detection.
-        /// </summary>
-        public long Version => _version;
-
-        /// <summary>
-        /// Construct my default state.
-        /// </summary>
-        protected StateObject()
+        if (GetType() != obj.GetType())
         {
+            return false;
         }
-        
-        /// <summary>
-        /// Construct my default state with <paramref name="persistenceId"/> and <paramref name="version"/>
-        /// </summary>
-        /// <param name="persistenceId">The long unique identity used for my persistence</param>
-        /// <param name="version">The persistent version</param>
-        protected StateObject(long persistenceId, long version)
+
+        var other = (StateObject) obj;
+            
+        if (_persistenceId != other._persistenceId)
         {
-            _persistenceId = persistenceId;
-            _version = version;
+            return false;
         }
-        
-        /// <summary>
-        /// Construct my default state with <paramref name="persistenceId"/>
-        /// </summary>
-        /// <param name="persistenceId">The long unique identity used for my persistence</param>
-        protected StateObject(long persistenceId) => _persistenceId = persistenceId;
+
+        return true;
     }
+
+    public override int GetHashCode()
+    {
+        var prime = 31;
+        var result = 1;
+        result = prime * result + (int) ((ulong)_persistenceId ^ ((ulong)_persistenceId >> 32));
+        return result;
+    }
+
+    /// <summary>
+    /// Gets the value of the unidentified id. May be used by subclasses to indicate they have not yet been persisted.
+    /// </summary>
+    public static long Unidentified { get; } = -1;
+
+    /// <summary>
+    /// Gets my persistence id.
+    /// </summary>
+    public long PersistenceId => _persistenceId;
+
+    /// <summary>
+    /// Gets a value whether or not I am uniquely identified or still awaiting identity assignment.
+    /// </summary>
+    public bool IsIdentified => _persistenceId != Unidentified;
+
+    /// <summary>
+    /// Gets my persistence version, which can be used to implement optimistic concurrency conflict detection.
+    /// </summary>
+    public long Version => _version;
+
+    /// <summary>
+    /// Construct my default state.
+    /// </summary>
+    protected StateObject()
+    {
+    }
+        
+    /// <summary>
+    /// Construct my default state with <paramref name="persistenceId"/> and <paramref name="version"/>
+    /// </summary>
+    /// <param name="persistenceId">The long unique identity used for my persistence</param>
+    /// <param name="version">The persistent version</param>
+    protected StateObject(long persistenceId, long version)
+    {
+        _persistenceId = persistenceId;
+        _version = version;
+    }
+        
+    /// <summary>
+    /// Construct my default state with <paramref name="persistenceId"/>
+    /// </summary>
+    /// <param name="persistenceId">The long unique identity used for my persistence</param>
+    protected StateObject(long persistenceId) => _persistenceId = persistenceId;
 }

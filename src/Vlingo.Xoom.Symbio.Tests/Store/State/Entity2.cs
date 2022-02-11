@@ -5,18 +5,17 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
-namespace Vlingo.Xoom.Symbio.Tests.Store.State
-{
-    public class Entity2
-    {
-        public string Id { get; }
-        
-        public string Value { get; }
+namespace Vlingo.Xoom.Symbio.Tests.Store.State;
 
-        public Entity2(string id, string value)
-        {
-            Id = id;
-            Value = value;
-        }
+public class Entity2
+{
+    public string Id { get; }
+        
+    public string Value { get; }
+
+    public Entity2(string id, string value)
+    {
+        Id = id;
+        Value = value;
     }
 }

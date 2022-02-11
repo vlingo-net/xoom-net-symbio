@@ -14,99 +14,98 @@ using Vlingo.Xoom.Actors.TestKit;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
+namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory;
+
+public class InMemoryStateStoreEntryReaderActorTest
 {
-    public class InMemoryStateStoreEntryReaderActorTest
+    private const string Id1 = "123-A";
+    private const string Id2 = "123-B";
+    private const string Id3 = "123-C";
+
+    private readonly MockStateStoreDispatcher<TextState> _dispatcher;
+    private readonly EntryAdapterProvider _entryAdapterProvider;
+    private readonly MockStateStoreResultInterest _interest;
+    private readonly IStateStoreEntryReader _reader;
+    private readonly IStateStore _store;
+
+    [Fact]
+    public void TestThatEntryReaderReadsOne()
     {
-        private const string Id1 = "123-A";
-        private const string Id2 = "123-B";
-        private const string Id3 = "123-C";
+        var access = _interest.AfterCompleting<Entity1, Event>(3);
+        _dispatcher.AfterCompleting(0);
 
-        private readonly MockStateStoreDispatcher<TextState> _dispatcher;
-        private readonly EntryAdapterProvider _entryAdapterProvider;
-        private readonly MockStateStoreResultInterest _interest;
-        private readonly IStateStoreEntryReader _reader;
-        private readonly IStateStore _store;
+        _store.Write(Id1, new Entity1(Id1, 10), 1, new List<Event> {new Event1()}, _interest);
+        _store.Write(Id2, new Entity2(Id2, "20"), 1, new List<Event> {new Event2()}, _interest);
+        _store.Write(Id3, new Entity1(Id3, 30), 1, new List<Event> {new Event3()}, _interest);
 
-        [Fact]
-        public void TestThatEntryReaderReadsOne()
-        {
-            var access = _interest.AfterCompleting<Entity1, Event>(3);
-            _dispatcher.AfterCompleting(0);
+        Assert.Equal(new Event1(), access.ReadFrom<object>("sources"));
+        Assert.Equal(new Event2(), access.ReadFrom<object>("sources"));
+        Assert.Equal(new Event3(), access.ReadFrom<object>("sources"));
 
-            _store.Write(Id1, new Entity1(Id1, 10), 1, new List<Event> {new Event1()}, _interest);
-            _store.Write(Id2, new Entity2(Id2, "20"), 1, new List<Event> {new Event2()}, _interest);
-            _store.Write(Id3, new Entity1(Id3, 30), 1, new List<Event> {new Event3()}, _interest);
+        var entry1 = _reader.ReadNext().Await();
+        Assert.True(_entryAdapterProvider.AsEntry(new Event1(), 1, Metadata.NullMetadata()).WithId("0").Equals(entry1));
+        var entry2 = _reader.ReadNext().Await();
+        Assert.True(_entryAdapterProvider.AsEntry(new Event2(), 1, Metadata.NullMetadata()).WithId("1").Equals(entry2));
+        var entry3 = _reader.ReadNext().Await();
+        Assert.True(_entryAdapterProvider.AsEntry(new Event3(), 1, Metadata.NullMetadata()).WithId("2").Equals(entry3));
 
-            Assert.Equal(new Event1(), access.ReadFrom<object>("sources"));
-            Assert.Equal(new Event2(), access.ReadFrom<object>("sources"));
-            Assert.Equal(new Event3(), access.ReadFrom<object>("sources"));
+        _reader.Rewind();
+        Assert.Equal(new List<IEntry> { entry1, entry2, entry3}, _reader.ReadNext(3).Await());
+    }
 
-            var entry1 = _reader.ReadNext().Await();
-            Assert.True(_entryAdapterProvider.AsEntry(new Event1(), 1, Metadata.NullMetadata()).WithId("0").Equals(entry1));
-            var entry2 = _reader.ReadNext().Await();
-            Assert.True(_entryAdapterProvider.AsEntry(new Event2(), 1, Metadata.NullMetadata()).WithId("1").Equals(entry2));
-            var entry3 = _reader.ReadNext().Await();
-            Assert.True(_entryAdapterProvider.AsEntry(new Event3(), 1, Metadata.NullMetadata()).WithId("2").Equals(entry3));
-
-            _reader.Rewind();
-            Assert.Equal(new List<IEntry> { entry1, entry2, entry3}, _reader.ReadNext(3).Await());
-        }
-
-        public InMemoryStateStoreEntryReaderActorTest(ITestOutputHelper output)
-        {
-            var converter = new Converter(output);
-            Console.SetOut(converter);
+    public InMemoryStateStoreEntryReaderActorTest(ITestOutputHelper output)
+    {
+        var converter = new Converter(output);
+        Console.SetOut(converter);
             
-            var testWorld = TestWorld.StartWithDefaults("test-store");
-            var world = testWorld.World;
+        var testWorld = TestWorld.StartWithDefaults("test-store");
+        var world = testWorld.World;
 
-            _interest = new MockStateStoreResultInterest();
-            _dispatcher = new MockStateStoreDispatcher<TextState>(_interest);
+        _interest = new MockStateStoreResultInterest();
+        _dispatcher = new MockStateStoreDispatcher<TextState>(_interest);
 
-            var stateAdapterProvider = new StateAdapterProvider(world);
-            _entryAdapterProvider = new EntryAdapterProvider(world);
+        var stateAdapterProvider = new StateAdapterProvider(world);
+        _entryAdapterProvider = new EntryAdapterProvider(world);
 
-            stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
-            // NOTE: No adapter registered for Entity2.class because it will use the default
+        stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
+        // NOTE: No adapter registered for Entity2.class because it will use the default
 
-            _store = world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState>), new List<IDispatcher> {_dispatcher});
+        _store = world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState>), new List<IDispatcher> {_dispatcher});
             
-            var completes = _store.EntryReader<IEntry<string>>("test");
-            _reader = completes.Await();
+        var completes = _store.EntryReader<IEntry<string>>("test");
+        _reader = completes.Await();
 
-            StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity1).FullName, typeof(Entity1));
-            StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity2).FullName, typeof(Entity2));
-        }
+        StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity1).FullName, typeof(Entity1));
+        StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity2).FullName, typeof(Entity2));
     }
+}
     
-    public abstract class Event : Source<Event>
+public abstract class Event : Source<Event>
+{
+    public override bool Equals(object obj)
     {
-        public override bool Equals(object obj)
+        if (obj == null || obj.GetType() != GetType())
         {
-            if (obj == null || obj.GetType() != GetType())
-            {
-                return false;
-            }
+            return false;
+        }
             
-            return true;
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        return true;
     }
 
-    public class Event1 : Event
+    public override int GetHashCode()
     {
+        return base.GetHashCode();
     }
+}
+
+public class Event1 : Event
+{
+}
     
-    public class Event2 : Event
-    {
-    }
+public class Event2 : Event
+{
+}
     
-    public class Event3 : Event
-    {
-    }
+public class Event3 : Event
+{
 }

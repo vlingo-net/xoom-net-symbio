@@ -5,23 +5,22 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
-namespace Vlingo.Xoom.Symbio.Store.Dispatch
+namespace Vlingo.Xoom.Symbio.Store.Dispatch;
+
+/// <summary>
+/// Defines the support for dispatching.
+/// </summary>
+public interface IDispatcher
 {
     /// <summary>
-    /// Defines the support for dispatching.
+    /// Register the <paramref name="control"/> with the receiver.
     /// </summary>
-    public interface IDispatcher
-    {
-        /// <summary>
-        /// Register the <paramref name="control"/> with the receiver.
-        /// </summary>
-        /// <param name="control">The <see cref="IDispatcherControl"/> to register</param>
-        void ControlWith(IDispatcherControl control);
+    /// <param name="control">The <see cref="IDispatcherControl"/> to register</param>
+    void ControlWith(IDispatcherControl control);
 
-        /// <summary>
-        /// Dispatch the <see cref="Dispatchable"/> instance.
-        /// </summary>
-        /// <param name="dispatchable">The <see cref="Dispatchable"/> instance to this dispatch</param>
-        void Dispatch(Dispatchable dispatchable);
-    }
+    /// <summary>
+    /// Dispatch the <see cref="Dispatchable"/> instance.
+    /// </summary>
+    /// <param name="dispatchable">The <see cref="Dispatchable"/> instance to this dispatch</param>
+    void Dispatch(Dispatchable dispatchable);
 }

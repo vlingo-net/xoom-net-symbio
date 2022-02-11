@@ -9,32 +9,31 @@ using System;
 using Vlingo.Xoom.Common.Serialization;
 using Vlingo.Xoom.Symbio.Store;
 
-namespace Vlingo.Xoom.Symbio
+namespace Vlingo.Xoom.Symbio;
+
+public sealed class DefaultTextStateAdapter : StateAdapter<object, TextState>
 {
-    public sealed class DefaultTextStateAdapter : StateAdapter<object, TextState>
+    public override int TypeVersion => 1;
+
+    public override object FromRawState(TextState raw)
     {
-        public override int TypeVersion => 1;
-
-        public override object FromRawState(TextState raw)
+        try
         {
-            try
-            {
-                var stateType = StoredTypes.ForName(raw.Type);
-                return JsonSerialization.Deserialized(raw.Data, stateType)!;
-            } 
-            catch (Exception e) 
-            {
-                throw new InvalidOperationException($"Cannot convert to type: {raw.Type}", e);
-            }
-        }
-
-        public override TOtherState FromRawState<TOtherState>(TextState raw) =>
-            (TOtherState)JsonSerialization.Deserialized(raw.Data, typeof(TOtherState))!;
-
-        public override TextState ToRawState(string id, object state, int stateVersion, Metadata metadata)
+            var stateType = StoredTypes.ForName(raw.Type);
+            return JsonSerialization.Deserialized(raw.Data, stateType)!;
+        } 
+        catch (Exception e) 
         {
-            var serialization = JsonSerialization.Serialized(state);
-            return new TextState(id, state.GetType(), TypeVersion, serialization, stateVersion, metadata);
+            throw new InvalidOperationException($"Cannot convert to type: {raw.Type}", e);
         }
+    }
+
+    public override TOtherState FromRawState<TOtherState>(TextState raw) =>
+        (TOtherState)JsonSerialization.Deserialized(raw.Data, typeof(TOtherState))!;
+
+    public override TextState ToRawState(string id, object state, int stateVersion, Metadata metadata)
+    {
+        var serialization = JsonSerialization.Serialized(state);
+        return new TextState(id, state.GetType(), TypeVersion, serialization, stateVersion, metadata);
     }
 }

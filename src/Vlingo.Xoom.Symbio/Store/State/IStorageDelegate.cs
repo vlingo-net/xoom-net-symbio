@@ -5,29 +5,28 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
-namespace Vlingo.Xoom.Symbio.Store.State
+namespace Vlingo.Xoom.Symbio.Store.State;
+
+/// <summary>
+/// Defines the interface through which basic abstract storage implementations
+/// delegate to the technical implementations. See any of the existing concrete
+/// implementations for details.
+/// </summary>
+public interface IStorageDelegate
 {
-    /// <summary>
-    /// Defines the interface through which basic abstract storage implementations
-    /// delegate to the technical implementations. See any of the existing concrete
-    /// implementations for details.
-    /// </summary>
-    public interface IStorageDelegate
-    {
-        IStorageDelegate Copy();
+    IStorageDelegate Copy();
 
-        void Close();
+    void Close();
         
-        bool IsClosed { get; }
+    bool IsClosed { get; }
         
-        Advice? EntryReaderAdvice { get; }
+    Advice? EntryReaderAdvice { get; }
 
-        void Initialize();
+    void Initialize();
         
-        string? OriginalId { get; }
+    string? OriginalId { get; }
 
-        TState StateFrom<TState, TResult>(TResult result, string id);
+    TState StateFrom<TState, TResult>(TResult result, string id);
         
-        TState StateFrom<TState, TResult>(TResult result, string id, int columnOffset);
-    }
+    TState StateFrom<TState, TResult>(TResult result, string id, int columnOffset);
 }

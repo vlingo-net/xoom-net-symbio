@@ -5,22 +5,21 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
-namespace Vlingo.Xoom.Symbio.Store
+namespace Vlingo.Xoom.Symbio.Store;
+
+public enum Result
 {
-    public enum Result
-    {
-        ConcurrencyViolation,
+    ConcurrencyViolation,
         
-        Error,
+    Error,
         
-        Failure,
+    Failure,
         
-        NotFound,
+    NotFound,
         
-        NotAllFound,
+    NotAllFound,
         
-        NoTypeStore,
+    NoTypeStore,
         
-        Success
-    }
+    Success
 }

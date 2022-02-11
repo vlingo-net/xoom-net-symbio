@@ -5,18 +5,17 @@
 // was not distributed with this file, You can obtain
 // one at https://mozilla.org/MPL/2.0/.
 
-namespace Vlingo.Xoom.Symbio.Store.Dispatch
+namespace Vlingo.Xoom.Symbio.Store.Dispatch;
+
+public class NoOpDispatcher : IDispatcher, IConfirmDispatchedResultInterest
 {
-    public class NoOpDispatcher : IDispatcher, IConfirmDispatchedResultInterest
+    private IDispatcherControl? _control;
+
+    public void ControlWith(IDispatcherControl control) => _control = control;
+
+    public void Dispatch(Dispatchable dispatchable) => _control?.ConfirmDispatched(dispatchable.Id, this);
+
+    public void ConfirmDispatchedResultedIn(Result result, string dispatchId)
     {
-        private IDispatcherControl? _control;
-
-        public void ControlWith(IDispatcherControl control) => _control = control;
-
-        public void Dispatch(Dispatchable dispatchable) => _control?.ConfirmDispatched(dispatchable.Id, this);
-
-        public void ConfirmDispatchedResultedIn(Result result, string dispatchId)
-        {
-        }
     }
 }

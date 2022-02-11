@@ -10,44 +10,43 @@ using Vlingo.Xoom.Actors;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Vlingo.Xoom.Symbio.Tests.Store.Gap
+namespace Vlingo.Xoom.Symbio.Tests.Store.Gap;
+
+public class RetryActorTest
 {
-    public class RetryActorTest
+    private readonly IReader _readerActor;
+        
+    public RetryActorTest(ITestOutputHelper output)
     {
-        private readonly IReader _readerActor;
-        
-        public RetryActorTest(ITestOutputHelper output)
-        {
-            var converter = new Converter(output);
-            Console.SetOut(converter);
+        var converter = new Converter(output);
+        Console.SetOut(converter);
             
-            var world = World.StartWithDefaults("retry-actor-tests");
-            _readerActor = world.ActorFor<IReader>(() => new RetryReaderActor());
-        }
+        var world = World.StartWithDefaults("retry-actor-tests");
+        _readerActor = world.ActorFor<IReader>(() => new RetryReaderActor());
+    }
         
-        [Fact]
-        public void ReadTest()
-        {
-            var entry = _readerActor.ReadOne().Await();
-            Assert.Equal("0", entry.Id);
+    [Fact]
+    public void ReadTest()
+    {
+        var entry = _readerActor.ReadOne().Await();
+        Assert.Equal("0", entry.Id);
 
-            var entry2 = _readerActor.ReadOne().Await();
-            Assert.Equal("1", entry2.Id);
+        var entry2 = _readerActor.ReadOne().Await();
+        Assert.Equal("1", entry2.Id);
 
-            var entries = _readerActor.ReadNext(10).Await();
-            Assert.Equal(10, entries.Count);
+        var entries = _readerActor.ReadNext(10).Await();
+        Assert.Equal(10, entries.Count);
 
-            var entries2 = _readerActor.ReadNext(50).Await();
-            // 4 entries out of 50 didn't get loaded at all
-            Assert.Equal(46, entries2.Count);
+        var entries2 = _readerActor.ReadNext(50).Await();
+        // 4 entries out of 50 didn't get loaded at all
+        Assert.Equal(46, entries2.Count);
             
-            long previousId = -1;
-            foreach (var currentEntry in entries2)
-            {
-                var currentId = long.Parse(currentEntry.Id);
-                Assert.True(previousId < currentId);
-                previousId = currentId;
-            }
+        long previousId = -1;
+        foreach (var currentEntry in entries2)
+        {
+            var currentId = long.Parse(currentEntry.Id);
+            Assert.True(previousId < currentId);
+            previousId = currentId;
         }
     }
 }

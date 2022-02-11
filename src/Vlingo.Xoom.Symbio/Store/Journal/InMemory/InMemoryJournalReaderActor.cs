@@ -10,48 +10,47 @@ using Vlingo.Xoom.Actors;
 using Vlingo.Xoom.Common;
 using Vlingo.Xoom.Streams;
 
-namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory
+namespace Vlingo.Xoom.Symbio.Store.Journal.InMemory;
+
+public class InMemoryJournalReaderActor : Actor, IJournalReader
 {
-    public class InMemoryJournalReaderActor : Actor, IJournalReader
+    private readonly EntryAdapterProvider _entryAdapterProvider;
+    private readonly IJournalReader _reader;
+
+    public InMemoryJournalReaderActor(IJournalReader reader, EntryAdapterProvider entryAdapterProvider)
     {
-        private readonly EntryAdapterProvider _entryAdapterProvider;
-        private readonly IJournalReader _reader;
-
-        public InMemoryJournalReaderActor(IJournalReader reader, EntryAdapterProvider entryAdapterProvider)
-        {
-            _reader = reader;
-            _entryAdapterProvider = entryAdapterProvider;
-        }
-
-        public void Close() => _reader.Close();
-
-        public ICompletes<IEntry> ReadNext() => Completes().With(_reader.ReadNext().Outcome);
-
-        public ICompletes<IEntry> ReadNext(string fromId) => Completes().With(_reader.ReadNext(fromId).Outcome);
-
-        public ICompletes<IEnumerable<IEntry>> ReadNext(int maximumEntries) => Completes().With(_reader.ReadNext(maximumEntries).Outcome);
-
-        public ICompletes<IEnumerable<IEntry>> ReadNext(string fromId, int maximumEntries) => Completes().With(_reader.ReadNext(fromId, maximumEntries).Outcome);
-
-        public void Rewind() => _reader.Rewind();
-
-        public ICompletes<string> SeekTo(string id) => Completes().With(_reader.SeekTo(id).Outcome);
-
-        public ICompletes<string> Name => Completes().With(_reader.Name.Outcome);
-        
-        public ICompletes<long> Size => Completes().With(_reader.Size.Outcome);
-        
-        public ICompletes<IStream> StreamAll() => 
-            Completes().With((IStream) new EntryReaderStream(Stage, SelfAs<IJournalReader>(), _entryAdapterProvider));
-
-        public string Beginning { get; } = EntryReader.Beginning;
-
-        public string End { get; } = EntryReader.End;
-
-        public string Query { get; } = EntryReader.Query;
-
-        public int DefaultGapPreventionRetries { get; } = EntryReader.DefaultGapPreventionRetries;
-
-        public long DefaultGapPreventionRetryInterval { get; } = EntryReader.DefaultGapPreventionRetryInterval;
+        _reader = reader;
+        _entryAdapterProvider = entryAdapterProvider;
     }
+
+    public void Close() => _reader.Close();
+
+    public ICompletes<IEntry> ReadNext() => Completes().With(_reader.ReadNext().Outcome);
+
+    public ICompletes<IEntry> ReadNext(string fromId) => Completes().With(_reader.ReadNext(fromId).Outcome);
+
+    public ICompletes<IEnumerable<IEntry>> ReadNext(int maximumEntries) => Completes().With(_reader.ReadNext(maximumEntries).Outcome);
+
+    public ICompletes<IEnumerable<IEntry>> ReadNext(string fromId, int maximumEntries) => Completes().With(_reader.ReadNext(fromId, maximumEntries).Outcome);
+
+    public void Rewind() => _reader.Rewind();
+
+    public ICompletes<string> SeekTo(string id) => Completes().With(_reader.SeekTo(id).Outcome);
+
+    public ICompletes<string> Name => Completes().With(_reader.Name.Outcome);
+        
+    public ICompletes<long> Size => Completes().With(_reader.Size.Outcome);
+        
+    public ICompletes<IStream> StreamAll() => 
+        Completes().With((IStream) new EntryReaderStream(Stage, SelfAs<IJournalReader>(), _entryAdapterProvider));
+
+    public string Beginning { get; } = EntryReader.Beginning;
+
+    public string End { get; } = EntryReader.End;
+
+    public string Query { get; } = EntryReader.Query;
+
+    public int DefaultGapPreventionRetries { get; } = EntryReader.DefaultGapPreventionRetries;
+
+    public long DefaultGapPreventionRetryInterval { get; } = EntryReader.DefaultGapPreventionRetryInterval;
 }

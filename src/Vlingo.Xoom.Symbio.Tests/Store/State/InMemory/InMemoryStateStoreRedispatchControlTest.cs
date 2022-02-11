@@ -15,72 +15,71 @@ using Xunit;
 using Xunit.Abstractions;
 using IDispatcher = Vlingo.Xoom.Symbio.Store.Dispatch.IDispatcher;
 
-namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory
+namespace Vlingo.Xoom.Symbio.Tests.Store.State.InMemory;
+
+public class InMemoryStateStoreRedispatchControlTest : IDisposable
 {
-    public class InMemoryStateStoreRedispatchControlTest : IDisposable
+    private static string _storeName = typeof(Entity1).FullName;
+
+    private readonly MockStateStoreDispatcher<TextState> _dispatcher;
+    private readonly MockStateStoreResultInterest _interest;
+    private readonly IStateStore _store;
+    private readonly World _world;
+
+    [Fact]
+    public void TestRedispatch()
     {
-        private static string _storeName = typeof(Entity1).FullName;
+        var accessDispatcher = _dispatcher.AfterCompleting(3);
+            
+        var entity = new Entity1("123", 5);
 
-        private readonly MockStateStoreDispatcher<TextState> _dispatcher;
-        private readonly MockStateStoreResultInterest _interest;
-        private readonly IStateStore _store;
-        private readonly World _world;
+        accessDispatcher.WriteUsing("processDispatch", false);
+        _store.Write(entity.Id, entity, 1, _interest);
 
-        [Fact]
-        public void TestRedispatch()
+        try
         {
-            var accessDispatcher = _dispatcher.AfterCompleting(3);
-            
-            var entity = new Entity1("123", 5);
-
-            accessDispatcher.WriteUsing("processDispatch", false);
-            _store.Write(entity.Id, entity, 1, _interest);
-
-            try
-            {
-                Thread.Sleep(3000);
-            }
-            catch
-            {
-                // ignore
-            }
-
-            accessDispatcher.WriteUsing("processDispatch", true);
-            
-            accessDispatcher.ReadFromExpecting("dispatchedStateCount", 1);
-
-            var dispatchedStateCount = accessDispatcher.ReadFrom<int>("dispatchedStateCount");
-            Assert.True(dispatchedStateCount == 1, "dispatchedStateCount");
-
-            var dispatchAttemptCount = accessDispatcher.ReadFrom<int>("dispatchAttemptCount");
-            Assert.True(dispatchAttemptCount > 1, "dispatchAttemptCount");
+            Thread.Sleep(3000);
+        }
+        catch
+        {
+            // ignore
         }
 
-        public InMemoryStateStoreRedispatchControlTest(ITestOutputHelper output)
-        {
-            var converter = new Converter(output);
-            Console.SetOut(converter);
+        accessDispatcher.WriteUsing("processDispatch", true);
             
-            _world = World.StartWithDefaults("test-store");
+        accessDispatcher.ReadFromExpecting("dispatchedStateCount", 1);
 
-            _interest = new MockStateStoreResultInterest();
-            _interest.AfterCompleting<string, Entity1>(0);
-            _dispatcher = new MockStateStoreDispatcher<TextState>(_interest);
+        var dispatchedStateCount = accessDispatcher.ReadFrom<int>("dispatchedStateCount");
+        Assert.True(dispatchedStateCount == 1, "dispatchedStateCount");
 
-            var stateAdapterProvider = new StateAdapterProvider(_world);
-            new EntryAdapterProvider(_world);
+        var dispatchAttemptCount = accessDispatcher.ReadFrom<int>("dispatchAttemptCount");
+        Assert.True(dispatchAttemptCount > 1, "dispatchAttemptCount");
+    }
 
-            stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
-            // NOTE: No adapter registered for Entity2.class because it will use the default
-
-            StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity1).FullName, typeof(Entity1));
+    public InMemoryStateStoreRedispatchControlTest(ITestOutputHelper output)
+    {
+        var converter = new Converter(output);
+        Console.SetOut(converter);
             
-            _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState>), new List<IDispatcher> {_dispatcher});
-        }
+        _world = World.StartWithDefaults("test-store");
 
-        public void Dispose()
-        {
-            _world.Terminate();
-        }
+        _interest = new MockStateStoreResultInterest();
+        _interest.AfterCompleting<string, Entity1>(0);
+        _dispatcher = new MockStateStoreDispatcher<TextState>(_interest);
+
+        var stateAdapterProvider = new StateAdapterProvider(_world);
+        new EntryAdapterProvider(_world);
+
+        stateAdapterProvider.RegisterAdapter(new Entity1StateAdapter());
+        // NOTE: No adapter registered for Entity2.class because it will use the default
+
+        StateTypeStateStoreMap.StateTypeToStoreName(typeof(Entity1).FullName, typeof(Entity1));
+            
+        _store = _world.ActorFor<IStateStore>(typeof(InMemoryStateStoreActor<TextState>), new List<IDispatcher> {_dispatcher});
+    }
+
+    public void Dispose()
+    {
+        _world.Terminate();
     }
 }

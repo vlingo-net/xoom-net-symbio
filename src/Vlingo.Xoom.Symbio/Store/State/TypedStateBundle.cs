@@ -7,54 +7,53 @@
 
 using System;
 
-namespace Vlingo.Xoom.Symbio.Store.State
+namespace Vlingo.Xoom.Symbio.Store.State;
+
+/// <summary>
+/// Used for writing and reading multiple states in one batch.
+/// </summary>
+public class TypedStateBundle
 {
-    /// <summary>
-    /// Used for writing and reading multiple states in one batch.
-    /// </summary>
-    public class TypedStateBundle
+    public string? Id { get; }
+    public Type? Type { get; }
+    public object? State { get; }
+    public int StateVersion { get; }
+    public Metadata? Metadata { get; }
+
+    public TypedStateBundle(string? id, Type? type, object? state, int stateVersion, Metadata? metadata)
     {
-        public string? Id { get; }
-        public Type? Type { get; }
-        public object? State { get; }
-        public int StateVersion { get; }
-        public Metadata? Metadata { get; }
-
-        public TypedStateBundle(string? id, Type? type, object? state, int stateVersion, Metadata? metadata)
-        {
-            Id = id;
-            Type = type;
-            State = state;
-            StateVersion = stateVersion;
-            Metadata = metadata;
-        }
-
-        public TypedStateBundle(string? id, object? state, int stateVersion, Metadata? metadata)
-            : this(id, null, state, stateVersion, metadata)
-        {
-        }
-
-        public TypedStateBundle(string? id, Type type) : this(id, type, null, 0, null)
-        {
-        }
+        Id = id;
+        Type = type;
+        State = state;
+        StateVersion = stateVersion;
+        Metadata = metadata;
     }
-    
-    public class TypedStateBundle<T> : TypedStateBundle
+
+    public TypedStateBundle(string? id, object? state, int stateVersion, Metadata? metadata)
+        : this(id, null, state, stateVersion, metadata)
     {
-        public T TypedState => (T) State!;
+    }
+
+    public TypedStateBundle(string? id, Type type) : this(id, type, null, 0, null)
+    {
+    }
+}
+    
+public class TypedStateBundle<T> : TypedStateBundle
+{
+    public T TypedState => (T) State!;
         
-        public TypedStateBundle(string? id, Type? type, object? state, int stateVersion, Metadata? metadata)
-            : base(id, type, state, stateVersion, metadata)
-        {
-        }
+    public TypedStateBundle(string? id, Type? type, object? state, int stateVersion, Metadata? metadata)
+        : base(id, type, state, stateVersion, metadata)
+    {
+    }
 
-        public TypedStateBundle(string? id, object state, int stateVersion, Metadata metadata)
-            : base(id, state, stateVersion, metadata)
-        {
-        }
+    public TypedStateBundle(string? id, object state, int stateVersion, Metadata metadata)
+        : base(id, state, stateVersion, metadata)
+    {
+    }
 
-        public TypedStateBundle(string? id, Type type) : base(id, type)
-        {
-        }
+    public TypedStateBundle(string? id, Type type) : base(id, type)
+    {
     }
 }

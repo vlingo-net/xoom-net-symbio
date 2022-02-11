@@ -10,106 +10,105 @@ using System.Collections.Generic;
 using System.Linq;
 using Vlingo.Xoom.Actors;
 
-namespace Vlingo.Xoom.Symbio
+namespace Vlingo.Xoom.Symbio;
+
+public class StateAdapterProvider
 {
-    public class StateAdapterProvider
+    internal static string InternalName = Guid.NewGuid().ToString();
+
+    private readonly Dictionary<Type, object> _adapters;
+    private readonly Dictionary<string, object> _namedAdapters;
+    private readonly IStateAdapter<object, TextState> _defaultTextStateAdapter;
+        
+    public static StateAdapterProvider Instance(World world)
     {
-        internal static string InternalName = Guid.NewGuid().ToString();
-
-        private readonly Dictionary<Type, object> _adapters;
-        private readonly Dictionary<string, object> _namedAdapters;
-        private readonly IStateAdapter<object, TextState> _defaultTextStateAdapter;
-        
-        public static StateAdapterProvider Instance(World world)
+        var stateAdapterProvider = world.ResolveDynamic<StateAdapterProvider>(InternalName);
+        if (stateAdapterProvider == null)
         {
-            var stateAdapterProvider = world.ResolveDynamic<StateAdapterProvider>(InternalName);
-            if (stateAdapterProvider == null)
-            {
-                return new StateAdapterProvider(world);
-            }
+            return new StateAdapterProvider(world);
+        }
             
-            return stateAdapterProvider;
-        }
+        return stateAdapterProvider;
+    }
 
-        public StateAdapterProvider(World world) : this() => world.RegisterDynamic(InternalName, this);
+    public StateAdapterProvider(World world) : this() => world.RegisterDynamic(InternalName, this);
         
-        public StateAdapterProvider()
-        {
-            _adapters = new Dictionary<Type, object>();
-            _namedAdapters = new Dictionary<string, object>();
-            _defaultTextStateAdapter = new DefaultTextStateAdapter();
-        }
+    public StateAdapterProvider()
+    {
+        _adapters = new Dictionary<Type, object>();
+        _namedAdapters = new Dictionary<string, object>();
+        _defaultTextStateAdapter = new DefaultTextStateAdapter();
+    }
         
-        public void RegisterAdapter<TState, TRawState>(IStateAdapter<TState, TRawState> adapter) where TRawState : IState
-        {
-            _adapters.Add(typeof(TState), adapter);
-            _namedAdapters.Add(typeof(TState).FullName!, adapter);
-        }
+    public void RegisterAdapter<TState, TRawState>(IStateAdapter<TState, TRawState> adapter) where TRawState : IState
+    {
+        _adapters.Add(typeof(TState), adapter);
+        _namedAdapters.Add(typeof(TState).FullName!, adapter);
+    }
         
-        public void RegisterAdapter<TState, TRawState>(IStateAdapter<TState, TRawState> adapter, Action<Type, IStateAdapter<TState, TRawState>> consumer) where TRawState : IState
+    public void RegisterAdapter<TState, TRawState>(IStateAdapter<TState, TRawState> adapter, Action<Type, IStateAdapter<TState, TRawState>> consumer) where TRawState : IState
+    {
+        var stateType = typeof(TState);
+        _adapters.Add(stateType, adapter);
+        _namedAdapters.Add(stateType.Name, adapter);
+        consumer(stateType, adapter);
+    }
+
+    public TRawState AsRaw<TState, TRawState>(string id, TState state, int stateVersion) where TRawState : IState =>
+        AsRaw<TState, TRawState>(id, state, stateVersion, Metadata.NullMetadata());
+
+    public TRawState AsRaw<TState, TRawState>(string id, TState state, int stateVersion, Metadata metadata) where TRawState : IState
+    {
+        var adapter = Adapter<TState, TRawState>();
+        if (adapter != null)
         {
-            var stateType = typeof(TState);
-            _adapters.Add(stateType, adapter);
-            _namedAdapters.Add(stateType.Name, adapter);
-            consumer(stateType, adapter);
+            return adapter.ToRawState(state, stateVersion, metadata);
         }
 
-        public TRawState AsRaw<TState, TRawState>(string id, TState state, int stateVersion) where TRawState : IState =>
-            AsRaw<TState, TRawState>(id, state, stateVersion, Metadata.NullMetadata());
+        return (TRawState) (object) _defaultTextStateAdapter.ToRawState(id, state!, stateVersion, metadata);
+    }
 
-        public TRawState AsRaw<TState, TRawState>(string id, TState state, int stateVersion, Metadata metadata) where TRawState : IState
+    public TState FromRaw<TState, TRawState>(TRawState state) where TRawState : IState
+    {
+        var adapter = NamedAdapter<TState, TRawState>(state);
+        if (adapter != null)
         {
-            var adapter = Adapter<TState, TRawState>();
-            if (adapter != null)
-            {
-                return adapter.ToRawState(state, stateVersion, metadata);
-            }
-
-            return (TRawState) (object) _defaultTextStateAdapter.ToRawState(id, state!, stateVersion, metadata);
+            return adapter.FromRawState(state);
         }
 
-        public TState FromRaw<TState, TRawState>(TRawState state) where TRawState : IState
-        {
-            var adapter = NamedAdapter<TState, TRawState>(state);
-            if (adapter != null)
-            {
-                return adapter.FromRawState(state);
-            }
-
-            return (TState) _defaultTextStateAdapter.FromRawState((TextState)(object)state);
-        }
+        return (TState) _defaultTextStateAdapter.FromRawState((TextState)(object)state);
+    }
         
-        private IStateAdapter<TState, TRawState>? Adapter<TState, TRawState>() where TRawState : IState
+    private IStateAdapter<TState, TRawState>? Adapter<TState, TRawState>() where TRawState : IState
+    {
+        if (!_adapters.ContainsKey(typeof(TState)))
         {
-            if (!_adapters.ContainsKey(typeof(TState)))
-            {
-                return null;
-            }
-            var adapter = (IStateAdapter<TState, TRawState>) _adapters[typeof(TState)];
-            return adapter;
+            return null;
         }
+        var adapter = (IStateAdapter<TState, TRawState>) _adapters[typeof(TState)];
+        return adapter;
+    }
 
-        private IStateAdapter<TState, TRawState>? NamedAdapter<TState, TRawState>(TRawState state) where TRawState : IState
+    private IStateAdapter<TState, TRawState>? NamedAdapter<TState, TRawState>(TRawState state) where TRawState : IState
+    {
+        var typeName = state.Type;
+        if (!_namedAdapters.ContainsKey(typeName))
         {
-            var typeName = state.Type;
-            if (!_namedAdapters.ContainsKey(typeName))
+            // case when serializer restores with full name
+            if (state.Type.Contains(','))
             {
-                // case when serializer restores with full name
-                if (state.Type.Contains(','))
+                var type = Type.GetType(state.Type);
+                var simplifiedName = type?.FullName;
+                if (!string.IsNullOrEmpty(simplifiedName) && !_namedAdapters.ContainsKey(simplifiedName!))
                 {
-                    var type = Type.GetType(state.Type);
-                    var simplifiedName = type?.FullName;
-                    if (!string.IsNullOrEmpty(simplifiedName) && !_namedAdapters.ContainsKey(simplifiedName!))
-                    {
-                        return null;
-                    }
-
-                    typeName = simplifiedName;
+                    return null;
                 }
+
+                typeName = simplifiedName;
             }
-            
-            var adapter = (IStateAdapter<TState, TRawState>) _namedAdapters[typeName!];
-            return adapter;
         }
+            
+        var adapter = (IStateAdapter<TState, TRawState>) _namedAdapters[typeName!];
+        return adapter;
     }
 }
