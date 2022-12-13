@@ -38,7 +38,7 @@ public class InMemoryObjectStoreDelegate : IObjectStoreDelegate
     public void ConfirmDispatched(string dispatchId)
     {
         var toRemove = _dispatchables.FirstOrDefault(d => d.Id.Equals(dispatchId));
-        _dispatchables.Remove(toRemove);
+        _dispatchables.Remove(toRemove!);
     }
 
     /// <inheritdoc />
@@ -119,7 +119,7 @@ public class InMemoryObjectStoreDelegate : IObjectStoreDelegate
         // NOTE: No query constraints accepted; selects all stored objects
 
         var all = new List<StateObject>();
-        var store = _stores.ComputeIfAbsent(expression.Type, type => new Dictionary<long, IState>());
+        var store = _stores.ComputeIfAbsent(expression.Type, _ => new Dictionary<long, IState>());
         foreach (var entry in store.Values)
         {
             var stateObject = _stateAdapterProvider.FromRaw<StateObject, IState>(entry);
@@ -149,7 +149,7 @@ public class InMemoryObjectStoreDelegate : IObjectStoreDelegate
             throw new StorageException(Result.Error, $"Unknown query type: {expression}");
         }
 
-        var store = _stores.ComputeIfAbsent(expression.Type, type => new Dictionary<long, IState>());
+        var store = _stores.ComputeIfAbsent(expression.Type, _ => new Dictionary<long, IState>());
         var found = id == null || id.Equals("-1") ? null! : store[long.Parse(id)];
 
         var result = Optional
@@ -170,7 +170,7 @@ public class InMemoryObjectStoreDelegate : IObjectStoreDelegate
     private IState Persist(StateObject stateObject, Metadata metadata)
     {
         var raw = _stateAdapterProvider.AsRaw<StateObject, IState>(stateObject.PersistenceId.ToString(), stateObject, 1, metadata);
-        var store = _stores.ComputeIfAbsent(stateObject.GetType(), type => new Dictionary<long, IState>());
+        var store = _stores.ComputeIfAbsent(stateObject.GetType(), _ => new Dictionary<long, IState>());
         var persistenceId = stateObject.PersistenceId == -1L ? _nextId++ : stateObject.PersistenceId;
         if (store.ContainsKey(persistenceId))
         {
