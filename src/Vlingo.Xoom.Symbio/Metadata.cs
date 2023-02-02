@@ -14,7 +14,7 @@ namespace Vlingo.Xoom.Symbio;
 
 public class Metadata : IComparable<Metadata>
 {
-    [Obsolete]
+    //[Obsolete]
     public static object EmptyObject => new DummyObject();
         
     public static Metadata NullMetadata() => new(new Dictionary<string, string>(), string.Empty, string.Empty);
@@ -42,7 +42,7 @@ public class Metadata : IComparable<Metadata>
         return new Metadata(properties, value, operation);
     }
     
-    [Obsolete]
+    //[Obsolete]
     public static Metadata With(object @object, string value, string operation) => new(@object, value, operation);
 
     [Obsolete]
@@ -55,7 +55,7 @@ public class Metadata : IComparable<Metadata>
         return new Metadata(@object, value, operation);
     }
 
-    [Obsolete]
+    //[Obsolete]
     public Metadata(object? @object, string? value, string? operation)
     {
         Object = @object ?? EmptyObject;
@@ -80,19 +80,19 @@ public class Metadata : IComparable<Metadata>
     {
     }
 
-    [Obsolete("Object is deprecated and will be removed in future versions. Use the IReadonlyDictionary of Properties instead.")]
+    //[Obsolete("Object is deprecated and will be removed in future versions. Use the IReadonlyDictionary of Properties instead.")]
     public object? Object { get; }
     
     public IReadOnlyDictionary<string,string> Properties { get; }
 
-    [Obsolete]
+    //[Obsolete]
     public Optional<object?> OptionalObject => HasObject ? Optional.Of(Object) : Optional.Empty<object?>();
         
     public string Operation { get; }
         
     public string Value { get; }
 
-    [Obsolete]
+    //[Obsolete]
     public bool HasObject => Object != EmptyObject;
     
     public bool HasProperties => Properties.Any();
